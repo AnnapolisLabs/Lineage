@@ -5,7 +5,7 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center py-4">
           <div class="flex items-center gap-6">
-            <button @click="router.back()" class="text-annapolis-gray-300 hover:text-annapolis-teal transition-colors duration-300 flex items-center gap-2">
+            <button @click="router.push('/projects')" class="text-annapolis-gray-300 hover:text-annapolis-teal transition-colors duration-300 flex items-center gap-2">
               <span class="text-xl">←</span>
               <span>Back</span>
             </button>
@@ -92,6 +92,7 @@
               <div class="flex-1 overflow-y-auto min-h-0">
                 <RequirementTreeView
                   :requirements="allRequirements"
+                  :requirement-links="allRequirementLinks"
                   :selected-id="selectedRequirement?.id"
                   :expanded="expandedNodes"
                   @navigate="handleTreeNavigate"
@@ -236,7 +237,7 @@
                   </div>
                   <p class="text-annapolis-gray-300 leading-relaxed mb-4">{{ req.description || 'No description provided' }}</p>
 
-                  <div class="flex items-center gap-3">
+                  <div class="flex items-center gap-3 flex-wrap">
                     <span :class="[
                       'inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border',
                       req.status === 'APPROVED' ? 'bg-green-500/20 text-green-400 border-green-500/30' :
@@ -257,6 +258,36 @@
                     </span>
                     <span v-if="req.section" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
                       Section {{ req.section }}
+                    </span>
+                    <button
+                      v-if="req.inLinkCount !== undefined && req.inLinkCount > 0"
+                      @click.stop="router.push(`/projects/${projectId}/requirements/${req.id}?showLinks=incoming`)"
+                      class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-400 border border-purple-500/30 hover:bg-purple-500/30 hover:border-purple-500/50 transition-all cursor-pointer"
+                      title="Click to view incoming links"
+                    >
+                      ↑ {{ req.inLinkCount }} In
+                    </button>
+                    <span
+                      v-else-if="req.inLinkCount !== undefined"
+                      class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-400 border border-purple-500/30 opacity-50"
+                      title="No incoming links"
+                    >
+                      ↑ 0 In
+                    </span>
+                    <button
+                      v-if="req.outLinkCount !== undefined && req.outLinkCount > 0"
+                      @click.stop="router.push(`/projects/${projectId}/requirements/${req.id}?showLinks=outgoing`)"
+                      class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30 hover:border-green-500/50 transition-all cursor-pointer"
+                      title="Click to view outgoing links"
+                    >
+                      {{ req.outLinkCount }} Out ↓
+                    </button>
+                    <span
+                      v-else-if="req.outLinkCount !== undefined"
+                      class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30 opacity-50"
+                      title="No outgoing links"
+                    >
+                      0 Out ↓
                     </span>
                     <span v-if="req.parentReqId" class="text-xs text-annapolis-gray-400">
                       <span class="font-medium">Parent:</span> {{ req.parentReqId }}
@@ -411,7 +442,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { projectService, type Project } from '@/services/projectService'
-import { requirementService, type Requirement } from '@/services/requirementService'
+import { requirementService, type Requirement, type RequirementLink } from '@/services/requirementService'
 import RequirementTreeView from '@/components/RequirementTreeView.vue'
 
 const route = useRoute()
@@ -421,13 +452,14 @@ const authStore = useAuthStore()
 const projectId = computed(() => route.params.id as string)
 const project = ref<Project | null>(null)
 const allRequirements = ref<Requirement[]>([])
+const allRequirementLinks = ref<any[]>([])
 const requirements = ref<Requirement[]>([])
 const loading = ref(true)
 
-const searchQuery = ref('')
-const filterStatus = ref('')
-const filterPriority = ref('')
-const filterLevel = ref('')
+const searchQuery = ref(route.query.search as string || '')
+const filterStatus = ref(route.query.status as string || '')
+const filterPriority = ref(route.query.priority as string || '')
+const filterLevel = ref(route.query.level as string || '')
 const showExportMenu = ref(false)
 
 const showModal = ref(false)
@@ -451,6 +483,10 @@ const availableParents = computed(() => {
 
 onMounted(async () => {
   await loadData()
+  // Apply filters from URL on mount
+  if (searchQuery.value || filterStatus.value || filterPriority.value || filterLevel.value) {
+    handleSearch()
+  }
 })
 
 async function loadData() {
@@ -459,11 +495,24 @@ async function loadData() {
     project.value = await projectService.getById(projectId.value)
     allRequirements.value = await requirementService.getByProject(projectId.value)
     requirements.value = allRequirements.value
-    // Clear search filters when reloading
-    searchQuery.value = ''
-    filterStatus.value = ''
-    filterPriority.value = ''
-    filterLevel.value = ''
+
+    // Load all requirement links for tree view
+    const linkPromises = allRequirements.value.map(req =>
+      requirementService.getLinks(req.id).catch(err => {
+        console.error(`Failed to load links for ${req.reqId}:`, err)
+        return []
+      })
+    )
+    const allLinks = await Promise.all(linkPromises)
+
+    // Flatten and store all links with their source requirement ID
+    allRequirementLinks.value = allLinks.flatMap((links, index) => {
+      const sourceReqId = allRequirements.value[index].id
+      return links.map(link => ({
+        ...link,
+        sourceRequirementId: sourceReqId
+      }))
+    })
   } catch (err) {
     console.error('Failed to load data:', err)
   } finally {
@@ -472,6 +521,16 @@ async function loadData() {
 }
 
 function handleSearch() {
+  // Update URL query parameters to persist filters
+  router.replace({
+    query: {
+      search: searchQuery.value || undefined,
+      status: filterStatus.value || undefined,
+      priority: filterPriority.value || undefined,
+      level: filterLevel.value || undefined
+    }
+  })
+
   // Client-side filtering for instant results
   let filtered = allRequirements.value
 
@@ -500,7 +559,39 @@ function handleSearch() {
     filtered = filtered.filter(req => req.level?.toString() === filterLevel.value)
   }
 
+  // Sort by requirement ID (natural number ordering)
+  filtered.sort((a, b) => compareReqIds(a.reqId, b.reqId))
+
   requirements.value = filtered
+}
+
+function compareReqIds(reqId1: string, reqId2: string): number {
+  try {
+    // Extract numeric portion after the last dash
+    const num1 = extractNumber(reqId1)
+    const num2 = extractNumber(reqId2)
+
+    // If numbers are different, sort by number
+    if (num1 !== num2) {
+      return num1 - num2
+    }
+
+    // If numbers are same, sort by full string (handles different prefixes)
+    return reqId1.localeCompare(reqId2)
+  } catch (e) {
+    // Fallback to string comparison if parsing fails
+    return reqId1.localeCompare(reqId2)
+  }
+}
+
+function extractNumber(reqId: string): number {
+  // Find the last dash and extract the number after it
+  const lastDash = reqId.lastIndexOf('-')
+  if (lastDash >= 0 && lastDash < reqId.length - 1) {
+    const numPart = reqId.substring(lastDash + 1)
+    return parseInt(numPart, 10)
+  }
+  return 0
 }
 
 function openCreateModal(parentReq?: Requirement) {

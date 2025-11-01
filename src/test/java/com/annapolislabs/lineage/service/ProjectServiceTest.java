@@ -5,6 +5,7 @@ import com.annapolislabs.lineage.dto.response.ProjectResponse;
 import com.annapolislabs.lineage.entity.*;
 import com.annapolislabs.lineage.repository.ProjectMemberRepository;
 import com.annapolislabs.lineage.repository.ProjectRepository;
+import com.annapolislabs.lineage.repository.RequirementRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,6 +30,9 @@ class ProjectServiceTest {
 
     @Mock
     private ProjectMemberRepository projectMemberRepository;
+
+    @Mock
+    private RequirementRepository requirementRepository;
 
     @Mock
     private AuthService authService;
@@ -138,6 +142,8 @@ class ProjectServiceTest {
         when(authService.getCurrentUser()).thenReturn(testUser);
         when(projectMemberRepository.findByProjectIdAndUserId(testProject.getId(), testUser.getId()))
                 .thenReturn(Optional.of(member));
+        when(requirementRepository.findByProjectId(testProject.getId())).thenReturn(new java.util.ArrayList<>());
+        when(projectMemberRepository.findByProjectId(testProject.getId())).thenReturn(Arrays.asList(member));
 
         // Act
         projectService.deleteProject(testProject.getId());

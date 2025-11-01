@@ -40,7 +40,64 @@
       </div>
 
       <!-- Content -->
-      <div v-else-if="requirement" class="max-w-7xl mx-auto space-y-6">
+      <div v-else-if="requirement" class="flex gap-6">
+        <!-- Tree View Sidebar -->
+        <div
+          v-if="allRequirements.length > 0"
+          class="transition-all duration-300 flex-shrink-0"
+        >
+          <!-- Collapsed - small button -->
+          <div
+            v-if="!showTreeView"
+            class="bg-annapolis-charcoal/50 backdrop-blur-sm rounded-lg shadow-lg border border-annapolis-teal/20 overflow-hidden flex items-center justify-center"
+            style="width: 48px; height: 42px;"
+          >
+            <button
+              @click="showTreeView = true"
+              class="p-2 text-annapolis-gray-300 hover:text-annapolis-teal transition-colors group"
+              title="Show Tree View"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Expanded - full height sidebar -->
+          <div
+            v-else
+            class="bg-annapolis-charcoal/50 backdrop-blur-sm rounded-lg shadow-lg border border-annapolis-teal/20 overflow-hidden flex flex-col"
+            style="width: 320px; height: calc(100vh - 160px); position: sticky; top: 20px;"
+          >
+            <div class="flex flex-col h-full p-4">
+              <div class="flex items-center justify-between mb-4 flex-shrink-0">
+                <h3 class="text-sm font-semibold text-white uppercase tracking-wide">Requirements Tree</h3>
+                <button
+                  @click="showTreeView = false"
+                  class="text-annapolis-gray-400 hover:text-annapolis-teal transition-colors"
+                  title="Collapse Tree View"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+              </div>
+              <div class="flex-1 overflow-y-auto min-h-0">
+                <RequirementTreeView
+                  :requirements="allRequirements"
+                  :requirement-links="allRequirementLinks"
+                  :selected-id="requirementId"
+                  :expanded="expandedNodes"
+                  @navigate="handleTreeNavigate"
+                  @toggle-expand="toggleNode"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 max-w-7xl space-y-6">
         <!-- Breadcrumb -->
         <nav class="flex items-center gap-2 text-sm text-annapolis-gray-300">
           <router-link
@@ -93,6 +150,16 @@
               </div>
             </div>
             <div class="flex items-center gap-3 ml-6">
+              <button
+                @click="showHistoryModal = true"
+                class="inline-flex items-center px-4 py-2 border border-purple-500/30 shadow-sm text-sm font-medium rounded-lg text-purple-400 bg-purple-500/10 hover:bg-purple-500/20 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300"
+                title="View version history"
+              >
+                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                History
+              </button>
               <button
                 @click="openEditModal"
                 class="inline-flex items-center px-4 py-2 border border-annapolis-teal/30 shadow-sm text-sm font-medium rounded-lg text-annapolis-teal bg-annapolis-teal/10 hover:bg-annapolis-teal/20 focus:outline-none focus:ring-2 focus:ring-annapolis-teal transition-all duration-300"
@@ -157,6 +224,7 @@
               @click="navigateToChild(child.id)"
             />
           </div>
+        </div>
         </div>
       </div>
     </main>
@@ -228,6 +296,38 @@
         </div>
       </div>
     </RequirementModal>
+
+    <!-- History Modal -->
+    <Transition name="fade">
+      <div
+        v-if="showHistoryModal"
+        @click="showHistoryModal = false"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      >
+        <div
+          @click.stop
+          class="bg-annapolis-charcoal rounded-xl shadow-2xl border border-annapolis-teal/30 w-full max-w-4xl max-h-[85vh] overflow-hidden flex flex-col"
+        >
+          <!-- Header -->
+          <div class="flex justify-between items-center p-6 border-b border-annapolis-teal/20">
+            <h2 class="text-2xl font-bold text-white">Version History</h2>
+            <button
+              @click="showHistoryModal = false"
+              class="text-annapolis-gray-400 hover:text-white transition-colors"
+            >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Content -->
+          <div class="overflow-y-auto p-6 flex-1">
+            <RequirementHistory v-if="showHistoryModal" :requirement-id="requirementId" />
+          </div>
+        </div>
+      </div>
+    </Transition>
 
     <!-- Links Overlay Modal -->
     <Transition name="fade">
@@ -354,6 +454,8 @@ import PriorityBadge from '@/components/requirements/PriorityBadge.vue'
 import RequirementCard from '@/components/requirements/RequirementCard.vue'
 import RequirementModal from '@/components/requirements/RequirementModal.vue'
 import RequirementForm from '@/components/requirements/RequirementForm.vue'
+import RequirementTreeView from '@/components/RequirementTreeView.vue'
+import RequirementHistory from '@/components/requirements/RequirementHistory.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -373,8 +475,13 @@ const showEditModal = ref(false)
 const showCreateModal = ref(false)
 const showLinkModal = ref(false)
 const showLinksOverlay = ref(false)
+const showHistoryModal = ref(false)
 const linkDirectionFilter = ref<'all' | 'incoming' | 'outgoing'>('all')
 const selectedRequirementToLink = ref('')
+
+const showTreeView = ref(true)
+const expandedNodes = ref(new Set<string>())
+const allRequirementLinks = ref<any[]>([])
 
 const formData = ref({
   title: '',
@@ -430,6 +537,13 @@ const availableRequirementsToLink = computed(() => {
 
 onMounted(async () => {
   await loadData()
+
+  // Check if we should auto-open links overlay
+  const showLinks = route.query.showLinks as string | undefined
+  if (showLinks === 'incoming' || showLinks === 'outgoing') {
+    linkDirectionFilter.value = showLinks
+    showLinksOverlay.value = true
+  }
 })
 
 // Watch for route changes to reload data when navigating between requirements
@@ -456,7 +570,32 @@ async function loadData() {
           .filter(link => link.direction === 'outgoing')
           .map(link => link.requirement.id)
       )
-      children.value = allRequirements.value.filter(r => childIds.has(r.id))
+      children.value = allRequirements.value
+        .filter(r => childIds.has(r.id))
+        .sort((a, b) => compareReqIds(a.reqId, b.reqId))
+    }
+
+    // Load all requirement links for tree view
+    const linkPromises = allRequirements.value.map(req =>
+      requirementService.getLinks(req.id).catch(err => {
+        console.error(`Failed to load links for ${req.reqId}:`, err)
+        return []
+      })
+    )
+    const allLinks = await Promise.all(linkPromises)
+
+    // Flatten and store all links with their source requirement ID
+    allRequirementLinks.value = allLinks.flatMap((links, index) => {
+      const sourceReqId = allRequirements.value[index].id
+      return links.map(link => ({
+        ...link,
+        sourceRequirementId: sourceReqId
+      }))
+    })
+
+    // Auto-expand parent nodes to show current requirement
+    if (requirement.value) {
+      expandParentNodes(requirement.value.id)
     }
   } catch (err) {
     console.error('Failed to load data:', err)
@@ -598,6 +737,68 @@ function showLinksFiltered(direction: 'incoming' | 'outgoing') {
 function navigateToRequirement(requirementId: string) {
   showLinksOverlay.value = false
   router.push(`/projects/${projectId.value}/requirements/${requirementId}`)
+}
+
+function handleTreeNavigate(req: Requirement) {
+  router.push(`/projects/${projectId.value}/requirements/${req.id}`)
+}
+
+function toggleNode(id: string) {
+  if (expandedNodes.value.has(id)) {
+    expandedNodes.value.delete(id)
+  } else {
+    expandedNodes.value.add(id)
+  }
+}
+
+function expandParentNodes(reqId: string) {
+  const req = allRequirements.value.find(r => r.id === reqId)
+  if (!req) return
+
+  // Expand all parent nodes
+  let current = req
+  while (current.parentId) {
+    expandedNodes.value.add(current.parentId)
+    const parent = allRequirements.value.find(r => r.id === current.parentId)
+    if (!parent) break
+    current = parent
+  }
+
+  // Also expand nodes with outgoing links to this requirement
+  allRequirementLinks.value.forEach(link => {
+    if (link.requirement.id === reqId && link.direction === 'outgoing') {
+      expandedNodes.value.add(link.sourceRequirementId)
+    }
+  })
+}
+
+function compareReqIds(reqId1: string, reqId2: string): number {
+  try {
+    // Extract numeric portion after the last dash
+    const num1 = extractNumber(reqId1)
+    const num2 = extractNumber(reqId2)
+
+    // If numbers are different, sort by number
+    if (num1 !== num2) {
+      return num1 - num2
+    }
+
+    // If numbers are same, sort by full string (handles different prefixes)
+    return reqId1.localeCompare(reqId2)
+  } catch (e) {
+    // Fallback to string comparison if parsing fails
+    return reqId1.localeCompare(reqId2)
+  }
+}
+
+function extractNumber(reqId: string): number {
+  // Find the last dash and extract the number after it
+  const lastDash = reqId.lastIndexOf('-')
+  if (lastDash >= 0 && lastDash < reqId.length - 1) {
+    const numPart = reqId.substring(lastDash + 1)
+    return parseInt(numPart, 10)
+  }
+  return 0
 }
 </script>
 

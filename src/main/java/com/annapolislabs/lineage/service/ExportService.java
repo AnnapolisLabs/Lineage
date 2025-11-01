@@ -98,7 +98,7 @@ public class ExportService {
         checkAccess(projectId);
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
-        List<Requirement> requirements = requirementRepository.findByProjectIdAndParentIsNull(projectId);
+        List<Requirement> requirements = requirementRepository.findByProjectIdAndParentIsNullAndDeletedAtIsNull(projectId);
 
         StringBuilder md = new StringBuilder();
         md.append("# ").append(project.getName()).append("\n\n");
@@ -127,7 +127,7 @@ public class ExportService {
         md.append("---\n\n");
 
         // Recursively append children
-        List<Requirement> children = requirementRepository.findByParentId(req.getId());
+        List<Requirement> children = requirementRepository.findByParentIdAndDeletedAtIsNull(req.getId());
         for (Requirement child : children) {
             appendRequirementMarkdown(md, child, level + 1);
         }

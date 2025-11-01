@@ -17,16 +17,19 @@ public class RequirementLinkService {
     private final RequirementLinkRepository linkRepository;
     private final RequirementRepository requirementRepository;
     private final ProjectMemberRepository projectMemberRepository;
+    private final RequirementHistoryRepository historyRepository;
     private final AuthService authService;
 
     @Autowired
     public RequirementLinkService(RequirementLinkRepository linkRepository,
                                  RequirementRepository requirementRepository,
                                  ProjectMemberRepository projectMemberRepository,
+                                 RequirementHistoryRepository historyRepository,
                                  AuthService authService) {
         this.linkRepository = linkRepository;
         this.requirementRepository = requirementRepository;
         this.projectMemberRepository = projectMemberRepository;
+        this.historyRepository = historyRepository;
         this.authService = authService;
     }
 
@@ -73,6 +76,9 @@ public class RequirementLinkService {
         // Links represent the full parent-child relationships.
         // A requirement can have multiple parents through links.
         // The parentId field is just used for the initial/primary parent.
+
+        // Create history entries for both requirements
+        createLinkHistoryEntry(fromReq, toReq, currentUser, ChangeType.LINK_ADDED);
 
         return linkToMap(link);
     }
@@ -136,6 +142,9 @@ public class RequirementLinkService {
             throw new RuntimeException("Editor access required");
         }
 
+        // Create history entries before deleting
+        createLinkHistoryEntry(link.getFromRequirement(), link.getToRequirement(), currentUser, ChangeType.LINK_REMOVED);
+
         // Delete the link only - don't delete the child requirement
         // The child requirement can have multiple parents through other links
         linkRepository.delete(link);
@@ -148,5 +157,20 @@ public class RequirementLinkService {
         map.put("to", new RequirementResponse(link.getToRequirement()));
         map.put("createdAt", link.getCreatedAt());
         return map;
+    }
+
+    private void createLinkHistoryEntry(Requirement fromReq, Requirement toReq, User user, ChangeType changeType) {
+        Map<String, Object> linkData = new HashMap<>();
+        linkData.put("fromReqId", fromReq.getReqId());
+        linkData.put("fromTitle", fromReq.getTitle());
+        linkData.put("toReqId", toReq.getReqId());
+        linkData.put("toTitle", toReq.getTitle());
+
+        // Create history entries for both requirements
+        RequirementHistory fromHistory = new RequirementHistory(fromReq, user, changeType, null, linkData);
+        RequirementHistory toHistory = new RequirementHistory(toReq, user, changeType, null, linkData);
+
+        historyRepository.save(fromHistory);
+        historyRepository.save(toHistory);
     }
 }

@@ -18,9 +18,23 @@
           <p class="text-annapolis-gray-300 leading-relaxed mb-4">
             {{ requirement.description || 'No description provided' }}
           </p>
-          <div class="flex items-center gap-3">
+          <div class="flex items-center gap-3 flex-wrap">
             <StatusBadge :status="requirement.status" />
             <PriorityBadge :priority="requirement.priority" />
+            <span
+              v-if="requirement.inLinkCount !== undefined"
+              class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-400 border border-purple-500/30"
+              title="Links to higher-level requirements (parents)"
+            >
+              ↑ {{ requirement.inLinkCount || 0 }} In
+            </span>
+            <span
+              v-if="requirement.outLinkCount !== undefined"
+              class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30"
+              title="Links to lower-level requirements (children)"
+            >
+              {{ requirement.outLinkCount || 0 }} Out ↓
+            </span>
           </div>
         </div>
         <div class="ml-6">

@@ -95,8 +95,9 @@ public class RequirementService {
             throw new RuntimeException("Access denied");
         }
 
-        return requirementRepository.findByProjectId(projectId)
+        return requirementRepository.findByProjectIdAndDeletedAtIsNull(projectId)
                 .stream()
+                .sorted((r1, r2) -> compareReqIds(r1.getReqId(), r2.getReqId()))
                 .map(this::toRequirementResponse)
                 .collect(Collectors.toList());
     }
@@ -157,6 +158,10 @@ public class RequirementService {
         Requirement requirement = requirementRepository.findById(requirementId)
                 .orElseThrow(() -> new RuntimeException("Requirement not found"));
 
+        if (requirement.isDeleted()) {
+            throw new RuntimeException("Requirement already deleted");
+        }
+
         User currentUser = authService.getCurrentUser();
         ProjectMember member = projectMemberRepository.findByProjectIdAndUserId(requirement.getProject().getId(), currentUser.getId())
                 .orElseThrow(() -> new RuntimeException("Access denied"));
@@ -165,20 +170,19 @@ public class RequirementService {
             throw new RuntimeException("Editor access required");
         }
 
-        // Create history entry before deleting (capture data first, then save after delete)
-        Map<String, Object> reqData = new HashMap<>();
-        reqData.put("reqId", requirement.getReqId());
-        reqData.put("title", requirement.getTitle());
-        reqData.put("description", requirement.getDescription());
-        reqData.put("status", requirement.getStatus());
-        reqData.put("priority", requirement.getPriority());
-        reqData.put("parentId", requirement.getParent() != null ? requirement.getParent().getId().toString() : null);
-        
-        // Delete the requirement (this will cascade to children due to our entity configuration)
-        requirementRepository.delete(requirement);
-        
-        // Note: We skip creating history entry for deletes to avoid Hibernate flush issues
-        // History is still tracked via the cascade deletions
+        // Soft delete: mark as deleted but preserve the record and ID
+        Map<String, Object> oldValue = toMap(requirement);
+
+        requirement.setDeletedAt(java.time.LocalDateTime.now());
+        requirement.setDeletedBy(currentUser);
+        requirementRepository.save(requirement);
+
+        // Create history entry for deletion
+        Map<String, Object> newValue = new HashMap<>();
+        newValue.put("deletedAt", requirement.getDeletedAt());
+        newValue.put("deletedBy", currentUser.getEmail());
+
+        createHistoryEntry(requirement, currentUser, ChangeType.DELETED, oldValue, newValue);
     }
 
     @Transactional(readOnly = true)
@@ -290,5 +294,39 @@ public class RequirementService {
         response.setOutLinkCount(outLinkCount);
 
         return response;
+    }
+
+    /**
+     * Compares two requirement IDs for natural ordering.
+     * Handles formats like "REQ-001", "CR-123", etc.
+     * Extracts the numeric portion and compares numerically.
+     */
+    private int compareReqIds(String reqId1, String reqId2) {
+        try {
+            // Extract numeric portion after the last dash
+            int num1 = extractNumber(reqId1);
+            int num2 = extractNumber(reqId2);
+
+            // If numbers are different, sort by number
+            if (num1 != num2) {
+                return Integer.compare(num1, num2);
+            }
+
+            // If numbers are same, sort by full string (handles different prefixes)
+            return reqId1.compareTo(reqId2);
+        } catch (Exception e) {
+            // Fallback to string comparison if parsing fails
+            return reqId1.compareTo(reqId2);
+        }
+    }
+
+    private int extractNumber(String reqId) {
+        // Find the last dash and extract the number after it
+        int lastDash = reqId.lastIndexOf('-');
+        if (lastDash >= 0 && lastDash < reqId.length() - 1) {
+            String numPart = reqId.substring(lastDash + 1);
+            return Integer.parseInt(numPart);
+        }
+        return 0;
     }
 }
