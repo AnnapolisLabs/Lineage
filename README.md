@@ -18,13 +18,14 @@ A modern, MIT-licensed, web-based requirements management tool built with Spring
 ## Features
 
 - **Requirements CRUD** with Markdown support
-- **Hierarchical organization** (parent-child relationships, drag-and-drop)
+- **Hierarchical organization** (parent-child relationships)
 - **Bi-directional linking** between requirements
 - **Full-text search** with filtering
 - **User authentication** and role-based access control (Viewer, Editor, Admin)
-- **Version history** with diff view
+- **Version history** tracking all requirement changes with diff view
 - **Export** to CSV, JSON, and Markdown
 - **Multi-project** support with project-level permissions
+- **Permanent requirement IDs** - deleted requirements never reuse IDs
 
 ## Tech Stack
 
@@ -179,15 +180,25 @@ No artificial feature restrictions. Pay for convenience, not the software itself
 - [x] JWT authentication
 - [x] Frontend with Vue 3
 - [x] Login/Logout UI
-- [ ] Requirements CRUD UI
-- [ ] Search and filtering
-- [ ] Version history viewer
+- [x] Requirements CRUD UI
+- [x] Search and filtering
+- [x] Hierarchical requirement numbering
+- [x] Bi-directional requirement linking
+- [x] Multi-project support
+- [x] Export to CSV, JSON, and Markdown
+- [x] Project settings management
+- [x] Version history system
+  - [x] Track all requirement changes (content, links, status, deletions)
+  - [x] Permanent requirement IDs (soft delete - deleted IDs never reused)
+  - [x] Version history API
+  - [x] Version history UI with diff viewer
 
 ### v0.2 (Planned)
 - Traceability matrix
 - PDF/HTML export
 - Comments and discussions
 - Baseline/snapshot feature
+- Enhanced requirement attributes
 
 ### v0.3 (Planned)
 - ReqIF import/export

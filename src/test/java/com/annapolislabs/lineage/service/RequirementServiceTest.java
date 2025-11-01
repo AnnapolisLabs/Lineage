@@ -33,6 +33,9 @@ class RequirementServiceTest {
     private RequirementHistoryRepository historyRepository;
 
     @Mock
+    private RequirementLinkRepository linkRepository;
+
+    @Mock
     private AuthService authService;
 
     @InjectMocks
@@ -73,6 +76,7 @@ class RequirementServiceTest {
         when(requirementRepository.findByProjectId(testProject.getId())).thenReturn(new ArrayList<>());
         when(requirementRepository.save(any(Requirement.class))).thenReturn(testRequirement);
         when(historyRepository.save(any(RequirementHistory.class))).thenReturn(new RequirementHistory());
+        when(linkRepository.findAllLinksForRequirement(any(UUID.class))).thenReturn(new ArrayList<>());
 
         // Act
         RequirementResponse response = requirementService.createRequirement(testProject.getId(), request);
@@ -108,8 +112,10 @@ class RequirementServiceTest {
         when(authService.getCurrentUser()).thenReturn(testUser);
         when(projectMemberRepository.existsByProjectIdAndUserId(testProject.getId(), testUser.getId()))
                 .thenReturn(true);
-        when(requirementRepository.findByProjectId(testProject.getId()))
+        when(requirementRepository.findByProjectIdAndDeletedAtIsNull(testProject.getId()))
                 .thenReturn(Arrays.asList(testRequirement));
+        when(linkRepository.findAllLinksForRequirement(testRequirement.getId()))
+                .thenReturn(new ArrayList<>());
 
         // Act
         List<RequirementResponse> requirements = requirementService.getRequirementsByProject(testProject.getId());
@@ -135,6 +141,7 @@ class RequirementServiceTest {
                 .thenReturn(Optional.of(testMember));
         when(requirementRepository.save(any(Requirement.class))).thenReturn(testRequirement);
         when(historyRepository.save(any(RequirementHistory.class))).thenReturn(new RequirementHistory());
+        when(linkRepository.findAllLinksForRequirement(any(UUID.class))).thenReturn(new ArrayList<>());
 
         // Act
         RequirementResponse response = requirementService.updateRequirement(testRequirement.getId(), request);
@@ -152,13 +159,15 @@ class RequirementServiceTest {
         when(authService.getCurrentUser()).thenReturn(testUser);
         when(projectMemberRepository.findByProjectIdAndUserId(testProject.getId(), testUser.getId()))
                 .thenReturn(Optional.of(testMember));
+        when(requirementRepository.save(any(Requirement.class))).thenReturn(testRequirement);
+        when(historyRepository.save(any(RequirementHistory.class))).thenReturn(new RequirementHistory());
 
         // Act
         requirementService.deleteRequirement(testRequirement.getId());
 
         // Assert
-        verify(requirementRepository).delete(testRequirement);
-        // Note: We no longer create history entries during delete to avoid Hibernate flush issues
+        verify(requirementRepository).save(any(Requirement.class));
+        verify(historyRepository).save(any(RequirementHistory.class));
     }
 
     @Test

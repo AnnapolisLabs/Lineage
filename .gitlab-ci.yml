@@ -1,0 +1,7 @@
+sync-to-github:
+  stage: deploy
+  only:
+    - main
+  script:
+    - git remote add github https://${GITHUB_TOKEN}@github.com/AnnapolisLabs/Lineage.git
+    - git push github HEAD:main --force

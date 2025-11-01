@@ -66,6 +66,13 @@ public class Requirement {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "deleted_by")
+    private User deletedBy;
+
     // Constructors
     public Requirement() {}
 
@@ -196,5 +203,25 @@ public class Requirement {
 
     public void setSection(String section) {
         this.section = section;
+    }
+
+    public LocalDateTime getDeletedAt() {
+        return deletedAt;
+    }
+
+    public void setDeletedAt(LocalDateTime deletedAt) {
+        this.deletedAt = deletedAt;
+    }
+
+    public User getDeletedBy() {
+        return deletedBy;
+    }
+
+    public void setDeletedBy(User deletedBy) {
+        this.deletedBy = deletedBy;
+    }
+
+    public boolean isDeleted() {
+        return deletedAt != null;
     }
 }

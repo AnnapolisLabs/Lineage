@@ -16,6 +16,15 @@ export interface Requirement {
   createdByEmail: string
   createdAt: string
   updatedAt: string
+  inLinkCount?: number
+  outLinkCount?: number
+}
+
+export interface RequirementLink {
+  id: string
+  direction: 'incoming' | 'outgoing'
+  requirement: Requirement
+  createdAt: string
 }
 
 export interface CreateRequirementRequest {
@@ -61,5 +70,18 @@ export const requirementService = {
   async search(projectId: string, params: { q?: string; status?: string; priority?: string }): Promise<Requirement[]> {
     const response = await api.get<Requirement[]>(`/projects/${projectId}/search`, { params })
     return response.data
+  },
+
+  async getLinks(requirementId: string): Promise<RequirementLink[]> {
+    const response = await api.get<RequirementLink[]>(`/requirements/${requirementId}/links`)
+    return response.data
+  },
+
+  async createLink(requirementId: string, toRequirementId: string): Promise<void> {
+    await api.post(`/requirements/${requirementId}/links`, { toRequirementId })
+  },
+
+  async deleteLink(linkId: string): Promise<void> {
+    await api.delete(`/links/${linkId}`)
   }
 }

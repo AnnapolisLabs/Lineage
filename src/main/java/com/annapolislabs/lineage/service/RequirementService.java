@@ -18,6 +18,7 @@ public class RequirementService {
     private final ProjectRepository projectRepository;
     private final ProjectMemberRepository projectMemberRepository;
     private final RequirementHistoryRepository historyRepository;
+    private final RequirementLinkRepository linkRepository;
     private final AuthService authService;
 
     @Autowired
@@ -25,11 +26,13 @@ public class RequirementService {
                              ProjectRepository projectRepository,
                              ProjectMemberRepository projectMemberRepository,
                              RequirementHistoryRepository historyRepository,
+                             RequirementLinkRepository linkRepository,
                              AuthService authService) {
         this.requirementRepository = requirementRepository;
         this.projectRepository = projectRepository;
         this.projectMemberRepository = projectMemberRepository;
         this.historyRepository = historyRepository;
+        this.linkRepository = linkRepository;
         this.authService = authService;
     }
 
@@ -71,10 +74,16 @@ public class RequirementService {
 
         requirement = requirementRepository.save(requirement);
 
+        // If parent is set, automatically create a link
+        if (parent != null) {
+            RequirementLink link = new RequirementLink(parent, requirement, currentUser);
+            linkRepository.save(link);
+        }
+
         // Create history entry
         createHistoryEntry(requirement, currentUser, ChangeType.CREATED, null, toMap(requirement));
 
-        return new RequirementResponse(requirement);
+        return toRequirementResponse(requirement);
     }
 
     @Transactional(readOnly = true)
@@ -86,9 +95,10 @@ public class RequirementService {
             throw new RuntimeException("Access denied");
         }
 
-        return requirementRepository.findByProjectId(projectId)
+        return requirementRepository.findByProjectIdAndDeletedAtIsNull(projectId)
                 .stream()
-                .map(RequirementResponse::new)
+                .sorted((r1, r2) -> compareReqIds(r1.getReqId(), r2.getReqId()))
+                .map(this::toRequirementResponse)
                 .collect(Collectors.toList());
     }
 
@@ -103,7 +113,7 @@ public class RequirementService {
             throw new RuntimeException("Access denied");
         }
 
-        return new RequirementResponse(requirement);
+        return toRequirementResponse(requirement);
     }
 
     @Transactional
@@ -140,13 +150,17 @@ public class RequirementService {
         // Create history entry
         createHistoryEntry(requirement, currentUser, ChangeType.UPDATED, oldValue, toMap(requirement));
 
-        return new RequirementResponse(requirement);
+        return toRequirementResponse(requirement);
     }
 
     @Transactional
     public void deleteRequirement(UUID requirementId) {
         Requirement requirement = requirementRepository.findById(requirementId)
                 .orElseThrow(() -> new RuntimeException("Requirement not found"));
+
+        if (requirement.isDeleted()) {
+            throw new RuntimeException("Requirement already deleted");
+        }
 
         User currentUser = authService.getCurrentUser();
         ProjectMember member = projectMemberRepository.findByProjectIdAndUserId(requirement.getProject().getId(), currentUser.getId())
@@ -156,20 +170,19 @@ public class RequirementService {
             throw new RuntimeException("Editor access required");
         }
 
-        // Create history entry before deleting (capture data first, then save after delete)
-        Map<String, Object> reqData = new HashMap<>();
-        reqData.put("reqId", requirement.getReqId());
-        reqData.put("title", requirement.getTitle());
-        reqData.put("description", requirement.getDescription());
-        reqData.put("status", requirement.getStatus());
-        reqData.put("priority", requirement.getPriority());
-        reqData.put("parentId", requirement.getParent() != null ? requirement.getParent().getId().toString() : null);
-        
-        // Delete the requirement (this will cascade to children due to our entity configuration)
-        requirementRepository.delete(requirement);
-        
-        // Note: We skip creating history entry for deletes to avoid Hibernate flush issues
-        // History is still tracked via the cascade deletions
+        // Soft delete: mark as deleted but preserve the record and ID
+        Map<String, Object> oldValue = toMap(requirement);
+
+        requirement.setDeletedAt(java.time.LocalDateTime.now());
+        requirement.setDeletedBy(currentUser);
+        requirementRepository.save(requirement);
+
+        // Create history entry for deletion
+        Map<String, Object> newValue = new HashMap<>();
+        newValue.put("deletedAt", requirement.getDeletedAt());
+        newValue.put("deletedBy", currentUser.getEmail());
+
+        createHistoryEntry(requirement, currentUser, ChangeType.DELETED, oldValue, newValue);
     }
 
     @Transactional(readOnly = true)
@@ -246,5 +259,74 @@ public class RequirementService {
         map.put("oldValue", history.getOldValue());
         map.put("newValue", history.getNewValue());
         return map;
+    }
+
+    private RequirementResponse toRequirementResponse(Requirement requirement) {
+        RequirementResponse response = new RequirementResponse(requirement);
+
+        // Calculate link counts based on hierarchical direction
+        // Out links = links pointing DOWN the hierarchy (to lower/child levels)
+        // In links = links pointing UP the hierarchy (to higher/parent levels)
+        List<RequirementLink> allLinks = linkRepository.findAllLinksForRequirement(requirement.getId());
+
+        int inLinkCount = 0;
+        int outLinkCount = 0;
+
+        for (RequirementLink link : allLinks) {
+            Requirement otherReq;
+
+            if (link.getFromRequirement().getId().equals(requirement.getId())) {
+                otherReq = link.getToRequirement();
+            } else {
+                otherReq = link.getFromRequirement();
+            }
+
+            if (otherReq.getLevel() > requirement.getLevel()) {
+                // Other requirement is at a lower level (child) - OUT link
+                outLinkCount++;
+            } else {
+                // Other requirement is at a higher level (parent) - IN link
+                inLinkCount++;
+            }
+        }
+
+        response.setInLinkCount(inLinkCount);
+        response.setOutLinkCount(outLinkCount);
+
+        return response;
+    }
+
+    /**
+     * Compares two requirement IDs for natural ordering.
+     * Handles formats like "REQ-001", "CR-123", etc.
+     * Extracts the numeric portion and compares numerically.
+     */
+    private int compareReqIds(String reqId1, String reqId2) {
+        try {
+            // Extract numeric portion after the last dash
+            int num1 = extractNumber(reqId1);
+            int num2 = extractNumber(reqId2);
+
+            // If numbers are different, sort by number
+            if (num1 != num2) {
+                return Integer.compare(num1, num2);
+            }
+
+            // If numbers are same, sort by full string (handles different prefixes)
+            return reqId1.compareTo(reqId2);
+        } catch (Exception e) {
+            // Fallback to string comparison if parsing fails
+            return reqId1.compareTo(reqId2);
+        }
+    }
+
+    private int extractNumber(String reqId) {
+        // Find the last dash and extract the number after it
+        int lastDash = reqId.lastIndexOf('-');
+        if (lastDash >= 0 && lastDash < reqId.length() - 1) {
+            String numPart = reqId.substring(lastDash + 1);
+            return Integer.parseInt(numPart);
+        }
+        return 0;
     }
 }
