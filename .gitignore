@@ -35,3 +35,12 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Environment Variables ###
+.env
+
+### Node ###
+node_modules/
+dist/
+.DS_Store
+/frontend/nul
