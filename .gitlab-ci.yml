@@ -1,5 +1,5 @@
 sync-to-github:
-  image: git:latest
+  image: bitnami/git:latest
   stage: deploy
   only:
     - main
