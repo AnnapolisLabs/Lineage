@@ -10,7 +10,7 @@
           'tree-item flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-all',
           selectedId === req.id ? 'bg-annapolis-teal/20 text-annapolis-teal' : 'text-annapolis-gray-300 hover:bg-annapolis-charcoal/50'
         ]"
-        @click="$emit('select', req)"
+        @click="$emit('navigate', req)"
       >
         <button
           v-if="hasChildren(req.id)"
@@ -50,7 +50,7 @@
           :parent-id="req.id"
           :selected-id="selectedId"
           :expanded="expanded"
-          @select="$emit('select', $event)"
+          @navigate="$emit('navigate', $event)"
           @toggle-expand="toggleExpand"
         />
       </div>
@@ -75,21 +75,21 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  select: [requirement: Requirement]
+  navigate: [requirement: Requirement]
   toggleExpand: [id: string]
 }>()
 
 const rootRequirements = computed(() => {
   return props.requirements.filter(req => {
     if (props.parentId === null) {
-      return !req.parentReqId
+      return !req.parentId
     }
-    return req.parentReqId === props.parentId
+    return req.parentId === props.parentId
   })
 })
 
 function hasChildren(reqId: string): boolean {
-  return props.requirements.some(req => req.parentReqId === reqId)
+  return props.requirements.some(req => req.parentId === reqId)
 }
 
 function toggleExpand(id: string) {

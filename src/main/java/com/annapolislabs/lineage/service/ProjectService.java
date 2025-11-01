@@ -5,9 +5,11 @@ import com.annapolislabs.lineage.dto.response.ProjectResponse;
 import com.annapolislabs.lineage.entity.Project;
 import com.annapolislabs.lineage.entity.ProjectMember;
 import com.annapolislabs.lineage.entity.ProjectRole;
+import com.annapolislabs.lineage.entity.Requirement;
 import com.annapolislabs.lineage.entity.User;
 import com.annapolislabs.lineage.repository.ProjectMemberRepository;
 import com.annapolislabs.lineage.repository.ProjectRepository;
+import com.annapolislabs.lineage.repository.RequirementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,14 +24,17 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final ProjectMemberRepository projectMemberRepository;
     private final AuthService authService;
+    private final RequirementRepository requirementRepository;
 
     @Autowired
     public ProjectService(ProjectRepository projectRepository,
                          ProjectMemberRepository projectMemberRepository,
-                         AuthService authService) {
+                         AuthService authService,
+                         RequirementRepository requirementRepository) {
         this.projectRepository = projectRepository;
         this.projectMemberRepository = projectMemberRepository;
         this.authService = authService;
+        this.requirementRepository = requirementRepository;
     }
 
     @Transactional
@@ -95,6 +100,7 @@ public class ProjectService {
 
         project.setName(request.getName());
         project.setDescription(request.getDescription());
+        project.setLevelPrefixes(request.getLevelPrefixes());
         // Don't allow changing project key after creation
 
         project = projectRepository.save(project);
@@ -115,6 +121,15 @@ public class ProjectService {
             throw new RuntimeException("Admin access required");
         }
 
+        // Delete all requirements associated with this project first
+        List<Requirement> requirements = requirementRepository.findByProjectId(projectId);
+        requirementRepository.deleteAll(requirements);
+
+        // Delete all project members
+        List<ProjectMember> members = projectMemberRepository.findByProjectId(projectId);
+        projectMemberRepository.deleteAll(members);
+
+        // Finally delete the project
         projectRepository.delete(project);
     }
 }

@@ -15,6 +15,8 @@ public class RequirementResponse {
     private String priority;
     private UUID parentId;
     private String parentReqId;
+    private Integer level;
+    private String section;
     private Map<String, Object> customFields;
     private String createdByName;
     private String createdByEmail;
@@ -34,6 +36,8 @@ public class RequirementResponse {
             this.parentId = requirement.getParent().getId();
             this.parentReqId = requirement.getParent().getReqId();
         }
+        this.level = requirement.getLevel();
+        this.section = requirement.getSection();
         this.customFields = requirement.getCustomFields();
         if (requirement.getCreatedBy() != null) {
             this.createdByName = requirement.getCreatedBy().getName();
@@ -146,5 +150,21 @@ public class RequirementResponse {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
+    }
+
+    public String getSection() {
+        return section;
+    }
+
+    public void setSection(String section) {
+        this.section = section;
     }
 }

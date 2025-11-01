@@ -3,6 +3,8 @@ package com.annapolislabs.lineage.dto.response;
 import com.annapolislabs.lineage.entity.Project;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class ProjectResponse {
@@ -10,6 +12,7 @@ public class ProjectResponse {
     private String name;
     private String description;
     private String projectKey;
+    private Map<String, String> levelPrefixes = new HashMap<>();
     private String createdByName;
     private String createdByEmail;
     private LocalDateTime createdAt;
@@ -22,6 +25,7 @@ public class ProjectResponse {
         this.name = project.getName();
         this.description = project.getDescription();
         this.projectKey = project.getProjectKey();
+        this.levelPrefixes = project.getLevelPrefixes();
         if (project.getCreatedBy() != null) {
             this.createdByName = project.getCreatedBy().getName();
             this.createdByEmail = project.getCreatedBy().getEmail();
@@ -93,5 +97,13 @@ public class ProjectResponse {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Map<String, String> getLevelPrefixes() {
+        return levelPrefixes;
+    }
+
+    public void setLevelPrefixes(Map<String, String> levelPrefixes) {
+        this.levelPrefixes = levelPrefixes;
     }
 }

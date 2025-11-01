@@ -48,19 +48,26 @@ public class RequirementService {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
 
-        // Generate requirement ID
-        String reqId = generateReqId(project);
+        // Get all existing requirements in the project for numbering
+        List<Requirement> allRequirements = requirementRepository.findByProjectId(projectId);
+
+        // Determine parent and generate hierarchical ID
+        Requirement parent = null;
+        if (request.getParentId() != null) {
+            parent = requirementRepository.findById(request.getParentId())
+                    .orElseThrow(() -> new RuntimeException("Parent requirement not found"));
+        }
+
+        // Calculate level and generate requirement ID
+        int level = parent == null ? 1 : parent.getLevel() + 1;
+        String reqId = generateReqId(project, allRequirements, level);
 
         Requirement requirement = new Requirement(project, reqId, request.getTitle(), request.getDescription(), currentUser);
         requirement.setStatus(request.getStatus());
         requirement.setPriority(request.getPriority());
         requirement.setCustomFields(request.getCustomFields());
-
-        if (request.getParentId() != null) {
-            Requirement parent = requirementRepository.findById(request.getParentId())
-                    .orElseThrow(() -> new RuntimeException("Parent requirement not found"));
-            requirement.setParent(parent);
-        }
+        requirement.setParent(parent);
+        requirement.setLevel(level);
 
         requirement = requirementRepository.save(requirement);
 
@@ -181,10 +188,36 @@ public class RequirementService {
                 .collect(Collectors.toList());
     }
 
-    private String generateReqId(Project project) {
-        List<Requirement> existingReqs = requirementRepository.findByProjectId(project.getId());
-        int nextNumber = existingReqs.size() + 1;
-        return project.getProjectKey() + "-" + String.format("%03d", nextNumber);
+    /**
+     * Generates requirement ID based on level prefix configuration.
+     * Format: PREFIX-001, PREFIX-002, etc. where PREFIX is configured per level
+     * Examples: CR-001, REN-001, SYS-001
+     *
+     * @param project The project
+     * @param allRequirements All existing requirements in the project
+     * @param level The requirement level
+     * @return The generated requirement ID
+     */
+    private String generateReqId(Project project, List<Requirement> allRequirements, int level) {
+        // Get the prefix for this level, or use a default
+        String prefix = project.getLevelPrefixes().getOrDefault(String.valueOf(level), "REQ-L" + level);
+
+        // Find the max number for this prefix
+        int maxNumber = allRequirements.stream()
+                .filter(req -> req.getLevel() == level)
+                .map(req -> req.getReqId())
+                .filter(id -> id.startsWith(prefix + "-"))
+                .map(id -> {
+                    try {
+                        return Integer.parseInt(id.substring(prefix.length() + 1));
+                    } catch (NumberFormatException e) {
+                        return 0;
+                    }
+                })
+                .max(Integer::compare)
+                .orElse(0);
+
+        return prefix + "-" + String.format("%03d", maxNumber + 1);
     }
 
     private void createHistoryEntry(Requirement requirement, User user, ChangeType changeType, Map<String, Object> oldValue, Map<String, Object> newValue) {

@@ -17,12 +17,24 @@
               {{ project.projectKey }}
             </span>
           </div>
-          <button
-            @click="handleLogout"
-            class="px-4 py-2 text-sm font-medium text-annapolis-gray-300 hover:text-annapolis-teal transition-colors duration-300"
-          >
-            Logout
-          </button>
+          <div class="flex items-center gap-3">
+            <button
+              @click="router.push(`/projects/${projectId}/settings`)"
+              class="px-4 py-2 text-sm font-medium text-annapolis-gray-300 hover:text-annapolis-teal transition-colors duration-300 flex items-center gap-2"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              Settings
+            </button>
+            <button
+              @click="handleLogout"
+              class="px-4 py-2 text-sm font-medium text-annapolis-gray-300 hover:text-annapolis-teal transition-colors duration-300"
+            >
+              Logout
+            </button>
+          </div>
         </div>
       </div>
     </header>
@@ -82,7 +94,7 @@
                   :requirements="allRequirements"
                   :selected-id="selectedRequirement?.id"
                   :expanded="expandedNodes"
-                  @select="handleTreeSelect"
+                  @navigate="handleTreeNavigate"
                   @toggle-expand="toggleNode"
                 />
               </div>
@@ -123,6 +135,20 @@
               <option value="MEDIUM">Medium</option>
               <option value="HIGH">High</option>
               <option value="CRITICAL">Critical</option>
+            </select>
+            <select
+              v-model="filterLevel"
+              class="px-4 py-2 bg-annapolis-charcoal/50 border border-annapolis-teal/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-annapolis-teal focus:border-transparent transition-all"
+              @change="handleSearch"
+            >
+              <option value="">All Levels</option>
+              <option
+                v-for="(prefix, level) in project?.levelPrefixes"
+                :key="level"
+                :value="level"
+              >
+                L{{ level }} - {{ prefix }}
+              </option>
             </select>
           </div>
           <div class="flex space-x-2">
@@ -191,9 +217,10 @@
             :key="req.id"
             :id="`req-${req.id}`"
             :class="[
-              'bg-annapolis-charcoal/50 backdrop-blur-sm rounded-lg shadow-lg border transition-all duration-300 overflow-hidden',
+              'bg-annapolis-charcoal/50 backdrop-blur-sm rounded-lg shadow-lg border transition-all duration-300 overflow-hidden cursor-pointer',
               selectedRequirement?.id === req.id ? 'border-annapolis-teal ring-2 ring-annapolis-teal/30' : 'border-annapolis-teal/20 hover:border-annapolis-teal/40 hover:shadow-xl'
             ]"
+            @click="navigateToRequirement(req.id)"
           >
             <div class="p-6">
               <div class="flex justify-between items-start mb-6">
@@ -201,6 +228,9 @@
                   <div class="flex items-center gap-3 mb-3">
                     <span class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-mono font-medium bg-annapolis-teal/20 text-annapolis-teal border border-annapolis-teal/30">
                       {{ req.reqId }}
+                    </span>
+                    <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-annapolis-gray-600/20 text-annapolis-gray-300 border border-annapolis-gray-600/30">
+                      Level {{ req.level || 1 }}
                     </span>
                     <h3 class="text-lg font-semibold text-white">{{ req.title }}</h3>
                   </div>
@@ -225,6 +255,9 @@
                     ]">
                       {{ req.priority }}
                     </span>
+                    <span v-if="req.section" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                      Section {{ req.section }}
+                    </span>
                     <span v-if="req.parentReqId" class="text-xs text-annapolis-gray-400">
                       <span class="font-medium">Parent:</span> {{ req.parentReqId }}
                     </span>
@@ -232,6 +265,16 @@
                 </div>
 
                 <div class="flex items-center gap-3 ml-6">
+                  <button
+                    @click.stop="openCreateModal(req)"
+                    class="inline-flex items-center px-3 py-2 border border-green-500/30 shadow-sm text-sm font-medium rounded-lg text-green-400 bg-green-500/10 hover:bg-green-500/20 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300"
+                    title="Add child requirement"
+                  >
+                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Add Child
+                  </button>
                   <button
                     @click.stop="openEditModal(req)"
                     class="inline-flex items-center px-3 py-2 border border-annapolis-teal/30 shadow-sm text-sm font-medium rounded-lg text-annapolis-teal bg-annapolis-teal/10 hover:bg-annapolis-teal/20 focus:outline-none focus:ring-2 focus:ring-annapolis-teal transition-all duration-300"
@@ -305,6 +348,16 @@
                 </option>
               </select>
             </div>
+            <div>
+              <label class="block text-sm font-medium text-annapolis-gray-300 mb-2">Section (Optional)</label>
+              <input
+                v-model="formData.section"
+                type="text"
+                placeholder="e.g., 1.1.1, 2.3.4"
+                class="w-full px-4 py-3 bg-annapolis-navy/50 border border-annapolis-teal/30 rounded-lg text-white placeholder-annapolis-gray-400 focus:outline-none focus:ring-2 focus:ring-annapolis-teal focus:border-transparent transition-all"
+              />
+              <p class="mt-1 text-xs text-annapolis-gray-400">Optional hierarchical section number for organization</p>
+            </div>
             <div class="grid grid-cols-2 gap-5">
               <div>
                 <label class="block text-sm font-medium text-annapolis-gray-300 mb-2">Status</label>
@@ -374,6 +427,7 @@ const loading = ref(true)
 const searchQuery = ref('')
 const filterStatus = ref('')
 const filterPriority = ref('')
+const filterLevel = ref('')
 const showExportMenu = ref(false)
 
 const showModal = ref(false)
@@ -387,7 +441,8 @@ const formData = ref({
   description: '',
   status: 'DRAFT',
   priority: 'MEDIUM',
-  parentId: null as string | null
+  parentId: null as string | null,
+  section: ''
 })
 
 const availableParents = computed(() => {
@@ -408,6 +463,7 @@ async function loadData() {
     searchQuery.value = ''
     filterStatus.value = ''
     filterPriority.value = ''
+    filterLevel.value = ''
   } catch (err) {
     console.error('Failed to load data:', err)
   } finally {
@@ -439,6 +495,11 @@ function handleSearch() {
     filtered = filtered.filter(req => req.priority === filterPriority.value)
   }
 
+  // Filter by level
+  if (filterLevel.value) {
+    filtered = filtered.filter(req => req.level?.toString() === filterLevel.value)
+  }
+
   requirements.value = filtered
 }
 
@@ -449,7 +510,8 @@ function openCreateModal(parentReq?: Requirement) {
     description: '',
     status: 'DRAFT',
     priority: 'MEDIUM',
-    parentId: parentReq?.id || null
+    parentId: parentReq?.id || null,
+    section: ''
   }
   showModal.value = true
 }
@@ -461,16 +523,14 @@ function openEditModal(req: Requirement) {
     description: req.description,
     status: req.status,
     priority: req.priority,
-    parentId: req.parentId || null
+    parentId: req.parentId || null,
+    section: req.section || ''
   }
   showModal.value = true
 }
 
-function handleTreeSelect(req: Requirement) {
-  selectedRequirement.value = req
-  // Scroll to requirement in list
-  const element = document.getElementById(`req-${req.id}`)
-  element?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+function handleTreeNavigate(req: Requirement) {
+  router.push(`/projects/${projectId.value}/requirements/${req.id}`)
 }
 
 function toggleNode(id: string) {
@@ -507,6 +567,10 @@ async function deleteRequirement(id: string) {
     console.error('Failed to delete requirement:', err)
     alert(`Failed to delete requirement: ${err.response?.data?.message || err.message || 'Unknown error'}`)
   }
+}
+
+function navigateToRequirement(reqId: string) {
+  router.push(`/projects/${projectId.value}/requirements/${reqId}`)
 }
 
 function handleLogout() {

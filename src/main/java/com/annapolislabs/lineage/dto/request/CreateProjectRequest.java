@@ -3,6 +3,8 @@ package com.annapolislabs.lineage.dto.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CreateProjectRequest {
 
@@ -16,6 +18,8 @@ public class CreateProjectRequest {
     @NotBlank(message = "Project key is required")
     @Pattern(regexp = "^[A-Z]{2,10}$", message = "Project key must be 2-10 uppercase letters")
     private String projectKey;
+
+    private Map<String, String> levelPrefixes = new HashMap<>();
 
     public CreateProjectRequest() {}
 
@@ -47,5 +51,13 @@ public class CreateProjectRequest {
 
     public void setProjectKey(String projectKey) {
         this.projectKey = projectKey;
+    }
+
+    public Map<String, String> getLevelPrefixes() {
+        return levelPrefixes;
+    }
+
+    public void setLevelPrefixes(Map<String, String> levelPrefixes) {
+        this.levelPrefixes = levelPrefixes;
     }
 }

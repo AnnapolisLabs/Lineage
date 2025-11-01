@@ -1,11 +1,15 @@
 package com.annapolislabs.lineage.entity;
 
+import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.*;
+import org.hibernate.annotations.Type;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Entity
@@ -25,6 +29,10 @@ public class Project {
 
     @Column(nullable = false, unique = true)
     private String projectKey;
+
+    @Type(JsonBinaryType.class)
+    @Column(name = "level_prefixes", columnDefinition = "jsonb")
+    private Map<String, String> levelPrefixes = new HashMap<>();  // e.g., {"1": "CR", "2": "REN", "3": "SYS"}
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by")
@@ -102,5 +110,13 @@ public class Project {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Map<String, String> getLevelPrefixes() {
+        return levelPrefixes;
+    }
+
+    public void setLevelPrefixes(Map<String, String> levelPrefixes) {
+        this.levelPrefixes = levelPrefixes;
     }
 }

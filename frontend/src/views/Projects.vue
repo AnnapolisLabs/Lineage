@@ -72,9 +72,20 @@
           <div class="p-6">
             <div class="flex items-start justify-between mb-3">
               <h3 class="text-xl font-semibold text-white group-hover:text-annapolis-teal transition-colors">{{ project.name }}</h3>
-              <span class="px-3 py-1 text-xs font-mono bg-annapolis-teal/20 text-annapolis-teal rounded-lg border border-annapolis-teal/30">
-                {{ project.projectKey }}
-              </span>
+              <div class="flex items-center gap-2">
+                <span class="px-3 py-1 text-xs font-mono bg-annapolis-teal/20 text-annapolis-teal rounded-lg border border-annapolis-teal/30">
+                  {{ project.projectKey }}
+                </span>
+                <button
+                  @click.stop="openDeleteModal(project)"
+                  class="p-1.5 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded transition-colors"
+                  title="Delete project"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
             </div>
             <p class="text-sm text-annapolis-gray-300 mb-4 line-clamp-2 min-h-[40px]">
               {{ project.description || 'No description' }}
@@ -155,6 +166,60 @@
         </form>
       </div>
     </div>
+
+    <!-- Delete Project Confirmation Modal -->
+    <div
+      v-if="showDeleteModal"
+      class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50"
+      @click.self="closeDeleteModal"
+    >
+      <div class="bg-annapolis-charcoal rounded-lg px-8 py-6 w-full max-w-md shadow-2xl border border-red-500/30">
+        <div class="flex items-start gap-3 mb-4">
+          <svg class="w-6 h-6 text-red-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <div>
+            <h3 class="text-xl font-semibold text-white">Delete Project</h3>
+            <p class="mt-2 text-sm text-annapolis-gray-300">
+              This action cannot be undone. This will permanently delete the project
+              <span class="font-semibold text-white">{{ projectToDelete?.name }}</span>
+              and all its requirements.
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-6">
+          <label class="block text-sm font-medium text-annapolis-gray-300 mb-2">
+            Type <span class="font-mono font-semibold text-white">{{ projectToDelete?.name }}</span> to confirm:
+          </label>
+          <input
+            v-model="deleteConfirmText"
+            type="text"
+            class="w-full px-4 py-3 bg-annapolis-navy/50 border border-red-500/30 rounded-lg text-white placeholder-annapolis-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+            :placeholder="projectToDelete?.name"
+            @keyup.enter="handleDeleteProject"
+          />
+        </div>
+
+        <div class="mt-6 flex justify-end gap-3">
+          <button
+            type="button"
+            @click="closeDeleteModal"
+            class="px-4 py-2 text-sm font-medium text-annapolis-gray-300 hover:text-white border border-annapolis-teal/20 rounded-lg hover:bg-annapolis-teal/10 transition-all duration-300"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            @click="handleDeleteProject"
+            :disabled="deleteConfirmText !== projectToDelete?.name || projectStore.loading"
+            class="px-6 py-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Delete Project
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -163,6 +228,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useProjectStore } from '@/stores/projects'
+import type { Project } from '@/services/projectService'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -174,6 +240,10 @@ const newProject = ref({
   projectKey: '',
   description: ''
 })
+
+const showDeleteModal = ref(false)
+const projectToDelete = ref<Project | null>(null)
+const deleteConfirmText = ref('')
 
 onMounted(async () => {
   await authStore.fetchCurrentUser()
@@ -191,6 +261,29 @@ async function handleCreateProject() {
     showCreateModal.value = false
     newProject.value = { name: '', projectKey: '', description: '' }
     router.push(`/projects/${project.id}`)
+  }
+}
+
+function openDeleteModal(project: Project) {
+  projectToDelete.value = project
+  deleteConfirmText.value = ''
+  showDeleteModal.value = true
+}
+
+function closeDeleteModal() {
+  showDeleteModal.value = false
+  projectToDelete.value = null
+  deleteConfirmText.value = ''
+}
+
+async function handleDeleteProject() {
+  if (!projectToDelete.value || deleteConfirmText.value !== projectToDelete.value.name) {
+    return
+  }
+
+  const success = await projectStore.deleteProject(projectToDelete.value.id)
+  if (success) {
+    closeDeleteModal()
   }
 }
 </script>

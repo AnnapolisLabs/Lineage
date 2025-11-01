@@ -9,6 +9,8 @@ export interface Requirement {
   priority: string
   parentId?: string
   parentReqId?: string
+  level: number
+  section?: string
   customFields: Record<string, any>
   createdByName: string
   createdByEmail: string
@@ -22,6 +24,7 @@ export interface CreateRequirementRequest {
   status: string
   priority: string
   parentId?: string
+  section?: string
   customFields?: Record<string, any>
 }
 

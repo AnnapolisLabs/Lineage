@@ -5,6 +5,7 @@ export interface Project {
   name: string
   description: string
   projectKey: string
+  levelPrefixes: Record<string, string>
   createdByName: string
   createdByEmail: string
   createdAt: string
@@ -15,6 +16,7 @@ export interface CreateProjectRequest {
   name: string
   description: string
   projectKey: string
+  levelPrefixes?: Record<string, string>
 }
 
 export const projectService = {

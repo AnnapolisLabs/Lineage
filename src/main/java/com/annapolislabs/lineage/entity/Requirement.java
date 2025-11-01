@@ -45,6 +45,12 @@ public class Requirement {
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Requirement> children = new ArrayList<>();
 
+    @Column(nullable = false)
+    private Integer level = 1;
+
+    @Column
+    private String section;  // Optional hierarchical section like "1.1.1", "2.3.4"
+
     @Type(JsonBinaryType.class)
     @Column(columnDefinition = "jsonb")
     private Map<String, Object> customFields = new HashMap<>();
@@ -174,5 +180,21 @@ public class Requirement {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
+    }
+
+    public String getSection() {
+        return section;
+    }
+
+    public void setSection(String section) {
+        this.section = section;
     }
 }
