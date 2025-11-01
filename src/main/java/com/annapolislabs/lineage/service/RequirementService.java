@@ -18,6 +18,7 @@ public class RequirementService {
     private final ProjectRepository projectRepository;
     private final ProjectMemberRepository projectMemberRepository;
     private final RequirementHistoryRepository historyRepository;
+    private final RequirementLinkRepository linkRepository;
     private final AuthService authService;
 
     @Autowired
@@ -25,11 +26,13 @@ public class RequirementService {
                              ProjectRepository projectRepository,
                              ProjectMemberRepository projectMemberRepository,
                              RequirementHistoryRepository historyRepository,
+                             RequirementLinkRepository linkRepository,
                              AuthService authService) {
         this.requirementRepository = requirementRepository;
         this.projectRepository = projectRepository;
         this.projectMemberRepository = projectMemberRepository;
         this.historyRepository = historyRepository;
+        this.linkRepository = linkRepository;
         this.authService = authService;
     }
 
@@ -71,10 +74,16 @@ public class RequirementService {
 
         requirement = requirementRepository.save(requirement);
 
+        // If parent is set, automatically create a link
+        if (parent != null) {
+            RequirementLink link = new RequirementLink(parent, requirement, currentUser);
+            linkRepository.save(link);
+        }
+
         // Create history entry
         createHistoryEntry(requirement, currentUser, ChangeType.CREATED, null, toMap(requirement));
 
-        return new RequirementResponse(requirement);
+        return toRequirementResponse(requirement);
     }
 
     @Transactional(readOnly = true)
@@ -88,7 +97,7 @@ public class RequirementService {
 
         return requirementRepository.findByProjectId(projectId)
                 .stream()
-                .map(RequirementResponse::new)
+                .map(this::toRequirementResponse)
                 .collect(Collectors.toList());
     }
 
@@ -103,7 +112,7 @@ public class RequirementService {
             throw new RuntimeException("Access denied");
         }
 
-        return new RequirementResponse(requirement);
+        return toRequirementResponse(requirement);
     }
 
     @Transactional
@@ -140,7 +149,7 @@ public class RequirementService {
         // Create history entry
         createHistoryEntry(requirement, currentUser, ChangeType.UPDATED, oldValue, toMap(requirement));
 
-        return new RequirementResponse(requirement);
+        return toRequirementResponse(requirement);
     }
 
     @Transactional
@@ -246,5 +255,40 @@ public class RequirementService {
         map.put("oldValue", history.getOldValue());
         map.put("newValue", history.getNewValue());
         return map;
+    }
+
+    private RequirementResponse toRequirementResponse(Requirement requirement) {
+        RequirementResponse response = new RequirementResponse(requirement);
+
+        // Calculate link counts based on hierarchical direction
+        // Out links = links pointing DOWN the hierarchy (to lower/child levels)
+        // In links = links pointing UP the hierarchy (to higher/parent levels)
+        List<RequirementLink> allLinks = linkRepository.findAllLinksForRequirement(requirement.getId());
+
+        int inLinkCount = 0;
+        int outLinkCount = 0;
+
+        for (RequirementLink link : allLinks) {
+            Requirement otherReq;
+
+            if (link.getFromRequirement().getId().equals(requirement.getId())) {
+                otherReq = link.getToRequirement();
+            } else {
+                otherReq = link.getFromRequirement();
+            }
+
+            if (otherReq.getLevel() > requirement.getLevel()) {
+                // Other requirement is at a lower level (child) - OUT link
+                outLinkCount++;
+            } else {
+                // Other requirement is at a higher level (parent) - IN link
+                inLinkCount++;
+            }
+        }
+
+        response.setInLinkCount(inLinkCount);
+        response.setOutLinkCount(outLinkCount);
+
+        return response;
     }
 }

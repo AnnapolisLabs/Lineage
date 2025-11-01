@@ -22,6 +22,8 @@ public class RequirementResponse {
     private String createdByEmail;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Integer inLinkCount;
+    private Integer outLinkCount;
 
     public RequirementResponse() {}
 
@@ -166,5 +168,21 @@ public class RequirementResponse {
 
     public void setSection(String section) {
         this.section = section;
+    }
+
+    public Integer getInLinkCount() {
+        return inLinkCount;
+    }
+
+    public void setInLinkCount(Integer inLinkCount) {
+        this.inLinkCount = inLinkCount;
+    }
+
+    public Integer getOutLinkCount() {
+        return outLinkCount;
+    }
+
+    public void setOutLinkCount(Integer outLinkCount) {
+        this.outLinkCount = outLinkCount;
     }
 }

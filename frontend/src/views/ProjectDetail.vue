@@ -544,9 +544,15 @@ function toggleNode(id: string) {
 async function handleSaveRequirement() {
   try {
     if (editingRequirement.value) {
-      await requirementService.update(editingRequirement.value.id, formData.value)
+      await requirementService.update(editingRequirement.value.id, {
+        ...formData.value,
+        parentId: formData.value.parentId || undefined
+      })
     } else {
-      await requirementService.create(projectId.value, formData.value)
+      await requirementService.create(projectId.value, {
+        ...formData.value,
+        parentId: formData.value.parentId || undefined
+      })
     }
     showModal.value = false
     await loadData()
