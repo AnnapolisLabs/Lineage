@@ -1,4 +1,5 @@
 sync-to-github:
+  image: alpine/git:latest
   stage: deploy
   only:
     - main
