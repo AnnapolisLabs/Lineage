@@ -179,15 +179,23 @@ No artificial feature restrictions. Pay for convenience, not the software itself
 - [x] JWT authentication
 - [x] Frontend with Vue 3
 - [x] Login/Logout UI
-- [ ] Requirements CRUD UI
-- [ ] Search and filtering
-- [ ] Version history viewer
+- [x] Requirements CRUD UI
+- [x] Search and filtering
+- [x] Version history API
+- [x] Hierarchical requirement numbering
+- [x] Bi-directional requirement linking
+- [x] Multi-project support
+- [x] Export to CSV, JSON, and Markdown
+- [x] Project settings management
+- [ ] Version history UI (diff viewer)
+- [ ] Drag-and-drop reordering
 
 ### v0.2 (Planned)
 - Traceability matrix
 - PDF/HTML export
 - Comments and discussions
 - Baseline/snapshot feature
+- Enhanced requirement attributes
 
 ### v0.3 (Planned)
 - ReqIF import/export
