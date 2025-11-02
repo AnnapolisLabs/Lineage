@@ -20,7 +20,7 @@ sonar-backend:
 
   script:
     - gradle build -x test
-    - gradle sonar
+    - gradle sonar -Dsonar.host.url="${SONAR_HOST_URL}" -Dsonar.token="${SONAR_TOKEN}"
   allow_failure: true
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
