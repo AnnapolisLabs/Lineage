@@ -1,0 +1,1 @@
+{"token":"eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBsaW5lYWdlLmxvY2FsIiwiaWF0IjoxNzYyMDUzODAzLCJleHAiOjE3NjIxNDAyMDN9.9KPOdD8wRFZi04sdQStj7RDO5VM8ABP8JQ1iKZTVCjc5lmugAodEa7J7K93fwxpP","email":"admin@lineage.local","name":"Admin User","role":"ADMIN"}
