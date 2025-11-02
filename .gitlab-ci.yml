@@ -1,16 +1,15 @@
 stages:
+  - build-gradle
   - sonar-backend
   - sonar-frontend
   - deploy
 
-sonar-gradle:
+sonar-backend:
   image: gradle:8.10.0-jdk21-jammy
-
   variables:
     SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
     GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
 
-  stage: sonar-backend
   cache:
     policy: pull-push
     key: "sonar-cache-$CI_COMMIT_REF_SLUG"
@@ -18,7 +17,9 @@ sonar-gradle:
       - "${SONAR_USER_HOME}/cache"
       - sonar-scanner/
 
-  script: gradle sonar
+  script:
+    - gradle build -x test
+    - gradle sonar
   allow_failure: true
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
