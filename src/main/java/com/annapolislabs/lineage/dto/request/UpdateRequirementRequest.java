@@ -22,6 +22,7 @@ public class UpdateRequirementRequest {
 
     private Map<String, Object> customFields = new HashMap<>();
 
+    // Default constructor required for JSON deserialization
     public UpdateRequirementRequest() {}
 
     // Getters and Setters

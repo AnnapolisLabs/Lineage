@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * MCP Tool for listing available projects
@@ -57,7 +56,7 @@ public class ListProjectsTool implements McpTool {
                 map.put("description", p.getDescription() != null ? p.getDescription() : "");
                 return map;
             })
-            .collect(Collectors.toList());
+            .toList();
         
         return Map.of(
             "success", true,

@@ -1,6 +1,8 @@
 package com.annapolislabs.lineage.config;
 
 import com.annapolislabs.lineage.mcp.McpTool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,13 +16,16 @@ import java.util.stream.Collectors;
 @Configuration
 public class McpToolsConfig {
 
+    private static final Logger logger = LoggerFactory.getLogger(McpToolsConfig.class);
+
     @Bean
     public Map<String, McpTool> mcpToolsMap(List<McpTool> tools) {
-        System.out.println("=== Registering MCP Tools ===");
+        logger.info("=== Registering MCP Tools ===");
         Map<String, McpTool> toolMap = tools.stream()
-                .peek(tool -> System.out.println("  Tool: " + tool.getName() + " (" + tool.getClass().getSimpleName() + ")"))
                 .collect(Collectors.toMap(McpTool::getName, tool -> tool));
-        System.out.println("=== Total tools registered: " + toolMap.size() + " ===");
+        toolMap.forEach((name, tool) ->
+                logger.info("  Tool: {} ({})", name, tool.getClass().getSimpleName()));
+        logger.info("=== Total tools registered: {} ===", toolMap.size());
         return toolMap;
     }
 }

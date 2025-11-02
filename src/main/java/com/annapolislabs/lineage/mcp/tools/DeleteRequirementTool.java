@@ -16,6 +16,10 @@ import java.util.UUID;
 @Component("deleteRequirement")
 public class DeleteRequirementTool implements McpTool {
 
+    private static final String REQUIREMENT_ID = "requirementId";
+    private static final String STRING_TYPE = "string";
+    private static final String DESCRIPTION = "description";
+
     private final RequirementService requirementService;
     private final ObjectMapper objectMapper;
 
@@ -42,18 +46,18 @@ public class DeleteRequirementTool implements McpTool {
 
         ObjectNode properties = schema.putObject("properties");
 
-        ObjectNode requirementId = properties.putObject("requirementId");
-        requirementId.put("type", "string");
-        requirementId.put("description", "UUID of the requirement to delete");
+        ObjectNode requirementId = properties.putObject(REQUIREMENT_ID);
+        requirementId.put("type", STRING_TYPE);
+        requirementId.put(DESCRIPTION, "UUID of the requirement to delete");
 
-        schema.putArray("required").add("requirementId");
+        schema.putArray("required").add(REQUIREMENT_ID);
 
         return schema;
     }
 
     @Override
     public Object execute(JsonNode arguments, Map<String, Object> context) throws Exception {
-        UUID requirementId = UUID.fromString(arguments.get("requirementId").asText());
+        UUID requirementId = UUID.fromString(arguments.get(REQUIREMENT_ID).asText());
 
         requirementService.deleteRequirement(requirementId);
 

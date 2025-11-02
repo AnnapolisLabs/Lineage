@@ -11,13 +11,16 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * MCP Tool for listing requirements in a project
  */
 @Component("listRequirements")
 public class ListRequirementsTool implements McpTool {
+
+    private static final String PROJECT_ID = "projectId";
+    private static final String STRING_TYPE = "string";
+    private static final String DESCRIPTION = "description";
 
     private final RequirementService requirementService;
     private final ObjectMapper objectMapper;
@@ -44,22 +47,22 @@ public class ListRequirementsTool implements McpTool {
         schema.put("type", "object");
         
         ObjectNode properties = schema.putObject("properties");
-        
-        ObjectNode projectId = properties.putObject("projectId");
-        projectId.put("type", "string");
-        projectId.put("description", "UUID of the project to list requirements from");
-        
-        schema.putArray("required").add("projectId");
+
+        ObjectNode projectId = properties.putObject(PROJECT_ID);
+        projectId.put("type", STRING_TYPE);
+        projectId.put(DESCRIPTION, "UUID of the project to list requirements from");
+
+        schema.putArray("required").add(PROJECT_ID);
         
         return schema;
     }
 
     @Override
     public Object execute(JsonNode arguments, Map<String, Object> context) throws Exception {
-        UUID projectId = UUID.fromString(arguments.get("projectId").asText());
-        
+        UUID projectId = UUID.fromString(arguments.get(PROJECT_ID).asText());
+
         List<RequirementResponse> requirements = requirementService.getRequirementsByProject(projectId);
-        
+
         List<Map<String, String>> reqList = requirements.stream()
             .map(r -> {
                 Map<String, String> map = new java.util.HashMap<>();
@@ -72,7 +75,7 @@ public class ListRequirementsTool implements McpTool {
                 map.put("parentId", r.getParentId() != null ? r.getParentId().toString() : "");
                 return map;
             })
-            .collect(Collectors.toList());
+            .toList();
         
         return Map.of(
             "success", true,

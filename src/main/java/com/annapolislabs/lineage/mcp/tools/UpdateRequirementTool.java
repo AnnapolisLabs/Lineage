@@ -20,6 +20,14 @@ import java.util.UUID;
 @Component("updateRequirement")
 public class UpdateRequirementTool implements McpTool {
 
+    private static final String REQUIREMENT_ID = "requirementId";
+    private static final String STRING_TYPE = "string";
+    private static final String DESCRIPTION = "description";
+    private static final String TITLE = "title";
+    private static final String STATUS = "status";
+    private static final String PRIORITY = "priority";
+    private static final String PARENT_ID = "parentId";
+
     private final RequirementService requirementService;
     private final RequirementRepository requirementRepository;
     private final ObjectMapper objectMapper;
@@ -50,38 +58,38 @@ public class UpdateRequirementTool implements McpTool {
 
         ObjectNode properties = schema.putObject("properties");
 
-        ObjectNode requirementId = properties.putObject("requirementId");
-        requirementId.put("type", "string");
-        requirementId.put("description", "UUID of the requirement to update");
+        ObjectNode requirementId = properties.putObject(REQUIREMENT_ID);
+        requirementId.put("type", STRING_TYPE);
+        requirementId.put(DESCRIPTION, "UUID of the requirement to update");
 
-        ObjectNode title = properties.putObject("title");
-        title.put("type", "string");
-        title.put("description", "New title for the requirement (optional)");
+        ObjectNode title = properties.putObject(TITLE);
+        title.put("type", STRING_TYPE);
+        title.put(DESCRIPTION, "New title for the requirement (optional)");
 
-        ObjectNode description = properties.putObject("description");
-        description.put("type", "string");
-        description.put("description", "New description for the requirement (optional)");
+        ObjectNode description = properties.putObject(DESCRIPTION);
+        description.put("type", STRING_TYPE);
+        description.put(DESCRIPTION, "New description for the requirement (optional)");
 
-        ObjectNode status = properties.putObject("status");
-        status.put("type", "string");
-        status.put("description", "New status: DRAFT, APPROVED, IMPLEMENTED, VERIFIED, REJECTED (optional)");
+        ObjectNode status = properties.putObject(STATUS);
+        status.put("type", STRING_TYPE);
+        status.put(DESCRIPTION, "New status: DRAFT, APPROVED, IMPLEMENTED, VERIFIED, REJECTED (optional)");
 
-        ObjectNode priority = properties.putObject("priority");
-        priority.put("type", "string");
-        priority.put("description", "New priority: LOW, MEDIUM, HIGH, CRITICAL (optional)");
+        ObjectNode priority = properties.putObject(PRIORITY);
+        priority.put("type", STRING_TYPE);
+        priority.put(DESCRIPTION, "New priority: LOW, MEDIUM, HIGH, CRITICAL (optional)");
 
-        ObjectNode parentId = properties.putObject("parentId");
-        parentId.put("type", "string");
-        parentId.put("description", "New parent requirement UUID (optional, use null to remove parent)");
+        ObjectNode parentId = properties.putObject(PARENT_ID);
+        parentId.put("type", STRING_TYPE);
+        parentId.put(DESCRIPTION, "New parent requirement UUID (optional, use null to remove parent)");
 
-        schema.putArray("required").add("requirementId");
+        schema.putArray("required").add(REQUIREMENT_ID);
 
         return schema;
     }
 
     @Override
     public Object execute(JsonNode arguments, Map<String, Object> context) throws Exception {
-        UUID requirementId = UUID.fromString(arguments.get("requirementId").asText());
+        UUID requirementId = UUID.fromString(arguments.get(REQUIREMENT_ID).asText());
 
         // Fetch current requirement to merge with partial updates
         Requirement current = requirementRepository.findById(requirementId)
@@ -100,27 +108,27 @@ public class UpdateRequirementTool implements McpTool {
         }
 
         // Apply updates from arguments
-        if (arguments.has("title") && !arguments.get("title").isNull()) {
-            request.setTitle(arguments.get("title").asText());
+        if (arguments.has(TITLE) && !arguments.get(TITLE).isNull()) {
+            request.setTitle(arguments.get(TITLE).asText());
         }
 
-        if (arguments.has("description") && !arguments.get("description").isNull()) {
-            request.setDescription(arguments.get("description").asText());
+        if (arguments.has(DESCRIPTION) && !arguments.get(DESCRIPTION).isNull()) {
+            request.setDescription(arguments.get(DESCRIPTION).asText());
         }
 
-        if (arguments.has("status") && !arguments.get("status").isNull()) {
-            request.setStatus(arguments.get("status").asText());
+        if (arguments.has(STATUS) && !arguments.get(STATUS).isNull()) {
+            request.setStatus(arguments.get(STATUS).asText());
         }
 
-        if (arguments.has("priority") && !arguments.get("priority").isNull()) {
-            request.setPriority(arguments.get("priority").asText());
+        if (arguments.has(PRIORITY) && !arguments.get(PRIORITY).isNull()) {
+            request.setPriority(arguments.get(PRIORITY).asText());
         }
 
-        if (arguments.has("parentId")) {
-            if (arguments.get("parentId").isNull()) {
+        if (arguments.has(PARENT_ID)) {
+            if (arguments.get(PARENT_ID).isNull()) {
                 request.setParentId(null);
             } else {
-                request.setParentId(UUID.fromString(arguments.get("parentId").asText()));
+                request.setParentId(UUID.fromString(arguments.get(PARENT_ID).asText()));
             }
         }
 

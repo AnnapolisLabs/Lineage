@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,6 +27,18 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class McpServer extends TextWebSocketHandler {
 
+    private static final Logger logger = LoggerFactory.getLogger(McpServer.class);
+    private static final String JSONRPC = "jsonrpc";
+    private static final String METHOD = "method";
+    private static final String PARAMS = "params";
+    private static final String NAME = "name";
+    private static final String ERROR = "error";
+    private static final String CODE = "code";
+    private static final String MESSAGE = "message";
+    private static final String RESULT = "result";
+    private static final String USER_ID = "userId";
+    private static final String SESSION_ID = "sessionId";
+
     private final ObjectMapper objectMapper;
     private final Map<String, McpTool> tools;
     private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
@@ -32,9 +46,9 @@ public class McpServer extends TextWebSocketHandler {
     public McpServer(ObjectMapper objectMapper, @Qualifier("mcpToolsMap") Map<String, McpTool> tools) {
         this.objectMapper = objectMapper;
         this.tools = tools;
-        System.out.println("=== McpServer received tools ===");
-        tools.forEach((name, tool) -> System.out.println("  Key: '" + name + "' -> " + tool.getClass().getSimpleName()));
-        System.out.println("================================");
+        logger.info("=== McpServer received tools ===");
+        tools.forEach((name, tool) -> logger.info("  Key: '{}' -> {}", name, tool.getClass().getSimpleName()));
+        logger.info("================================");
     }
 
     @Override
@@ -43,14 +57,14 @@ public class McpServer extends TextWebSocketHandler {
         
         // Send server info on connection
         ObjectNode response = objectMapper.createObjectNode();
-        response.put("jsonrpc", "2.0");
-        response.put("method", "server/info");
-        
-        ObjectNode params = response.putObject("params");
-        params.put("name", "lineage-mcp-server");
+        response.put(JSONRPC, "2.0");
+        response.put(METHOD, "server/info");
+
+        ObjectNode params = response.putObject(PARAMS);
+        params.put(NAME, "lineage-mcp-server");
         params.put("version", "1.0.0");
         params.put("protocolVersion", "2024-11-05");
-        
+
         ObjectNode capabilities = params.putObject("capabilities");
         capabilities.putObject("tools");
         
@@ -61,11 +75,11 @@ public class McpServer extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         try {
             JsonNode request = objectMapper.readTree(message.getPayload());
-            String method = request.path("method").asText();
-            
+            String method = request.path(METHOD).asText();
+
             ObjectNode response = objectMapper.createObjectNode();
-            response.put("jsonrpc", "2.0");
-            
+            response.put(JSONRPC, "2.0");
+
             if (request.has("id")) {
                 response.set("id", request.get("id"));
             }
@@ -74,36 +88,36 @@ public class McpServer extends TextWebSocketHandler {
                 case "tools/list":
                     handleToolsList(response);
                     break;
-                    
+
                 case "tools/call":
                     handleToolCall(request, response, session);
                     break;
-                    
+
                 default:
-                    response.putObject("error")
-                            .put("code", -32601)
-                            .put("message", "Method not found: " + method);
+                    response.putObject(ERROR)
+                            .put(CODE, -32601)
+                            .put(MESSAGE, "Method not found: " + method);
             }
 
             session.sendMessage(new TextMessage(objectMapper.writeValueAsString(response)));
-            
+
         } catch (Exception e) {
             ObjectNode errorResponse = objectMapper.createObjectNode();
-            errorResponse.put("jsonrpc", "2.0");
-            errorResponse.putObject("error")
-                    .put("code", -32603)
-                    .put("message", "Internal error: " + e.getMessage());
-            
+            errorResponse.put(JSONRPC, "2.0");
+            errorResponse.putObject(ERROR)
+                    .put(CODE, -32603)
+                    .put(MESSAGE, "Internal error: " + e.getMessage());
+
             session.sendMessage(new TextMessage(objectMapper.writeValueAsString(errorResponse)));
         }
     }
 
     private void handleToolsList(ObjectNode response) {
-        ArrayNode toolsArray = response.putObject("result").putArray("tools");
-        
+        ArrayNode toolsArray = response.putObject(RESULT).putArray("tools");
+
         for (McpTool tool : tools.values()) {
             ObjectNode toolNode = toolsArray.addObject();
-            toolNode.put("name", tool.getName());
+            toolNode.put(NAME, tool.getName());
             toolNode.put("description", tool.getDescription());
             toolNode.set("inputSchema", tool.getInputSchema());
         }
@@ -111,26 +125,26 @@ public class McpServer extends TextWebSocketHandler {
 
     private void handleToolCall(JsonNode request, ObjectNode response, WebSocketSession session) {
         try {
-            JsonNode params = request.path("params");
-            String toolName = params.path("name").asText();
+            JsonNode params = request.path(PARAMS);
+            String toolName = params.path(NAME).asText();
             JsonNode arguments = params.path("arguments");
 
-            System.out.println("Looking up tool: '" + toolName + "'");
-            System.out.println("Available tools: " + tools.keySet());
+            logger.debug("Looking up tool: '{}'", toolName);
+            logger.debug("Available tools: {}", tools.keySet());
 
             McpTool tool = tools.get(toolName);
             if (tool == null) {
-                response.putObject("error")
-                        .put("code", -32602)
-                        .put("message", "Tool not found: " + toolName);
+                response.putObject(ERROR)
+                        .put(CODE, -32602)
+                        .put(MESSAGE, "Tool not found: " + toolName);
                 return;
             }
 
             // Get authentication context from session
-            String userId = (String) session.getAttributes().get("userId");
+            String userId = (String) session.getAttributes().get(USER_ID);
             Map<String, Object> context = new HashMap<>();
-            context.put("userId", userId);
-            context.put("sessionId", session.getId());
+            context.put(USER_ID, userId);
+            context.put(SESSION_ID, session.getId());
 
             // Set up Spring Security context for the duration of tool execution
             UsernamePasswordAuthenticationToken authentication =
@@ -142,7 +156,7 @@ public class McpServer extends TextWebSocketHandler {
                 Object result = tool.execute(arguments, context);
 
                 // Build response
-                ObjectNode resultNode = response.putObject("result");
+                ObjectNode resultNode = response.putObject(RESULT);
                 ArrayNode contentArray = resultNode.putArray("content");
 
                 ObjectNode contentItem = contentArray.addObject();
@@ -154,9 +168,9 @@ public class McpServer extends TextWebSocketHandler {
             }
 
         } catch (Exception e) {
-            response.putObject("error")
-                    .put("code", -32603)
-                    .put("message", "Tool execution failed: " + e.getMessage());
+            response.putObject(ERROR)
+                    .put(CODE, -32603)
+                    .put(MESSAGE, "Tool execution failed: " + e.getMessage());
         }
     }
 

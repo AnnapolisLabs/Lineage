@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class RequirementService {
@@ -99,7 +98,7 @@ public class RequirementService {
                 .stream()
                 .sorted((r1, r2) -> compareReqIds(r1.getReqId(), r2.getReqId()))
                 .map(this::toRequirementResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Transactional(readOnly = true)
@@ -198,7 +197,7 @@ public class RequirementService {
         return historyRepository.findByRequirementIdOrderByChangedAtDesc(requirementId)
                 .stream()
                 .map(this::historyToMap)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**

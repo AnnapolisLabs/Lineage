@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class ProjectService {
@@ -67,7 +66,7 @@ public class ProjectService {
         return projectRepository.findAllByUserId(currentUser.getId())
                 .stream()
                 .map(ProjectResponse::new)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Transactional(readOnly = true)

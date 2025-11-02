@@ -3,11 +3,12 @@ package com.annapolislabs.lineage.mcp.tools;
 import com.annapolislabs.lineage.mcp.McpTool;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,6 +17,12 @@ import java.util.regex.Pattern;
  */
 @Component("parseRequirements")
 public class ParseRequirementsTool implements McpTool {
+
+    private static final String TEXT = "text";
+    private static final String CONTEXT = "context";
+    private static final String STRING_TYPE = "string";
+    private static final String DESCRIPTION = "description";
+    private static final String MEDIUM = "MEDIUM";
 
     private final ObjectMapper objectMapper;
 
@@ -41,24 +48,24 @@ public class ParseRequirementsTool implements McpTool {
         schema.put("type", "object");
         
         ObjectNode properties = schema.putObject("properties");
-        
-        ObjectNode text = properties.putObject("text");
-        text.put("type", "string");
-        text.put("description", "Plain text input containing requirements (e.g., customer interview transcript, specifications document)");
-        
-        ObjectNode context = properties.putObject("context");
-        context.put("type", "string");
-        context.put("description", "Optional context about the requirements (e.g., 'customer requirements for mobile app', 'system requirements for payment processing')");
-        
-        schema.putArray("required").add("text");
+
+        ObjectNode text = properties.putObject(TEXT);
+        text.put("type", STRING_TYPE);
+        text.put(DESCRIPTION, "Plain text input containing requirements (e.g., customer interview transcript, specifications document)");
+
+        ObjectNode context = properties.putObject(CONTEXT);
+        context.put("type", STRING_TYPE);
+        context.put(DESCRIPTION, "Optional context about the requirements (e.g., 'customer requirements for mobile app', 'system requirements for payment processing')");
+
+        schema.putArray("required").add(TEXT);
         
         return schema;
     }
 
     @Override
     public Object execute(JsonNode arguments, Map<String, Object> context) throws Exception {
-        String text = arguments.get("text").asText();
-        String reqContext = arguments.has("context") ? arguments.get("context").asText() : "";
+        String text = arguments.get(TEXT).asText();
+        String reqContext = arguments.has(CONTEXT) ? arguments.get(CONTEXT).asText() : "";
         
         List<Map<String, String>> parsedRequirements = parseText(text, reqContext);
         
@@ -79,7 +86,7 @@ public class ParseRequirementsTool implements McpTool {
         
         StringBuilder currentReq = new StringBuilder();
         String currentTitle = null;
-        String currentPriority = "MEDIUM";
+        String currentPriority = MEDIUM;
         
         // Patterns for requirement detection
         Pattern reqPattern = Pattern.compile("^\\s*(?:[-*•]|\\d+[.)]|REQ[-\\d]+:?|shall|must|should|will|need to|requirement:?)\\s*(.+)", Pattern.CASE_INSENSITIVE);
@@ -115,7 +122,7 @@ public class ParseRequirementsTool implements McpTool {
 
                 // Reset priority to MEDIUM for this requirement, unless we just detected one
                 String reqPriority = currentPriority;
-                currentPriority = "MEDIUM";
+                currentPriority = MEDIUM;
 
                 // Start new requirement
                 String content = reqMatcher.group(1).trim();
@@ -148,7 +155,7 @@ public class ParseRequirementsTool implements McpTool {
                     String cleanLine = priorityPattern.matcher(originalLine).replaceFirst("").trim();
                     String title = cleanLine.length() < 100 ? cleanLine : cleanLine.substring(0, 80) + "...";
                     addRequirement(requirements, title, cleanLine, currentPriority);
-                    currentPriority = "MEDIUM"; // Reset for next requirement
+                    currentPriority = MEDIUM; // Reset for next requirement
                 }
             }
         }
@@ -161,7 +168,7 @@ public class ParseRequirementsTool implements McpTool {
         // If no requirements found, treat entire text as one requirement
         if (requirements.isEmpty() && text.trim().length() > 0) {
             String title = "Requirement from " + (context.isEmpty() ? "input" : context);
-            addRequirement(requirements, title, text.trim(), "MEDIUM");
+            addRequirement(requirements, title, text.trim(), MEDIUM);
         }
         
         return requirements;
