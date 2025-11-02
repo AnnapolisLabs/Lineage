@@ -1,5 +1,6 @@
 package com.annapolislabs.lineage.mcp.tools;
 
+import com.annapolislabs.lineage.common.ServiceConstants;
 import com.annapolislabs.lineage.dto.request.CreateRequirementRequest;
 import com.annapolislabs.lineage.dto.response.RequirementResponse;
 import com.annapolislabs.lineage.entity.Requirement;
@@ -21,12 +22,7 @@ import java.util.UUID;
 @Component("updateRequirement")
 public class UpdateRequirementTool implements McpTool {
 
-    private static final String REQUIREMENT_ID = "requirementId";
     private static final String STRING_TYPE = "string";
-    private static final String DESCRIPTION = "description";
-    private static final String TITLE = "title";
-    private static final String STATUS = "status";
-    private static final String PRIORITY = "priority";
     private static final String PARENT_ID = "parentId";
 
     private final RequirementService requirementService;
@@ -59,42 +55,42 @@ public class UpdateRequirementTool implements McpTool {
 
         ObjectNode properties = schema.putObject("properties");
 
-        ObjectNode requirementId = properties.putObject(REQUIREMENT_ID);
+        ObjectNode requirementId = properties.putObject(ServiceConstants.REQUIREMENT_ID);
         requirementId.put("type", STRING_TYPE);
-        requirementId.put(DESCRIPTION, "UUID of the requirement to update");
+        requirementId.put(ServiceConstants.DESCRIPTION, "UUID of the requirement to update");
 
-        ObjectNode title = properties.putObject(TITLE);
+        ObjectNode title = properties.putObject(ServiceConstants.TITLE);
         title.put("type", STRING_TYPE);
-        title.put(DESCRIPTION, "New title for the requirement (optional)");
+        title.put(ServiceConstants.DESCRIPTION, "New title for the requirement (optional)");
 
-        ObjectNode description = properties.putObject(DESCRIPTION);
+        ObjectNode description = properties.putObject(ServiceConstants.DESCRIPTION);
         description.put("type", STRING_TYPE);
-        description.put(DESCRIPTION, "New description for the requirement (optional)");
+        description.put(ServiceConstants.DESCRIPTION, "New description for the requirement (optional)");
 
-        ObjectNode status = properties.putObject(STATUS);
+        ObjectNode status = properties.putObject(ServiceConstants.STATUS);
         status.put("type", STRING_TYPE);
-        status.put(DESCRIPTION, "New status: DRAFT, APPROVED, IMPLEMENTED, VERIFIED, REJECTED (optional)");
+        status.put(ServiceConstants.DESCRIPTION, "New status: DRAFT, APPROVED, IMPLEMENTED, VERIFIED, REJECTED (optional)");
 
-        ObjectNode priority = properties.putObject(PRIORITY);
+        ObjectNode priority = properties.putObject(ServiceConstants.PRIORITY);
         priority.put("type", STRING_TYPE);
-        priority.put(DESCRIPTION, "New priority: LOW, MEDIUM, HIGH, CRITICAL (optional)");
+        priority.put(ServiceConstants.DESCRIPTION, "New priority: LOW, MEDIUM, HIGH, CRITICAL (optional)");
 
         ObjectNode parentId = properties.putObject(PARENT_ID);
         parentId.put("type", STRING_TYPE);
-        parentId.put(DESCRIPTION, "New parent requirement UUID (optional, use null to remove parent)");
+        parentId.put(ServiceConstants.DESCRIPTION, "New parent requirement UUID (optional, use null to remove parent)");
 
-        schema.putArray("required").add(REQUIREMENT_ID);
+        schema.putArray("required").add(ServiceConstants.REQUIREMENT_ID);
 
         return schema;
     }
 
     @Override
     public Object execute(JsonNode arguments, Map<String, Object> context) throws McpToolExecutionException {
-        UUID requirementId = UUID.fromString(arguments.get(REQUIREMENT_ID).asText());
+        UUID requirementId = UUID.fromString(arguments.get(ServiceConstants.REQUIREMENT_ID).asText());
 
         // Fetch current requirement to merge with partial updates
         Requirement current = requirementRepository.findById(requirementId)
-                .orElseThrow(() -> new RuntimeException("Requirement not found: " + requirementId));
+                .orElseThrow(() -> new RuntimeException(ServiceConstants.REQUIREMENT_NOT_FOUND + ": " + requirementId));
 
         // Build request with current values as defaults
         CreateRequirementRequest request = new CreateRequirementRequest();
@@ -109,20 +105,20 @@ public class UpdateRequirementTool implements McpTool {
         }
 
         // Apply updates from arguments
-        if (arguments.has(TITLE) && !arguments.get(TITLE).isNull()) {
-            request.setTitle(arguments.get(TITLE).asText());
+        if (arguments.has(ServiceConstants.TITLE) && !arguments.get(ServiceConstants.TITLE).isNull()) {
+            request.setTitle(arguments.get(ServiceConstants.TITLE).asText());
         }
 
-        if (arguments.has(DESCRIPTION) && !arguments.get(DESCRIPTION).isNull()) {
-            request.setDescription(arguments.get(DESCRIPTION).asText());
+        if (arguments.has(ServiceConstants.DESCRIPTION) && !arguments.get(ServiceConstants.DESCRIPTION).isNull()) {
+            request.setDescription(arguments.get(ServiceConstants.DESCRIPTION).asText());
         }
 
-        if (arguments.has(STATUS) && !arguments.get(STATUS).isNull()) {
-            request.setStatus(arguments.get(STATUS).asText());
+        if (arguments.has(ServiceConstants.STATUS) && !arguments.get(ServiceConstants.STATUS).isNull()) {
+            request.setStatus(arguments.get(ServiceConstants.STATUS).asText());
         }
 
-        if (arguments.has(PRIORITY) && !arguments.get(PRIORITY).isNull()) {
-            request.setPriority(arguments.get(PRIORITY).asText());
+        if (arguments.has(ServiceConstants.PRIORITY) && !arguments.get(ServiceConstants.PRIORITY).isNull()) {
+            request.setPriority(arguments.get(ServiceConstants.PRIORITY).asText());
         }
 
         if (arguments.has(PARENT_ID)) {

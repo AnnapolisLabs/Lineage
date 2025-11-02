@@ -21,9 +21,10 @@ class ParseRequirementsDebugTest {
         ObjectMapper objectMapper = new ObjectMapper();
         ParseRequirementsTool tool = new ParseRequirementsTool(objectMapper);
 
-        String input = "1. The system must authenticate users\n" +
-                       "2. The system should support dark mode\n" +
-                       "3. High priority: Must encrypt all data";
+        String input = """
+                1. The system must authenticate users
+                2. The system should support dark mode
+                3. High priority: Must encrypt all data""";
 
         ObjectNode arguments = objectMapper.createObjectNode();
         arguments.put("text", input);

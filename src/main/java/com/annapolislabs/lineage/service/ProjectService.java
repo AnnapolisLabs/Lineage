@@ -1,5 +1,6 @@
 package com.annapolislabs.lineage.service;
 
+import com.annapolislabs.lineage.common.ServiceConstants;
 import com.annapolislabs.lineage.dto.request.CreateProjectRequest;
 import com.annapolislabs.lineage.dto.response.ProjectResponse;
 import com.annapolislabs.lineage.entity.Project;
@@ -7,6 +8,8 @@ import com.annapolislabs.lineage.entity.ProjectMember;
 import com.annapolislabs.lineage.entity.ProjectRole;
 import com.annapolislabs.lineage.entity.Requirement;
 import com.annapolislabs.lineage.entity.User;
+import com.annapolislabs.lineage.exception.AccessDeniedException;
+import com.annapolislabs.lineage.exception.ResourceNotFoundException;
 import com.annapolislabs.lineage.repository.ProjectMemberRepository;
 import com.annapolislabs.lineage.repository.ProjectRepository;
 import com.annapolislabs.lineage.repository.RequirementRepository;
@@ -72,12 +75,12 @@ public class ProjectService {
     @Transactional(readOnly = true)
     public ProjectResponse getProjectById(UUID projectId) {
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(ServiceConstants.PROJECT_NOT_FOUND));
 
         // Check if user has access
         User currentUser = authService.getCurrentUser();
         if (!projectMemberRepository.existsByProjectIdAndUserId(projectId, currentUser.getId())) {
-            throw new RuntimeException("Access denied");
+            throw new AccessDeniedException();
         }
 
         return new ProjectResponse(project);
@@ -86,7 +89,7 @@ public class ProjectService {
     @Transactional
     public ProjectResponse updateProject(UUID projectId, CreateProjectRequest request) {
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(ServiceConstants.PROJECT_NOT_FOUND));
 
         // Check if user has admin access
         User currentUser = authService.getCurrentUser();
@@ -109,7 +112,7 @@ public class ProjectService {
     @Transactional
     public void deleteProject(UUID projectId) {
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(ServiceConstants.PROJECT_NOT_FOUND));
 
         // Check if user has admin access
         User currentUser = authService.getCurrentUser();
