@@ -2,6 +2,7 @@ package com.annapolislabs.lineage.mcp.tools;
 
 import com.annapolislabs.lineage.dto.response.ProjectResponse;
 import com.annapolislabs.lineage.mcp.McpTool;
+import com.annapolislabs.lineage.mcp.McpToolExecutionException;
 import com.annapolislabs.lineage.service.ProjectService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -45,7 +46,7 @@ public class ListProjectsTool implements McpTool {
     }
 
     @Override
-    public Object execute(JsonNode arguments, Map<String, Object> context) throws Exception {
+    public Object execute(JsonNode arguments, Map<String, Object> context) throws McpToolExecutionException {
         List<ProjectResponse> projects = projectService.getAllProjects();
         
         List<Map<String, String>> projectList = projects.stream()

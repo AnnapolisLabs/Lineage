@@ -2,6 +2,8 @@ package com.annapolislabs.lineage.config;
 
 import com.annapolislabs.lineage.mcp.McpServer;
 import com.annapolislabs.lineage.security.JwtUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -39,6 +41,7 @@ public class McpWebSocketConfig implements WebSocketConfigurer {
      * Interceptor to authenticate WebSocket connections using JWT
      */
     private static class McpAuthInterceptor implements HandshakeInterceptor {
+        private static final Logger log = LoggerFactory.getLogger(McpAuthInterceptor.class);
         private final JwtUtil jwtUtil;
 
         public McpAuthInterceptor(JwtUtil jwtUtil) {
@@ -62,7 +65,7 @@ public class McpWebSocketConfig implements WebSocketConfigurer {
                 }
             } catch (Exception e) {
                 // Log authentication failure
-                System.err.println("MCP WebSocket authentication failed: " + e.getMessage());
+                log.error("MCP WebSocket authentication failed: {}", e.getMessage());
             }
             
             return false; // Reject connection if authentication fails

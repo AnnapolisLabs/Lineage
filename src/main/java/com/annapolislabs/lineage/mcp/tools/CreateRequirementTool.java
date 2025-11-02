@@ -3,6 +3,7 @@ package com.annapolislabs.lineage.mcp.tools;
 import com.annapolislabs.lineage.dto.request.CreateRequirementRequest;
 import com.annapolislabs.lineage.dto.response.RequirementResponse;
 import com.annapolislabs.lineage.mcp.McpTool;
+import com.annapolislabs.lineage.mcp.McpToolExecutionException;
 import com.annapolislabs.lineage.service.RequirementService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -86,7 +87,7 @@ public class CreateRequirementTool implements McpTool {
     }
 
     @Override
-    public Object execute(JsonNode arguments, Map<String, Object> context) throws Exception {
+    public Object execute(JsonNode arguments, Map<String, Object> context) throws McpToolExecutionException {
         UUID projectId = UUID.fromString(arguments.get(PROJECT_ID).asText());
 
         CreateRequirementRequest request = new CreateRequirementRequest();

@@ -2,6 +2,7 @@ package com.annapolislabs.lineage.mcp.tools;
 
 import com.annapolislabs.lineage.dto.request.CreateLinkRequest;
 import com.annapolislabs.lineage.mcp.McpTool;
+import com.annapolislabs.lineage.mcp.McpToolExecutionException;
 import com.annapolislabs.lineage.service.RequirementLinkService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -62,7 +63,7 @@ public class CreateLinkTool implements McpTool {
     }
 
     @Override
-    public Object execute(JsonNode arguments, Map<String, Object> context) throws Exception {
+    public Object execute(JsonNode arguments, Map<String, Object> context) throws McpToolExecutionException {
         UUID fromRequirementId = UUID.fromString(arguments.get(FROM_REQUIREMENT_ID).asText());
 
         CreateLinkRequest request = new CreateLinkRequest();

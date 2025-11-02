@@ -1,6 +1,7 @@
 package com.annapolislabs.lineage.mcp.tools;
 
 import com.annapolislabs.lineage.mcp.McpTool;
+import com.annapolislabs.lineage.mcp.McpToolExecutionException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -63,7 +64,7 @@ public class ParseRequirementsTool implements McpTool {
     }
 
     @Override
-    public Object execute(JsonNode arguments, Map<String, Object> context) throws Exception {
+    public Object execute(JsonNode arguments, Map<String, Object> context) throws McpToolExecutionException {
         String text = arguments.get(TEXT).asText();
         String reqContext = arguments.has(CONTEXT) ? arguments.get(CONTEXT).asText() : "";
         
@@ -89,7 +90,7 @@ public class ParseRequirementsTool implements McpTool {
         String currentPriority = MEDIUM;
         
         // Patterns for requirement detection
-        Pattern reqPattern = Pattern.compile("^\\s*(?:[-*•]|\\d+[.)]|REQ[-\\d]+:?|shall|must|should|will|need to|requirement:?)\\s*(.+)", Pattern.CASE_INSENSITIVE);
+        Pattern reqPattern = Pattern.compile("^\\s*(?:[-*•]|\\d+[.)]|REQ[-\\d]+:?|shall|must|should|will)\\s*(.+)", Pattern.CASE_INSENSITIVE);
         Pattern priorityPattern = Pattern.compile("(critical|high|medium|low)(?:\\s+priority)?:?", Pattern.CASE_INSENSITIVE);
         Pattern titlePattern = Pattern.compile("^#{1,3}\\s+(.+)$"); // Markdown headers
 
@@ -114,14 +115,14 @@ public class ParseRequirementsTool implements McpTool {
             Matcher reqMatcher = reqPattern.matcher(originalLine);
             if (reqMatcher.matches()) {
                 // Save previous requirement if exists
-                if (currentReq.length() > 0 || currentTitle != null) {
+                if (!currentReq.isEmpty() || currentTitle != null) {
                     addRequirement(requirements, currentTitle, currentReq.toString(), currentPriority);
                     currentReq = new StringBuilder();
                     currentTitle = null;
                 }
 
-                // Reset priority to MEDIUM for this requirement, unless we just detected one
-                String reqPriority = currentPriority;
+                // Store current priority before resetting
+                String detectedPriority = currentPriority;
                 currentPriority = MEDIUM;
 
                 // Start new requirement
@@ -144,9 +145,9 @@ public class ParseRequirementsTool implements McpTool {
                 } else {
                     currentReq.append(content);
                 }
-            } else if (currentReq.length() > 0 || currentTitle != null) {
+            } else if (!currentReq.isEmpty() || currentTitle != null) {
                 // Continue current requirement
-                if (currentReq.length() > 0) currentReq.append(" ");
+                if (!currentReq.isEmpty()) currentReq.append(" ");
                 currentReq.append(originalLine);
             } else {
                 // Treat standalone text as a requirement
@@ -159,14 +160,14 @@ public class ParseRequirementsTool implements McpTool {
                 }
             }
         }
-        
+
         // Add last requirement
-        if (currentReq.length() > 0 || currentTitle != null) {
+        if (!currentReq.isEmpty() || currentTitle != null) {
             addRequirement(requirements, currentTitle, currentReq.toString(), currentPriority);
         }
-        
+
         // If no requirements found, treat entire text as one requirement
-        if (requirements.isEmpty() && text.trim().length() > 0) {
+        if (requirements.isEmpty() && !text.trim().isEmpty()) {
             String title = "Requirement from " + (context.isEmpty() ? "input" : context);
             addRequirement(requirements, title, text.trim(), MEDIUM);
         }

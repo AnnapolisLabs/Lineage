@@ -27,6 +27,7 @@ public interface McpTool {
      * @param arguments The input arguments as JSON
      * @param context Execution context (user ID, session, etc.)
      * @return The result of the tool execution
+     * @throws McpToolExecutionException if tool execution fails
      */
-    Object execute(JsonNode arguments, Map<String, Object> context) throws Exception;
+    Object execute(JsonNode arguments, Map<String, Object> context) throws McpToolExecutionException;
 }

@@ -1,6 +1,5 @@
 package com.annapolislabs.lineage.mcp;
 
-import com.annapolislabs.lineage.config.DataLoader;
 import com.annapolislabs.lineage.entity.Project;
 import com.annapolislabs.lineage.entity.User;
 import com.annapolislabs.lineage.repository.ProjectRepository;
@@ -20,7 +19,6 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import java.net.URI;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -55,6 +53,7 @@ class McpServerIntegrationTest {
 
     private String jwtToken;
     private User testUser;
+    @SuppressWarnings("unused")
     private Project testProject;
 
     @BeforeEach

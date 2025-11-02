@@ -1,6 +1,7 @@
 package com.annapolislabs.lineage.mcp.tools;
 
 import com.annapolislabs.lineage.mcp.McpTool;
+import com.annapolislabs.lineage.mcp.McpToolExecutionException;
 import com.annapolislabs.lineage.service.RequirementService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -56,7 +57,7 @@ public class DeleteRequirementTool implements McpTool {
     }
 
     @Override
-    public Object execute(JsonNode arguments, Map<String, Object> context) throws Exception {
+    public Object execute(JsonNode arguments, Map<String, Object> context) throws McpToolExecutionException {
         UUID requirementId = UUID.fromString(arguments.get(REQUIREMENT_ID).asText());
 
         requirementService.deleteRequirement(requirementId);
