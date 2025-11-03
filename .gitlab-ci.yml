@@ -45,6 +45,9 @@ sonar-frontend:
       - "${SONAR_USER_HOME}/cache"
       - sonar-scanner/
 
+  before_script:
+    - find "${SONAR_USER_HOME}/cache" -type f -name "java" 2>/dev/null | xargs -r chmod +x || true
+
   script:
     - sonar-scanner -Dsonar.host.url="${SONAR_HOST_URL}"
   allow_failure: true
