@@ -16,14 +16,13 @@ import java.util.Map;
  * MCP Tool for listing available projects
  */
 @Component("listProjects")
-public class ListProjectsTool implements McpTool {
+public class ListProjectsTool extends BaseToolSchemaBuilder implements McpTool {
 
     private final ProjectService projectService;
-    private final ObjectMapper objectMapper;
 
     public ListProjectsTool(ProjectService projectService, ObjectMapper objectMapper) {
+        super(objectMapper);
         this.projectService = projectService;
-        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -39,8 +38,7 @@ public class ListProjectsTool implements McpTool {
 
     @Override
     public JsonNode getInputSchema() {
-        ObjectNode schema = objectMapper.createObjectNode();
-        schema.put("type", "object");
+        ObjectNode schema = createBaseSchema();
         schema.putObject("properties");
         return schema;
     }

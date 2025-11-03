@@ -16,19 +16,16 @@ import java.util.UUID;
  * MCP Tool for creating links between requirements
  */
 @Component("createLink")
-public class CreateLinkTool implements McpTool {
+public class CreateLinkTool extends BaseToolSchemaBuilder implements McpTool {
 
     private static final String FROM_REQUIREMENT_ID = "fromRequirementId";
     private static final String TO_REQUIREMENT_ID = "toRequirementId";
-    private static final String STRING_TYPE = "string";
-    private static final String DESCRIPTION = "description";
 
     private final RequirementLinkService linkService;
-    private final ObjectMapper objectMapper;
 
     public CreateLinkTool(RequirementLinkService linkService, ObjectMapper objectMapper) {
+        super(objectMapper);
         this.linkService = linkService;
-        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -44,21 +41,14 @@ public class CreateLinkTool implements McpTool {
 
     @Override
     public JsonNode getInputSchema() {
-        ObjectNode schema = objectMapper.createObjectNode();
-        schema.put("type", "object");
-        
+        ObjectNode schema = createBaseSchema();
         ObjectNode properties = schema.putObject("properties");
 
-        ObjectNode fromId = properties.putObject(FROM_REQUIREMENT_ID);
-        fromId.put("type", STRING_TYPE);
-        fromId.put(DESCRIPTION, "UUID of the source requirement");
+        addStringProperty(properties, FROM_REQUIREMENT_ID, "UUID of the source requirement");
+        addStringProperty(properties, TO_REQUIREMENT_ID, "UUID of the target requirement");
 
-        ObjectNode toId = properties.putObject(TO_REQUIREMENT_ID);
-        toId.put("type", STRING_TYPE);
-        toId.put(DESCRIPTION, "UUID of the target requirement");
+        addRequiredFields(schema, FROM_REQUIREMENT_ID, TO_REQUIREMENT_ID);
 
-        schema.putArray("required").add(FROM_REQUIREMENT_ID).add(TO_REQUIREMENT_ID);
-        
         return schema;
     }
 

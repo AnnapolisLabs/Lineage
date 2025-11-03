@@ -15,18 +15,15 @@ import java.util.UUID;
  * MCP Tool for deleting requirements
  */
 @Component("deleteRequirement")
-public class DeleteRequirementTool implements McpTool {
+public class DeleteRequirementTool extends BaseToolSchemaBuilder implements McpTool {
 
     private static final String REQUIREMENT_ID = "requirementId";
-    private static final String STRING_TYPE = "string";
-    private static final String DESCRIPTION = "description";
 
     private final RequirementService requirementService;
-    private final ObjectMapper objectMapper;
 
     public DeleteRequirementTool(RequirementService requirementService, ObjectMapper objectMapper) {
+        super(objectMapper);
         this.requirementService = requirementService;
-        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -42,16 +39,11 @@ public class DeleteRequirementTool implements McpTool {
 
     @Override
     public JsonNode getInputSchema() {
-        ObjectNode schema = objectMapper.createObjectNode();
-        schema.put("type", "object");
-
+        ObjectNode schema = createBaseSchema();
         ObjectNode properties = schema.putObject("properties");
 
-        ObjectNode requirementId = properties.putObject(REQUIREMENT_ID);
-        requirementId.put("type", STRING_TYPE);
-        requirementId.put(DESCRIPTION, "UUID of the requirement to delete");
-
-        schema.putArray("required").add(REQUIREMENT_ID);
+        addStringProperty(properties, REQUIREMENT_ID, "UUID of the requirement to delete");
+        addRequiredFields(schema, REQUIREMENT_ID);
 
         return schema;
     }

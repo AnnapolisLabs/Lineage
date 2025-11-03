@@ -61,6 +61,64 @@ def fetch_issues():
 
     return all_issues
 
+def fetch_duplications():
+    """Fetch code duplications from SonarQube"""
+    url = f"{SONARQUBE_URL}/api/duplications/show"
+
+    # Create Basic Auth header
+    auth_string = f"{SONARQUBE_TOKEN}:"
+    auth_header = b64encode(auth_string.encode()).decode()
+    headers = {
+        "Authorization": f"Basic {auth_header}"
+    }
+
+    # Get all files in the project
+    measures_url = f"{SONARQUBE_URL}/api/measures/component_tree"
+    measures_params = {
+        "component": PROJECT_KEY,
+        "metricKeys": "duplicated_lines_density",
+        "ps": 500
+    }
+
+    all_duplications = []
+    page = 1
+
+    while True:
+        measures_params['p'] = page
+        response = requests.get(measures_url, params=measures_params, headers=headers)
+        response.raise_for_status()
+        data = response.json()
+
+        components = data.get('components', [])
+
+        for component in components:
+            # Only process files with duplications
+            measures = component.get('measures', [])
+            if not measures or float(measures[0].get('value', '0')) == 0:
+                continue
+
+            file_key = component['key']
+            dup_response = requests.get(url, params={"key": file_key}, headers=headers)
+
+            if dup_response.status_code == 200:
+                dup_data = dup_response.json()
+                if 'duplications' in dup_data and dup_data['duplications']:
+                    all_duplications.append({
+                        'file': component.get('path', file_key),
+                        'duplications': dup_data['duplications'],
+                        'files': dup_data.get('files', {}),
+                        'density': float(measures[0].get('value', '0'))
+                    })
+
+        # Check if we have more pages
+        paging = data.get('paging', {})
+        total = paging.get('total', 0)
+        if page * measures_params['ps'] >= total:
+            break
+        page += 1
+
+    return all_duplications
+
 def format_for_claude(issues):
     """Format issues for Claude Agent to understand and fix"""
     formatted = []
@@ -113,7 +171,7 @@ def print_readable(issues):
             print(f"Rule: {issue['rule']}")
             print(f"Issue: {issue['issue']}")
 
-def print_claude_format(issues):
+def print_claude_format(issues, duplications):
     """Print in a format optimized for Claude Agent"""
     print("# SonarQube Issues for Fixing\n")
     print("Below are code quality issues that need to be fixed. Each issue includes:")
@@ -138,17 +196,34 @@ def print_claude_format(issues):
         print()
 
         for issue in sorted(by_file[file_path], key=lambda x: x['line'] if isinstance(x['line'], int) else 0):
-            severity_emoji = {
-                'BLOCKER': '🚨',
-                'CRITICAL': '🔴',
-                'MAJOR': '🟠',
-                'MINOR': '🟡',
-                'INFO': 'ℹ️'
-            }.get(issue['severity'], '•')
-
-            print(f"{severity_emoji} **Line {issue['line']}** [{issue['severity']}] ({issue['rule']})")
+            print(f"**Line {issue['line']}** [{issue['severity']}] ({issue['rule']})")
             print(f"   {issue['issue']}")
             print()
+
+    # Print duplications section
+    if duplications:
+        print("\n" + "=" * 80)
+        print(f"\n## Code Duplications ({len(duplications)} files with duplicates)\n")
+        print("Please review these duplicated code blocks and determine if they are:")
+        print("- Genuine duplicates that should be refactored")
+        print("- False positives that can be marked as such\n")
+
+        for dup_info in sorted(duplications, key=lambda x: x['density'], reverse=True):
+            file_path = dup_info['file']
+            density = dup_info['density']
+            print(f"\n### {file_path}")
+            print(f"Duplication Density: {density:.1f}%\n")
+
+            for dup in dup_info['duplications']:
+                from_line = dup['blocks'][0]['from']
+                size = dup['blocks'][0]['size']
+                print(f"**Lines {from_line}-{from_line + size - 1}** ({size} lines duplicated)")
+
+                # Show where it's duplicated
+                for block in dup['blocks'][1:]:
+                    dup_file = dup_info['files'].get(str(block['_ref']), {}).get('name', 'unknown')
+                    print(f"   Duplicated in: {dup_file}:{block['from']}-{block['from'] + block['size'] - 1}")
+                print()
 
 def main():
     format_type = sys.argv[1] if len(sys.argv) > 1 else "claude"
@@ -157,12 +232,19 @@ def main():
     issues = fetch_issues()
     formatted = format_for_claude(issues)
 
+    print("Fetching duplications from SonarQube...", file=sys.stderr)
+    duplications = fetch_duplications()
+
     if format_type == "json":
-        print(json.dumps(formatted, indent=2))
+        output = {
+            "issues": formatted,
+            "duplications": duplications
+        }
+        print(json.dumps(output, indent=2))
     elif format_type == "readable":
         print_readable(formatted)
     else:
-        print_claude_format(formatted)
+        print_claude_format(formatted, duplications)
 
 if __name__ == "__main__":
     main()

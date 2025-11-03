@@ -202,14 +202,14 @@ public class AIAgentService {
         for (ConversationMessage msg : conversation.getMessages()) {
             ObjectNode msgNode = messagesArray.addObject();
             msgNode.put("role", msg.getRole());
-            msgNode.put("content", msg.getContent());
+            msgNode.put(JSON_FIELD_CONTENT, msg.getContent());
         }
 
         // Add additional input if provided
         if (additionalInput != null && !additionalInput.isBlank()) {
             ObjectNode inputMsg = messagesArray.addObject();
             inputMsg.put("role", "user");
-            inputMsg.put("content", additionalInput);
+            inputMsg.put(JSON_FIELD_CONTENT, additionalInput);
         }
 
         // Build request body

@@ -17,18 +17,15 @@ import java.util.UUID;
  * MCP Tool for listing requirements in a project
  */
 @Component("listRequirements")
-public class ListRequirementsTool implements McpTool {
+public class ListRequirementsTool extends BaseToolSchemaBuilder implements McpTool {
 
     private static final String PROJECT_ID = "projectId";
-    private static final String STRING_TYPE = "string";
-    private static final String DESCRIPTION = "description";
 
     private final RequirementService requirementService;
-    private final ObjectMapper objectMapper;
 
     public ListRequirementsTool(RequirementService requirementService, ObjectMapper objectMapper) {
+        super(objectMapper);
         this.requirementService = requirementService;
-        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -44,17 +41,12 @@ public class ListRequirementsTool implements McpTool {
 
     @Override
     public JsonNode getInputSchema() {
-        ObjectNode schema = objectMapper.createObjectNode();
-        schema.put("type", "object");
-        
+        ObjectNode schema = createBaseSchema();
         ObjectNode properties = schema.putObject("properties");
 
-        ObjectNode projectId = properties.putObject(PROJECT_ID);
-        projectId.put("type", STRING_TYPE);
-        projectId.put(DESCRIPTION, "UUID of the project to list requirements from");
+        addStringProperty(properties, PROJECT_ID, "UUID of the project to list requirements from");
+        addRequiredFields(schema, PROJECT_ID);
 
-        schema.putArray("required").add(PROJECT_ID);
-        
         return schema;
     }
 

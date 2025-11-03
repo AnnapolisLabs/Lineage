@@ -62,6 +62,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Requirement, RequirementLink } from '@/services/requirementService'
+import { compareReqIds } from '@/utils/requirementSorting'
 
 interface Props {
   requirements: Requirement[]
@@ -117,36 +118,6 @@ const rootRequirements = computed(() => {
   // Sort by requirement ID (natural number ordering)
   return results.sort((a, b) => compareReqIds(a.reqId, b.reqId))
 })
-
-function compareReqIds(reqId1: string, reqId2: string): number {
-  try {
-    // Extract numeric portion after the last dash
-    const num1 = extractNumber(reqId1)
-    const num2 = extractNumber(reqId2)
-
-    // If numbers are different, sort by number
-    if (num1 !== num2) {
-      return num1 - num2
-    }
-
-    // If numbers are same, sort by full string (handles different prefixes)
-    return reqId1.localeCompare(reqId2)
-  } catch (e: any) {
-    // Fallback to string comparison if parsing fails
-    console.debug('Error comparing requirement IDs:', e.message)
-    return reqId1.localeCompare(reqId2)
-  }
-}
-
-function extractNumber(reqId: string): number {
-  // Find the last dash and extract the number after it
-  const lastDash = reqId.lastIndexOf('-')
-  if (lastDash >= 0 && lastDash < reqId.length - 1) {
-    const numPart = reqId.substring(lastDash + 1)
-    return Number.parseInt(numPart, 10)
-  }
-  return 0
-}
 
 function hasChildren(reqId: string): boolean {
   // Check for direct children

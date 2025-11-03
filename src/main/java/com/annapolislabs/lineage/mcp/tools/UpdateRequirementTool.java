@@ -20,21 +20,19 @@ import java.util.UUID;
  * MCP Tool for updating requirements
  */
 @Component("updateRequirement")
-public class UpdateRequirementTool implements McpTool {
+public class UpdateRequirementTool extends BaseToolSchemaBuilder implements McpTool {
 
-    private static final String STRING_TYPE = "string";
     private static final String PARENT_ID = "parentId";
 
     private final RequirementService requirementService;
     private final RequirementRepository requirementRepository;
-    private final ObjectMapper objectMapper;
 
     public UpdateRequirementTool(RequirementService requirementService,
                                 RequirementRepository requirementRepository,
                                 ObjectMapper objectMapper) {
+        super(objectMapper);
         this.requirementService = requirementService;
         this.requirementRepository = requirementRepository;
-        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -50,36 +48,17 @@ public class UpdateRequirementTool implements McpTool {
 
     @Override
     public JsonNode getInputSchema() {
-        ObjectNode schema = objectMapper.createObjectNode();
-        schema.put("type", "object");
-
+        ObjectNode schema = createBaseSchema();
         ObjectNode properties = schema.putObject("properties");
 
-        ObjectNode requirementId = properties.putObject(ServiceConstants.REQUIREMENT_ID);
-        requirementId.put("type", STRING_TYPE);
-        requirementId.put(ServiceConstants.DESCRIPTION, "UUID of the requirement to update");
+        addStringProperty(properties, ServiceConstants.REQUIREMENT_ID, "UUID of the requirement to update");
+        addStringProperty(properties, ServiceConstants.TITLE, "New title for the requirement (optional)");
+        addStringProperty(properties, ServiceConstants.DESCRIPTION, "New description for the requirement (optional)");
+        addStringProperty(properties, ServiceConstants.STATUS, "New status: DRAFT, APPROVED, IMPLEMENTED, VERIFIED, REJECTED (optional)");
+        addStringProperty(properties, ServiceConstants.PRIORITY, "New priority: LOW, MEDIUM, HIGH, CRITICAL (optional)");
+        addStringProperty(properties, PARENT_ID, "New parent requirement UUID (optional, use null to remove parent)");
 
-        ObjectNode title = properties.putObject(ServiceConstants.TITLE);
-        title.put("type", STRING_TYPE);
-        title.put(ServiceConstants.DESCRIPTION, "New title for the requirement (optional)");
-
-        ObjectNode description = properties.putObject(ServiceConstants.DESCRIPTION);
-        description.put("type", STRING_TYPE);
-        description.put(ServiceConstants.DESCRIPTION, "New description for the requirement (optional)");
-
-        ObjectNode status = properties.putObject(ServiceConstants.STATUS);
-        status.put("type", STRING_TYPE);
-        status.put(ServiceConstants.DESCRIPTION, "New status: DRAFT, APPROVED, IMPLEMENTED, VERIFIED, REJECTED (optional)");
-
-        ObjectNode priority = properties.putObject(ServiceConstants.PRIORITY);
-        priority.put("type", STRING_TYPE);
-        priority.put(ServiceConstants.DESCRIPTION, "New priority: LOW, MEDIUM, HIGH, CRITICAL (optional)");
-
-        ObjectNode parentId = properties.putObject(PARENT_ID);
-        parentId.put("type", STRING_TYPE);
-        parentId.put(ServiceConstants.DESCRIPTION, "New parent requirement UUID (optional, use null to remove parent)");
-
-        schema.putArray("required").add(ServiceConstants.REQUIREMENT_ID);
+        addRequiredFields(schema, ServiceConstants.REQUIREMENT_ID);
 
         return schema;
     }
