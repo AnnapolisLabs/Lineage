@@ -20,11 +20,13 @@ export const useAuthStore = defineStore('auth', () => {
       token.value = response.token
       localStorage.setItem('auth_token', response.token)
       user.value = {
-        id: '',
+        id: response.email, // Use email as user ID for AI history
         email: response.email,
         name: response.name,
         role: response.role
       }
+      // Store user ID for AI service
+      localStorage.setItem('user_id', response.email)
       return true
     } catch (err: any) {
       error.value = err.response?.data?.message || 'Login failed'
@@ -38,7 +40,31 @@ export const useAuthStore = defineStore('auth', () => {
     if (!token.value) return
     try {
       user.value = await authService.getCurrentUser()
+      if (user.value) {
+        localStorage.setItem('user_id', user.value.email)
+      }
     } catch (err) {
+      logout()
+    }
+  }
+
+  /**
+   * Validate token by calling backend /auth/me
+   * If token is invalid, clears auth state
+   */
+  async function validateToken() {
+    if (!token.value) {
+      return
+    }
+
+    try {
+      user.value = await authService.getCurrentUser()
+      if (user.value) {
+        localStorage.setItem('user_id', user.value.email)
+      }
+    } catch (err) {
+      // Token is invalid or expired, clear it
+      console.warn('Token validation failed, logging out')
       logout()
     }
   }
@@ -46,6 +72,8 @@ export const useAuthStore = defineStore('auth', () => {
   function logout() {
     user.value = null
     token.value = null
+    localStorage.removeItem('auth_token')
+    localStorage.removeItem('user_id')
     authService.logout()
   }
 
@@ -59,6 +87,7 @@ export const useAuthStore = defineStore('auth', () => {
     isEditor,
     login,
     logout,
-    fetchCurrentUser
+    fetchCurrentUser,
+    validateToken
   }
 })

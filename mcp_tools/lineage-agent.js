@@ -183,7 +183,7 @@ class LineageAgent {
                     ...this.conversationHistory
                 ],
                 temperature: 0.3,
-                max_tokens: 2000
+                max_tokens: 60000
             })
         });
 
