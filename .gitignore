@@ -38,7 +38,8 @@ out/
 
 ### Environment Variables ###
 .env
-
+**/.env
+**/token_response.txt
 ### Node ###
 node_modules/
 dist/
