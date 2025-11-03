@@ -1,0 +1,513 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testExecutions version="1">
+  <file path="src\App.spec.ts">
+    <testCase name="App.vue - should render router view" duration="47" />
+    <testCase name="App.vue - should show AIAssistant when authenticated" duration="12" />
+    <testCase name="App.vue - should call validateToken on mount" duration="8">
+      <failure message="expected &quot;vi.fn()&quot; to be called at least once">
+        <![CDATA[AssertionError: expected &quot;vi.fn()&quot; to be called at least once
+    at Proxy.&lt;anonymous&gt; (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/expect/dist/index.js:1396:10)
+    at Proxy.&lt;anonymous&gt; (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/expect/dist/index.js:1086:14)
+    at Proxy.methodWrapper (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/chai/index.js:1701:25)
+    at C:/Users/Mason/IdeaProjects/Lineage/frontend/src/App.spec.ts:70:30
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:753:20]]>
+      </failure>
+    </testCase>
+  </file>
+  <file path="src\components\AIAssistant.spec.ts">
+    <testCase name="AIAssistant.vue - should render AI assistant" duration="32" />
+    <testCase name="AIAssistant.vue - should toggle chat panel" duration="49">
+      <failure message="expected undefined to be true // Object.is equality">
+        <![CDATA[AssertionError: expected undefined to be true // Object.is equality
+    at C:/Users/Mason/IdeaProjects/Lineage/frontend/src/components/AIAssistant.spec.ts:48:40
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:753:20]]>
+      </failure>
+    </testCase>
+    <testCase name="AIAssistant.vue - should send message" duration="5" />
+    <testCase name="AIAssistant.vue - should create new conversation" duration="5" />
+    <testCase name="AIAssistant.vue - should load chat list" duration="5" />
+    <testCase name="AIAssistant.vue - should delete conversation" duration="3" />
+  </file>
+  <file path="src\components\HelloWorld.spec.ts">
+    <testCase name="HelloWorld.vue - should render component" duration="26" />
+    <testCase name="HelloWorld.vue - should display the message prop" duration="3" />
+  </file>
+  <file path="src\components\RequirementTreeView.spec.ts">
+    <testCase name="RequirementTreeView.vue - should render tree view" duration="25" />
+    <testCase name="RequirementTreeView.vue - should display requirements in tree structure" duration="8">
+      <error message="Cannot read properties of undefined (reading &apos;has&apos;)">
+        <![CDATA[TypeError: Cannot read properties of undefined (reading &apos;has&apos;)
+    at C:/Users/Mason/IdeaProjects/Lineage/frontend/src/components/RequirementTreeView.vue:22:45
+    at renderList (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:2949:16)
+    at Proxy._sfc_render (C:/Users/Mason/IdeaProjects/Lineage/frontend/src/components/RequirementTreeView.vue:58:11)
+    at renderComponentRoot (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:6530:16)
+    at ReactiveEffect.componentUpdateFn [as fn] (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:5330:46)
+    at ReactiveEffect.run (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\reactivity\dist\reactivity.cjs.js:241:19)
+    at setupRenderEffect (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:5465:5)
+    at mountComponent (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:5239:7)
+    at processComponent (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:5191:9)
+    at patch (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:4718:11)]]>
+      </error>
+    </testCase>
+    <testCase name="RequirementTreeView.vue - should handle empty requirements list" duration="8">
+      <failure message="expected &apos;&apos; to contain &apos;No requirements&apos;">
+        <![CDATA[AssertionError: expected &apos;&apos; to contain &apos;No requirements&apos;
+    at C:/Users/Mason/IdeaProjects/Lineage/frontend/src/components/RequirementTreeView.spec.ts:62:28
+    at file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:157:11
+    at file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:753:26
+    at file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:1636:20
+    at new Promise (&lt;anonymous&gt;)
+    at runWithTimeout (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:1602:10)
+    at runTest (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:1309:12)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at runSuite (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:1468:8)
+    at runSuite (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:1468:8)]]>
+      </failure>
+    </testCase>
+  </file>
+  <file path="src\components\requirements\PriorityBadge.spec.ts">
+    <testCase name="PriorityBadge.vue - should render priority badge" duration="23" />
+    <testCase name="PriorityBadge.vue - should apply correct classes for CRITICAL priority" duration="20" />
+    <testCase name="PriorityBadge.vue - should apply correct classes for HIGH priority" duration="3" />
+    <testCase name="PriorityBadge.vue - should apply correct classes for MEDIUM priority" duration="2" />
+  </file>
+  <file path="src\components\requirements\RequirementCard.spec.ts">
+    <testCase name="RequirementCard.vue - should render requirement card" duration="33" />
+    <testCase name="RequirementCard.vue - should display requirement ID" duration="6" />
+  </file>
+  <file path="src\components\requirements\RequirementForm.spec.ts">
+    <testCase name="RequirementForm.vue - should render requirement form" duration="35" />
+    <testCase name="RequirementForm.vue - should accept props" duration="21">
+      <failure message="expected undefined to be defined">
+        <![CDATA[AssertionError: expected undefined to be defined
+    at C:/Users/Mason/IdeaProjects/Lineage/frontend/src/components/requirements/RequirementForm.spec.ts:27:42
+    at file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:157:11
+    at file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:753:26
+    at file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:1636:20
+    at new Promise (&lt;anonymous&gt;)
+    at runWithTimeout (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:1602:10)
+    at runTest (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:1309:12)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at runSuite (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:1468:8)
+    at runSuite (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:1468:8)]]>
+      </failure>
+    </testCase>
+    <testCase name="RequirementForm.vue - should handle basic rendering" duration="24" />
+  </file>
+  <file path="src\components\requirements\RequirementHistory.spec.ts">
+    <testCase name="RequirementHistory.vue - should render requirement history" duration="81" />
+    <testCase name="RequirementHistory.vue - should display history items" duration="7" />
+    <testCase name="RequirementHistory.vue - should show empty state when no history" duration="5" />
+  </file>
+  <file path="src\components\requirements\RequirementModal.spec.ts">
+    <testCase name="RequirementModal.vue - should render modal" duration="22" />
+    <testCase name="RequirementModal.vue - should emit close event" duration="2" />
+  </file>
+  <file path="src\components\requirements\StatusBadge.spec.ts">
+    <testCase name="StatusBadge.vue - should render status badge" duration="22" />
+    <testCase name="StatusBadge.vue - should apply correct classes for APPROVED status" duration="10" />
+    <testCase name="StatusBadge.vue - should apply correct classes for REVIEW status" duration="2" />
+    <testCase name="StatusBadge.vue - should apply correct classes for DEPRECATED status" duration="2" />
+  </file>
+  <file path="src\composables\useRequirementStyles.spec.ts">
+    <testCase name="useRequirementStyles - getStatusClasses - should return approved classes for APPROVED status" duration="2" />
+    <testCase name="useRequirementStyles - getStatusClasses - should return review classes for REVIEW status" duration="0" />
+    <testCase name="useRequirementStyles - getStatusClasses - should return deprecated classes for DEPRECATED status" duration="0" />
+    <testCase name="useRequirementStyles - getStatusClasses - should return default classes for unknown status" duration="0" />
+    <testCase name="useRequirementStyles - getStatusClasses - should include base classes for all statuses" duration="0" />
+    <testCase name="useRequirementStyles - getPriorityClasses - should return critical classes for CRITICAL priority" duration="0" />
+    <testCase name="useRequirementStyles - getPriorityClasses - should return high classes for HIGH priority" duration="0" />
+    <testCase name="useRequirementStyles - getPriorityClasses - should return medium classes for MEDIUM priority" duration="0" />
+    <testCase name="useRequirementStyles - getPriorityClasses - should return default classes for unknown priority" duration="0" />
+    <testCase name="useRequirementStyles - getPriorityClasses - should include base classes for all priorities" duration="0" />
+  </file>
+  <file path="src\router\index.spec.ts">
+    <testCase name="router - should redirect to login when not authenticated" duration="10018">
+      <error message="Hook timed out in 10000ms.
+If this is a long-running hook, pass a timeout value as the last argument or configure it globally with &quot;hookTimeout&quot;.">
+        <![CDATA[Error: STACK_TRACE_ERROR
+    at beforeEach (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:1901:26)
+    at C:/Users/Mason/IdeaProjects/Lineage/frontend/src/router/index.spec.ts:9:3
+    at file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:735:40
+    at runWithSuite (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:1588:8)
+    at Object.collect (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:735:10)
+    at Object.collect (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:739:54)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at collectTests (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:1048:25)
+    at startTests (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:1556:17)
+    at file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/vitest/dist/chunks/base.BAf_bYeI.js:76:64]]>
+      </error>
+    </testCase>
+    <testCase name="router - should allow access to protected routes when authenticated" duration="10004">
+      <error message="Hook timed out in 10000ms.
+If this is a long-running hook, pass a timeout value as the last argument or configure it globally with &quot;hookTimeout&quot;.">
+        <![CDATA[Error: STACK_TRACE_ERROR
+    at beforeEach (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:1901:26)
+    at C:/Users/Mason/IdeaProjects/Lineage/frontend/src/router/index.spec.ts:9:3
+    at file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:735:40
+    at runWithSuite (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:1588:8)
+    at Object.collect (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:735:10)
+    at Object.collect (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:739:54)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at collectTests (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:1048:25)
+    at startTests (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:1556:17)
+    at file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/vitest/dist/chunks/base.BAf_bYeI.js:76:64]]>
+      </error>
+    </testCase>
+    <testCase name="router - should redirect to projects when authenticated user visits login" duration="10013">
+      <error message="Hook timed out in 10000ms.
+If this is a long-running hook, pass a timeout value as the last argument or configure it globally with &quot;hookTimeout&quot;.">
+        <![CDATA[Error: STACK_TRACE_ERROR
+    at beforeEach (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:1901:26)
+    at C:/Users/Mason/IdeaProjects/Lineage/frontend/src/router/index.spec.ts:9:3
+    at file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:735:40
+    at runWithSuite (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:1588:8)
+    at Object.collect (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:735:10)
+    at Object.collect (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:739:54)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at collectTests (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:1048:25)
+    at startTests (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:1556:17)
+    at file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/vitest/dist/chunks/base.BAf_bYeI.js:76:64]]>
+      </error>
+    </testCase>
+    <testCase name="router - should allow access to login when not authenticated" duration="10002">
+      <error message="Hook timed out in 10000ms.
+If this is a long-running hook, pass a timeout value as the last argument or configure it globally with &quot;hookTimeout&quot;.">
+        <![CDATA[Error: STACK_TRACE_ERROR
+    at beforeEach (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:1901:26)
+    at C:/Users/Mason/IdeaProjects/Lineage/frontend/src/router/index.spec.ts:9:3
+    at file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:735:40
+    at runWithSuite (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:1588:8)
+    at Object.collect (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:735:10)
+    at Object.collect (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:739:54)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at collectTests (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:1048:25)
+    at startTests (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:1556:17)
+    at file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/vitest/dist/chunks/base.BAf_bYeI.js:76:64]]>
+      </error>
+    </testCase>
+    <testCase name="router - should redirect unknown paths to home" duration="10000">
+      <error message="Hook timed out in 10000ms.
+If this is a long-running hook, pass a timeout value as the last argument or configure it globally with &quot;hookTimeout&quot;.">
+        <![CDATA[Error: STACK_TRACE_ERROR
+    at beforeEach (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:1901:26)
+    at C:/Users/Mason/IdeaProjects/Lineage/frontend/src/router/index.spec.ts:9:3
+    at file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:735:40
+    at runWithSuite (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:1588:8)
+    at Object.collect (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:735:10)
+    at Object.collect (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:739:54)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at collectTests (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:1048:25)
+    at startTests (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:1556:17)
+    at file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/vitest/dist/chunks/base.BAf_bYeI.js:76:64]]>
+      </error>
+    </testCase>
+  </file>
+  <file path="src\services\aiService.spec.ts">
+    <testCase name="AIService - sendMessage - should send message successfully" duration="6" />
+    <testCase name="AIService - sendMessage - should throw error on failed request" duration="3" />
+    <testCase name="AIService - createNewConversation - should create new conversation successfully" duration="1" />
+    <testCase name="AIService - createNewConversation - should throw error on failed request" duration="0" />
+    <testCase name="AIService - getChatList - should get chat list successfully" duration="0" />
+    <testCase name="AIService - getChatList - should throw error on failed request" duration="0" />
+    <testCase name="AIService - deleteConversation - should delete conversation successfully" duration="0" />
+    <testCase name="AIService - deleteConversation - should throw error on failed request" duration="0" />
+  </file>
+  <file path="src\services\api.spec.ts">
+
+  </file>
+  <file path="src\services\authService.spec.ts">
+    <testCase name="authService - login - should login successfully" duration="4" />
+    <testCase name="authService - getCurrentUser - should get current user successfully" duration="0" />
+    <testCase name="authService - logout - should remove auth token from localStorage" duration="0" />
+  </file>
+  <file path="src\services\projectService.spec.ts">
+    <testCase name="projectService - getAll - should get all projects" duration="5" />
+    <testCase name="projectService - getById - should get project by id" duration="1" />
+    <testCase name="projectService - create - should create project" duration="1" />
+    <testCase name="projectService - update - should update project" duration="0" />
+    <testCase name="projectService - delete - should delete project" duration="0" />
+  </file>
+  <file path="src\services\requirementService.spec.ts">
+    <testCase name="requirementService - getByProject - should get requirements by project id" duration="4" />
+    <testCase name="requirementService - getById - should get requirement by id" duration="0" />
+    <testCase name="requirementService - create - should create requirement" duration="1" />
+    <testCase name="requirementService - update - should update requirement" duration="0" />
+    <testCase name="requirementService - delete - should delete requirement" duration="0" />
+    <testCase name="requirementService - getHistory - should get requirement history" duration="0" />
+    <testCase name="requirementService - search - should search requirements" duration="1" />
+    <testCase name="requirementService - getLinks - should get requirement links" duration="0" />
+    <testCase name="requirementService - createLink - should create requirement link" duration="0" />
+    <testCase name="requirementService - deleteLink - should delete requirement link" duration="0" />
+  </file>
+  <file path="src\stores\auth.spec.ts">
+    <testCase name="useAuthStore - should initialize with null user and token from localStorage" duration="4" />
+    <testCase name="useAuthStore - should compute isAuthenticated correctly" duration="1" />
+    <testCase name="useAuthStore - should compute isAdmin correctly" duration="0" />
+    <testCase name="useAuthStore - should compute isEditor correctly" duration="1" />
+    <testCase name="useAuthStore - login - should login successfully" duration="2" />
+    <testCase name="useAuthStore - login - should handle login error" duration="2" />
+    <testCase name="useAuthStore - fetchCurrentUser - should fetch current user when token exists" duration="1" />
+    <testCase name="useAuthStore - fetchCurrentUser - should not fetch user when no token" duration="1" />
+    <testCase name="useAuthStore - fetchCurrentUser - should logout on fetch error" duration="1" />
+    <testCase name="useAuthStore - validateToken - should validate token and set user" duration="0" />
+    <testCase name="useAuthStore - validateToken - should logout on validation error" duration="1" />
+    <testCase name="useAuthStore - validateToken - should not validate when no token" duration="0" />
+    <testCase name="useAuthStore - logout - should clear user and token" duration="1" />
+  </file>
+  <file path="src\stores\projects.spec.ts">
+    <testCase name="useProjectStore - fetchProjects - should fetch projects successfully" duration="7" />
+    <testCase name="useProjectStore - fetchProjects - should handle fetch error" duration="1" />
+    <testCase name="useProjectStore - fetchProject - should fetch single project successfully" duration="1" />
+    <testCase name="useProjectStore - fetchProject - should handle fetch error" duration="0" />
+    <testCase name="useProjectStore - createProject - should create project successfully" duration="9">
+      <failure message="expected [ { id: &apos;1&apos;, …(2) } ] to include { id: &apos;1&apos;, name: &apos;New Project&apos;, …(1) }">
+        <![CDATA[AssertionError: expected [ { id: &apos;1&apos;, …(2) } ] to include { id: &apos;1&apos;, name: &apos;New Project&apos;, …(1) }
+    at Proxy.&lt;anonymous&gt; (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/expect/dist/index.js:1248:15)
+    at Proxy.&lt;anonymous&gt; (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/expect/dist/index.js:1086:14)
+    at Proxy.methodWrapper (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/chai/index.js:1701:25)
+    at C:/Users/Mason/IdeaProjects/Lineage/frontend/src/stores/projects.spec.ts:77:30
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:753:20]]>
+      </failure>
+    </testCase>
+    <testCase name="useProjectStore - createProject - should handle create error" duration="1" />
+    <testCase name="useProjectStore - updateProject - should update project successfully" duration="1" />
+    <testCase name="useProjectStore - updateProject - should update currentProject if it matches" duration="1" />
+    <testCase name="useProjectStore - updateProject - should handle update error" duration="1" />
+    <testCase name="useProjectStore - deleteProject - should delete project successfully" duration="1" />
+    <testCase name="useProjectStore - deleteProject - should clear currentProject if it matches deleted project" duration="0" />
+    <testCase name="useProjectStore - deleteProject - should handle delete error" duration="0" />
+  </file>
+  <file path="src\utils\requirementSorting.spec.ts">
+    <testCase name="requirementSorting - extractNumber - should extract number after last dash" duration="3" />
+    <testCase name="requirementSorting - extractNumber - should return 0 when no number found" duration="7">
+      <failure message="expected false to be true // Object.is equality">
+        <![CDATA[AssertionError: expected false to be true // Object.is equality
+    at C:/Users/Mason/IdeaProjects/Lineage/frontend/src/utils/requirementSorting.spec.ts:14:44
+    at file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:157:11
+    at file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:753:26
+    at file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:1636:20
+    at new Promise (&lt;anonymous&gt;)
+    at runWithTimeout (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:1602:10)
+    at runTest (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:1309:12)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at runSuite (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:1468:8)
+    at runSuite (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:1468:8)]]>
+      </failure>
+    </testCase>
+    <testCase name="requirementSorting - extractNumber - should handle empty string" duration="0" />
+    <testCase name="requirementSorting - compareReqIds - should sort by number when prefixes are same" duration="0" />
+    <testCase name="requirementSorting - compareReqIds - should return 0 for identical IDs" duration="11" />
+    <testCase name="requirementSorting - compareReqIds - should sort by string when numbers are equal" duration="0" />
+    <testCase name="requirementSorting - compareReqIds - should handle mixed formats gracefully" duration="0" />
+    <testCase name="requirementSorting - compareReqIds - should sort naturally by number" duration="0" />
+  </file>
+  <file path="src\views\Dashboard.spec.ts">
+    <testCase name="Dashboard.vue - should render dashboard" duration="49" />
+  </file>
+  <file path="src\views\Login.spec.ts">
+    <testCase name="Login.vue - should render login form" duration="57" />
+    <testCase name="Login.vue - should have default credentials pre-filled" duration="5" />
+    <testCase name="Login.vue - should submit form and redirect on successful login" duration="13" />
+    <testCase name="Login.vue - should not redirect on failed login" duration="5" />
+    <testCase name="Login.vue - should display error message when login fails" duration="8" />
+    <testCase name="Login.vue - should disable submit button when loading" duration="12" />
+  </file>
+  <file path="src\views\ProjectDetail.spec.ts">
+    <testCase name="ProjectDetail.vue - should render project detail view" duration="33">
+      <error message="Cannot read properties of undefined (reading &apos;search&apos;)">
+        <![CDATA[TypeError: Cannot read properties of undefined (reading &apos;search&apos;)
+    at setup (C:/Users/Mason/IdeaProjects/Lineage/frontend/src/views/ProjectDetail.vue:466:37)
+    at callWithErrorHandling (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:200:19)
+    at setupStatefulComponent (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:7934:25)
+    at setupComponent (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:7895:36)
+    at mountComponent (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:5225:7)
+    at processComponent (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:5191:9)
+    at patch (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:4718:11)
+    at ReactiveEffect.componentUpdateFn [as fn] (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:5337:11)
+    at ReactiveEffect.run (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\reactivity\dist\reactivity.cjs.js:241:19)
+    at setupRenderEffect (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:5465:5)]]>
+      </error>
+    </testCase>
+    <testCase name="ProjectDetail.vue - should fetch project on mount" duration="5">
+      <error message="Cannot read properties of undefined (reading &apos;search&apos;)">
+        <![CDATA[TypeError: Cannot read properties of undefined (reading &apos;search&apos;)
+    at setup (C:/Users/Mason/IdeaProjects/Lineage/frontend/src/views/ProjectDetail.vue:466:37)
+    at callWithErrorHandling (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:200:19)
+    at setupStatefulComponent (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:7934:25)
+    at setupComponent (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:7895:36)
+    at mountComponent (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:5225:7)
+    at processComponent (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:5191:9)
+    at patch (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:4718:11)
+    at ReactiveEffect.componentUpdateFn [as fn] (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:5337:11)
+    at ReactiveEffect.run (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\reactivity\dist\reactivity.cjs.js:241:19)
+    at setupRenderEffect (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:5465:5)]]>
+      </error>
+    </testCase>
+    <testCase name="ProjectDetail.vue - should fetch requirements on mount" duration="6">
+      <error message="Cannot read properties of undefined (reading &apos;search&apos;)">
+        <![CDATA[TypeError: Cannot read properties of undefined (reading &apos;search&apos;)
+    at setup (C:/Users/Mason/IdeaProjects/Lineage/frontend/src/views/ProjectDetail.vue:466:37)
+    at callWithErrorHandling (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:200:19)
+    at setupStatefulComponent (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:7934:25)
+    at setupComponent (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:7895:36)
+    at mountComponent (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:5225:7)
+    at processComponent (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:5191:9)
+    at patch (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:4718:11)
+    at ReactiveEffect.componentUpdateFn [as fn] (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:5337:11)
+    at ReactiveEffect.run (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\reactivity\dist\reactivity.cjs.js:241:19)
+    at setupRenderEffect (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:5465:5)]]>
+      </error>
+    </testCase>
+    <testCase name="ProjectDetail.vue - should display project name" duration="5">
+      <error message="Cannot read properties of undefined (reading &apos;search&apos;)">
+        <![CDATA[TypeError: Cannot read properties of undefined (reading &apos;search&apos;)
+    at setup (C:/Users/Mason/IdeaProjects/Lineage/frontend/src/views/ProjectDetail.vue:466:37)
+    at callWithErrorHandling (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:200:19)
+    at setupStatefulComponent (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:7934:25)
+    at setupComponent (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:7895:36)
+    at mountComponent (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:5225:7)
+    at processComponent (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:5191:9)
+    at patch (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:4718:11)
+    at ReactiveEffect.componentUpdateFn [as fn] (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:5337:11)
+    at ReactiveEffect.run (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\reactivity\dist\reactivity.cjs.js:241:19)
+    at setupRenderEffect (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:5465:5)]]>
+      </error>
+    </testCase>
+    <testCase name="ProjectDetail.vue - should display requirements" duration="4">
+      <error message="Cannot read properties of undefined (reading &apos;search&apos;)">
+        <![CDATA[TypeError: Cannot read properties of undefined (reading &apos;search&apos;)
+    at setup (C:/Users/Mason/IdeaProjects/Lineage/frontend/src/views/ProjectDetail.vue:466:37)
+    at callWithErrorHandling (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:200:19)
+    at setupStatefulComponent (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:7934:25)
+    at setupComponent (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:7895:36)
+    at mountComponent (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:5225:7)
+    at processComponent (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:5191:9)
+    at patch (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:4718:11)
+    at ReactiveEffect.componentUpdateFn [as fn] (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:5337:11)
+    at ReactiveEffect.run (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\reactivity\dist\reactivity.cjs.js:241:19)
+    at setupRenderEffect (C:\Users\Mason\IdeaProjects\Lineage\frontend\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:5465:5)]]>
+      </error>
+    </testCase>
+  </file>
+  <file path="src\views\ProjectSettings.spec.ts">
+    <testCase name="ProjectSettings.vue - should render project settings view" duration="92" />
+    <testCase name="ProjectSettings.vue - should fetch project on mount" duration="22">
+      <failure message="expected &quot;vi.fn()&quot; to be called with arguments: [ &apos;1&apos; ][90m
+
+Number of calls: [1m0[22m
+[39m">
+        <![CDATA[AssertionError: expected &quot;vi.fn()&quot; to be called with arguments: [ &apos;1&apos; ][90m
+
+Number of calls: [1m0[22m
+[39m
+    at Proxy.&lt;anonymous&gt; (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/expect/dist/index.js:1416:10)
+    at Proxy.&lt;anonymous&gt; (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/expect/dist/index.js:1086:14)
+    at Proxy.methodWrapper (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/chai/index.js:1701:25)
+    at C:/Users/Mason/IdeaProjects/Lineage/frontend/src/views/ProjectSettings.spec.ts:46:39
+    at runNextTicks (node:internal/process/task_queues:64:5)
+    at processImmediate (node:internal/timers:472:9)
+    at file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:753:20]]>
+      </failure>
+    </testCase>
+    <testCase name="ProjectSettings.vue - should display project settings form" duration="20">
+      <failure message="expected false to be true // Object.is equality">
+        <![CDATA[AssertionError: expected false to be true // Object.is equality
+    at C:/Users/Mason/IdeaProjects/Lineage/frontend/src/views/ProjectSettings.spec.ts:66:54
+    at runNextTicks (node:internal/process/task_queues:64:5)
+    at processImmediate (node:internal/timers:472:9)
+    at file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:753:20]]>
+      </failure>
+    </testCase>
+    <testCase name="ProjectSettings.vue - should handle update project" duration="6" />
+    <testCase name="ProjectSettings.vue - should handle delete project" duration="16" />
+  </file>
+  <file path="src\views\Projects.spec.ts">
+    <testCase name="Projects.vue - should render projects view" duration="106" />
+    <testCase name="Projects.vue - should fetch projects on mount" duration="9" />
+    <testCase name="Projects.vue - should display projects list" duration="15" />
+    <testCase name="Projects.vue - should show loading state" duration="8" />
+    <testCase name="Projects.vue - should show error message" duration="6" />
+    <testCase name="Projects.vue - should handle create project" duration="73">
+      <failure message="expected &quot;vi.fn()&quot; to be called at least once">
+        <![CDATA[AssertionError: expected &quot;vi.fn()&quot; to be called at least once
+    at Proxy.&lt;anonymous&gt; (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/expect/dist/index.js:1396:10)
+    at Proxy.&lt;anonymous&gt; (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/expect/dist/index.js:1086:14)
+    at Proxy.methodWrapper (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/chai/index.js:1701:25)
+    at C:/Users/Mason/IdeaProjects/Lineage/frontend/src/views/Projects.spec.ts:112:42
+    at runNextTicks (node:internal/process/task_queues:64:5)
+    at processImmediate (node:internal/timers:472:9)
+    at file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:753:20]]>
+      </failure>
+    </testCase>
+  </file>
+  <file path="src\views\RequirementDetail.spec.ts">
+    <testCase name="RequirementDetail.vue - should render requirement detail view" duration="109" />
+    <testCase name="RequirementDetail.vue - should fetch requirement on mount" duration="20">
+      <failure message="expected &quot;vi.fn()&quot; to be called with arguments: [ &apos;req-1&apos; ][90m
+
+Number of calls: [1m0[22m
+[39m">
+        <![CDATA[AssertionError: expected &quot;vi.fn()&quot; to be called with arguments: [ &apos;req-1&apos; ][90m
+
+Number of calls: [1m0[22m
+[39m
+    at Proxy.&lt;anonymous&gt; (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/expect/dist/index.js:1416:10)
+    at Proxy.&lt;anonymous&gt; (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/expect/dist/index.js:1086:14)
+    at Proxy.methodWrapper (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/chai/index.js:1701:25)
+    at C:/Users/Mason/IdeaProjects/Lineage/frontend/src/views/RequirementDetail.spec.ts:63:40
+    at runNextTicks (node:internal/process/task_queues:64:5)
+    at processImmediate (node:internal/timers:472:9)
+    at file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:753:20]]>
+      </failure>
+    </testCase>
+    <testCase name="RequirementDetail.vue - should display requirement title" duration="17">
+      <failure message="expected &apos;←BackLoading... Logout&apos; to contain &apos;Test Requirement&apos;">
+        <![CDATA[AssertionError: expected &apos;←BackLoading... Logout&apos; to contain &apos;Test Requirement&apos;
+    at C:/Users/Mason/IdeaProjects/Lineage/frontend/src/views/RequirementDetail.spec.ts:87:28
+    at runNextTicks (node:internal/process/task_queues:64:5)
+    at processImmediate (node:internal/timers:472:9)
+    at file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:753:20]]>
+      </failure>
+    </testCase>
+    <testCase name="RequirementDetail.vue - should fetch requirement links" duration="18">
+      <failure message="expected &quot;vi.fn()&quot; to be called with arguments: [ &apos;req-1&apos; ][90m
+
+Number of calls: [1m0[22m
+[39m">
+        <![CDATA[AssertionError: expected &quot;vi.fn()&quot; to be called with arguments: [ &apos;req-1&apos; ][90m
+
+Number of calls: [1m0[22m
+[39m
+    at Proxy.&lt;anonymous&gt; (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/expect/dist/index.js:1416:10)
+    at Proxy.&lt;anonymous&gt; (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/expect/dist/index.js:1086:14)
+    at Proxy.methodWrapper (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/chai/index.js:1701:25)
+    at C:/Users/Mason/IdeaProjects/Lineage/frontend/src/views/RequirementDetail.spec.ts:111:41
+    at runNextTicks (node:internal/process/task_queues:64:5)
+    at processImmediate (node:internal/timers:472:9)
+    at file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:753:20]]>
+      </failure>
+    </testCase>
+    <testCase name="RequirementDetail.vue - should fetch requirement history" duration="44">
+      <failure message="expected &quot;vi.fn()&quot; to be called with arguments: [ &apos;req-1&apos; ][90m
+
+Number of calls: [1m0[22m
+[39m">
+        <![CDATA[AssertionError: expected &quot;vi.fn()&quot; to be called with arguments: [ &apos;req-1&apos; ][90m
+
+Number of calls: [1m0[22m
+[39m
+    at Proxy.&lt;anonymous&gt; (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/expect/dist/index.js:1416:10)
+    at Proxy.&lt;anonymous&gt; (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/expect/dist/index.js:1086:14)
+    at Proxy.methodWrapper (file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/chai/index.js:1701:25)
+    at C:/Users/Mason/IdeaProjects/Lineage/frontend/src/views/RequirementDetail.spec.ts:135:43
+    at runNextTicks (node:internal/process/task_queues:64:5)
+    at processImmediate (node:internal/timers:472:9)
+    at file:///C:/Users/Mason/IdeaProjects/Lineage/frontend/node_modules/@vitest/runner/dist/index.js:753:20]]>
+      </failure>
+    </testCase>
+  </file>
+</testExecutions>

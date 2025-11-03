@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.16",
@@ -20,12 +22,18 @@
     "@types/diff": "^7.0.2",
     "@types/node": "^24.6.0",
     "@vitejs/plugin-vue": "^6.0.1",
+    "@vitest/coverage-v8": "^4.0.6",
+    "@vitest/ui": "^4.0.6",
+    "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.8.1",
     "autoprefixer": "^10.4.21",
+    "jsdom": "^27.1.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.16",
     "typescript": "~5.9.3",
     "vite": "^7.1.7",
+    "vitest": "^4.0.6",
+    "vitest-sonar-reporter": "^3.0.0",
     "vue-tsc": "^3.1.0"
   }
 }
