@@ -31,7 +31,7 @@ class JwtUtilTest {
 
         // Assert
         assertNotNull(token);
-        assertTrue(token.length() > 0);
+        assertFalse(token.isEmpty());
     }
 
     @Test

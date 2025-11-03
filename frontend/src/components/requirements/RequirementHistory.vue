@@ -180,7 +180,7 @@ function generateRedline(oldValue: any, newValue: any): string {
 
   let result = ''
 
-  diff.forEach((part) => {
+  for (const part of diff) {
     const escaped = escapeHtml(part.value)
 
     if (part.added) {
@@ -190,7 +190,7 @@ function generateRedline(oldValue: any, newValue: any): string {
     } else {
       result += `<span class="text-annapolis-gray-300">${escaped}</span>`
     }
-  })
+  }
 
   return result || '<span class="text-annapolis-gray-400">(empty)</span>'
 }
@@ -203,7 +203,7 @@ function escapeHtml(text: string): string {
     '"': '&quot;',
     "'": '&#039;'
   }
-  return text.replace(/[&<>"']/g, (m) => map[m])
+  return text.replaceAll(/[&<>"']/g, (m) => map[m])
 }
 
 function formatChangeType(type: string): string {

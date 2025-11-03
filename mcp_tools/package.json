@@ -1,0 +1,16 @@
+{
+  "name": "lineage-mcp-examples",
+  "version": "1.0.0",
+  "description": "MCP client examples for Lineage requirements management",
+  "main": "mcp-client-example.js",
+  "scripts": {
+    "test": "node mcp-client-example.js",
+    "ai": "node lineage-mcp-ai-client.js"
+  },
+  "keywords": ["mcp", "lineage", "requirements", "ai"],
+  "author": "Annapolis Labs",
+  "license": "MIT",
+  "dependencies": {
+    "ws": "^8.14.2"
+  }
+}

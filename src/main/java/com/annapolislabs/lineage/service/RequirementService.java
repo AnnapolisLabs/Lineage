@@ -1,15 +1,17 @@
 package com.annapolislabs.lineage.service;
 
+import com.annapolislabs.lineage.common.ServiceConstants;
 import com.annapolislabs.lineage.dto.request.CreateRequirementRequest;
 import com.annapolislabs.lineage.dto.response.RequirementResponse;
 import com.annapolislabs.lineage.entity.*;
+import com.annapolislabs.lineage.exception.AccessDeniedException;
+import com.annapolislabs.lineage.exception.ResourceNotFoundException;
 import com.annapolislabs.lineage.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class RequirementService {
@@ -42,14 +44,14 @@ public class RequirementService {
 
         // Check project access
         ProjectMember member = projectMemberRepository.findByProjectIdAndUserId(projectId, currentUser.getId())
-                .orElseThrow(() -> new RuntimeException("Access denied"));
+                .orElseThrow(AccessDeniedException::new);
 
         if (member.getRole() == ProjectRole.VIEWER) {
-            throw new RuntimeException("Editor access required");
+            throw new AccessDeniedException("Editor access required");
         }
 
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(ServiceConstants.PROJECT_NOT_FOUND));
 
         // Get all existing requirements in the project for numbering
         List<Requirement> allRequirements = requirementRepository.findByProjectId(projectId);
@@ -58,7 +60,7 @@ public class RequirementService {
         Requirement parent = null;
         if (request.getParentId() != null) {
             parent = requirementRepository.findById(request.getParentId())
-                    .orElseThrow(() -> new RuntimeException("Parent requirement not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Parent requirement not found"));
         }
 
         // Calculate level and generate requirement ID
@@ -92,25 +94,25 @@ public class RequirementService {
 
         // Check project access
         if (!projectMemberRepository.existsByProjectIdAndUserId(projectId, currentUser.getId())) {
-            throw new RuntimeException("Access denied");
+            throw new AccessDeniedException("Access denied");
         }
 
         return requirementRepository.findByProjectIdAndDeletedAtIsNull(projectId)
                 .stream()
                 .sorted((r1, r2) -> compareReqIds(r1.getReqId(), r2.getReqId()))
                 .map(this::toRequirementResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Transactional(readOnly = true)
     public RequirementResponse getRequirementById(UUID requirementId) {
         Requirement requirement = requirementRepository.findById(requirementId)
-                .orElseThrow(() -> new RuntimeException("Requirement not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(ServiceConstants.REQUIREMENT_NOT_FOUND));
 
         // Check project access
         User currentUser = authService.getCurrentUser();
         if (!projectMemberRepository.existsByProjectIdAndUserId(requirement.getProject().getId(), currentUser.getId())) {
-            throw new RuntimeException("Access denied");
+            throw new AccessDeniedException("Access denied");
         }
 
         return toRequirementResponse(requirement);
@@ -119,14 +121,14 @@ public class RequirementService {
     @Transactional
     public RequirementResponse updateRequirement(UUID requirementId, CreateRequirementRequest request) {
         Requirement requirement = requirementRepository.findById(requirementId)
-                .orElseThrow(() -> new RuntimeException("Requirement not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(ServiceConstants.REQUIREMENT_NOT_FOUND));
 
         User currentUser = authService.getCurrentUser();
         ProjectMember member = projectMemberRepository.findByProjectIdAndUserId(requirement.getProject().getId(), currentUser.getId())
-                .orElseThrow(() -> new RuntimeException("Access denied"));
+                .orElseThrow(AccessDeniedException::new);
 
         if (member.getRole() == ProjectRole.VIEWER) {
-            throw new RuntimeException("Editor access required");
+            throw new AccessDeniedException("Editor access required");
         }
 
         Map<String, Object> oldValue = toMap(requirement);
@@ -139,7 +141,7 @@ public class RequirementService {
 
         if (request.getParentId() != null) {
             Requirement parent = requirementRepository.findById(request.getParentId())
-                    .orElseThrow(() -> new RuntimeException("Parent requirement not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Parent requirement not found"));
             requirement.setParent(parent);
         } else {
             requirement.setParent(null);
@@ -156,18 +158,18 @@ public class RequirementService {
     @Transactional
     public void deleteRequirement(UUID requirementId) {
         Requirement requirement = requirementRepository.findById(requirementId)
-                .orElseThrow(() -> new RuntimeException("Requirement not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(ServiceConstants.REQUIREMENT_NOT_FOUND));
 
         if (requirement.isDeleted()) {
-            throw new RuntimeException("Requirement already deleted");
+            throw new IllegalStateException("Requirement already deleted");
         }
 
         User currentUser = authService.getCurrentUser();
         ProjectMember member = projectMemberRepository.findByProjectIdAndUserId(requirement.getProject().getId(), currentUser.getId())
-                .orElseThrow(() -> new RuntimeException("Access denied"));
+                .orElseThrow(AccessDeniedException::new);
 
         if (member.getRole() == ProjectRole.VIEWER) {
-            throw new RuntimeException("Editor access required");
+            throw new AccessDeniedException("Editor access required");
         }
 
         // Soft delete: mark as deleted but preserve the record and ID
@@ -188,17 +190,17 @@ public class RequirementService {
     @Transactional(readOnly = true)
     public List<Map<String, Object>> getRequirementHistory(UUID requirementId) {
         Requirement requirement = requirementRepository.findById(requirementId)
-                .orElseThrow(() -> new RuntimeException("Requirement not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(ServiceConstants.REQUIREMENT_NOT_FOUND));
 
         User currentUser = authService.getCurrentUser();
         if (!projectMemberRepository.existsByProjectIdAndUserId(requirement.getProject().getId(), currentUser.getId())) {
-            throw new RuntimeException("Access denied");
+            throw new AccessDeniedException("Access denied");
         }
 
         return historyRepository.findByRequirementIdOrderByChangedAtDesc(requirementId)
                 .stream()
                 .map(this::historyToMap)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
@@ -218,7 +220,7 @@ public class RequirementService {
         // Find the max number for this prefix
         int maxNumber = allRequirements.stream()
                 .filter(req -> req.getLevel() == level)
-                .map(req -> req.getReqId())
+                .map(Requirement::getReqId)
                 .filter(id -> id.startsWith(prefix + "-"))
                 .map(id -> {
                     try {

@@ -24,7 +24,10 @@ public class CreateRequirementRequest {
 
     private Map<String, Object> customFields = new HashMap<>();
 
-    public CreateRequirementRequest() {}
+    // Default constructor required for JSON deserialization
+    public CreateRequirementRequest() {
+        // Empty constructor for Jackson deserialization
+    }
 
     // Getters and Setters
     public String getTitle() {
