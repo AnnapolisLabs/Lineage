@@ -19,24 +19,6 @@ build-backend:
     - if: $CI_COMMIT_BRANCH == 'main'
     - if: $CI_COMMIT_BRANCH == 'develop'
 
-build-frontend:
-  image: node:20
-  stage: build-gradle
-  script:
-    - cd frontend
-    - npm ci
-    - npm run test:coverage
-  artifacts:
-    paths:
-      - frontend/coverage/
-      - frontend/test-report.xml
-    expire_in: 1 hour
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-    - if: $CI_COMMIT_BRANCH == 'master'
-    - if: $CI_COMMIT_BRANCH == 'main'
-    - if: $CI_COMMIT_BRANCH == 'develop'
-
 sonar-scan:
   image:
     name: sonarsource/sonar-scanner-cli:11
@@ -44,7 +26,6 @@ sonar-scan:
   stage: sonar
   dependencies:
     - build-backend
-    - build-frontend
   variables:
     SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
     GIT_DEPTH: "0"
