@@ -46,7 +46,7 @@ sonar-frontend:
       - sonar-scanner/
 
   before_script:
-    - find "${SONAR_USER_HOME}/cache" -type f -name "java" 2>/dev/null | xargs -r chmod +x || true
+    - find "${SONAR_USER_HOME}/cache" -type d -name "bin" -exec chmod -R +x {} + 2>/dev/null || true
 
   script:
     - sonar-scanner -Dsonar.host.url="${SONAR_HOST_URL}"
