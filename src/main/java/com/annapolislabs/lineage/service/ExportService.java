@@ -3,6 +3,8 @@ package com.annapolislabs.lineage.service;
 import com.annapolislabs.lineage.entity.Project;
 import com.annapolislabs.lineage.entity.Requirement;
 import com.annapolislabs.lineage.entity.User;
+import com.annapolislabs.lineage.exception.ExportException;
+import com.annapolislabs.lineage.exception.ResourceNotFoundException;
 import com.annapolislabs.lineage.repository.ProjectMemberRepository;
 import com.annapolislabs.lineage.repository.ProjectRepository;
 import com.annapolislabs.lineage.repository.RequirementRepository;
@@ -61,7 +63,7 @@ public class ExportService {
     public String exportToJson(UUID projectId) {
         checkAccess(projectId);
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Project not found"));
         List<Requirement> requirements = requirementRepository.findByProjectId(projectId);
 
         Map<String, Object> export = new HashMap<>();
@@ -89,7 +91,7 @@ public class ExportService {
         try {
             return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(export);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to generate JSON", e);
+            throw new ExportException("Failed to generate JSON", e);
         }
     }
 
@@ -97,7 +99,7 @@ public class ExportService {
     public String exportToMarkdown(UUID projectId) {
         checkAccess(projectId);
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Project not found"));
         List<Requirement> requirements = requirementRepository.findByProjectIdAndParentIsNullAndDeletedAtIsNull(projectId);
 
         StringBuilder md = new StringBuilder();
@@ -136,7 +138,7 @@ public class ExportService {
     private void checkAccess(UUID projectId) {
         User currentUser = authService.getCurrentUser();
         if (!projectMemberRepository.existsByProjectIdAndUserId(projectId, currentUser.getId())) {
-            throw new RuntimeException("Access denied");
+            throw new ExportException("Access denied");
         }
     }
 

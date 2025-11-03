@@ -41,24 +41,27 @@
           <h2 class="text-xl font-semibold text-white mb-6">General Information</h2>
           <div class="space-y-4">
             <div>
-              <label class="block text-sm font-medium text-annapolis-gray-300 mb-2">Project Name</label>
+              <label for="settings-name" class="block text-sm font-medium text-annapolis-gray-300 mb-2">Project Name</label>
               <input
+                id="settings-name"
                 v-model="projectData.name"
                 type="text"
                 class="w-full px-4 py-3 bg-annapolis-navy/50 border border-annapolis-teal/30 rounded-lg text-white placeholder-annapolis-gray-400 focus:outline-none focus:ring-2 focus:ring-annapolis-teal focus:border-transparent transition-all"
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-annapolis-gray-300 mb-2">Description</label>
+              <label for="settings-description" class="block text-sm font-medium text-annapolis-gray-300 mb-2">Description</label>
               <textarea
+                id="settings-description"
                 v-model="projectData.description"
                 rows="3"
                 class="w-full px-4 py-3 bg-annapolis-navy/50 border border-annapolis-teal/30 rounded-lg text-white placeholder-annapolis-gray-400 focus:outline-none focus:ring-2 focus:ring-annapolis-teal focus:border-transparent transition-all"
               ></textarea>
             </div>
             <div>
-              <label class="block text-sm font-medium text-annapolis-gray-300 mb-2">Project Key</label>
+              <label for="settings-key" class="block text-sm font-medium text-annapolis-gray-300 mb-2">Project Key</label>
               <input
+                id="settings-key"
                 v-model="projectData.projectKey"
                 type="text"
                 disabled
@@ -100,8 +103,9 @@
             >
               <div class="flex-1 grid grid-cols-2 gap-4">
                 <div>
-                  <label class="block text-xs font-medium text-annapolis-gray-400 mb-1">Level</label>
+                  <label :for="`level-${index}`" class="block text-xs font-medium text-annapolis-gray-400 mb-1">Level</label>
                   <input
+                    :id="`level-${index}`"
                     v-model.number="entry.level"
                     type="number"
                     min="1"
@@ -109,8 +113,9 @@
                   />
                 </div>
                 <div>
-                  <label class="block text-xs font-medium text-annapolis-gray-400 mb-1">Prefix</label>
+                  <label :for="`prefix-${index}`" class="block text-xs font-medium text-annapolis-gray-400 mb-1">Prefix</label>
                   <input
+                    :id="`prefix-${index}`"
                     v-model="entry.prefix"
                     type="text"
                     placeholder="e.g., CR, REN, SYS"
@@ -208,7 +213,7 @@ async function loadProject() {
     console.log('Loading level prefixes:', project.value.levelPrefixes)
     levelPrefixEntries.value = Object.entries(project.value.levelPrefixes || {})
       .map(([level, prefix]) => ({
-        level: parseInt(level),
+        level: Number.parseInt(level),
         prefix
       }))
       .sort((a, b) => a.level - b.level)

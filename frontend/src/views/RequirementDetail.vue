@@ -262,10 +262,11 @@
           </p>
         </div>
         <div>
-          <label class="block text-sm font-medium text-annapolis-gray-300 mb-2">
+          <label for="link-requirement" class="block text-sm font-medium text-annapolis-gray-300 mb-2">
             Link to another requirement (Level {{ requirement?.level }})
           </label>
           <select
+            id="link-requirement"
             v-model="selectedRequirementToLink"
             class="w-full px-4 py-2 bg-annapolis-navy border border-annapolis-gray-600 rounded-lg text-white focus:ring-2 focus:ring-annapolis-teal focus:border-transparent"
           >
@@ -456,6 +457,7 @@ import RequirementModal from '@/components/requirements/RequirementModal.vue'
 import RequirementForm from '@/components/requirements/RequirementForm.vue'
 import RequirementTreeView from '@/components/RequirementTreeView.vue'
 import RequirementHistory from '@/components/requirements/RequirementHistory.vue'
+import { compareReqIds } from '@/utils/requirementSorting'
 
 const route = useRoute()
 const router = useRouter()
@@ -765,41 +767,13 @@ function expandParentNodes(reqId: string) {
   }
 
   // Also expand nodes with outgoing links to this requirement
-  allRequirementLinks.value.forEach(link => {
+  for (const link of allRequirementLinks.value) {
     if (link.requirement.id === reqId && link.direction === 'outgoing') {
       expandedNodes.value.add(link.sourceRequirementId)
     }
-  })
-}
-
-function compareReqIds(reqId1: string, reqId2: string): number {
-  try {
-    // Extract numeric portion after the last dash
-    const num1 = extractNumber(reqId1)
-    const num2 = extractNumber(reqId2)
-
-    // If numbers are different, sort by number
-    if (num1 !== num2) {
-      return num1 - num2
-    }
-
-    // If numbers are same, sort by full string (handles different prefixes)
-    return reqId1.localeCompare(reqId2)
-  } catch (e) {
-    // Fallback to string comparison if parsing fails
-    return reqId1.localeCompare(reqId2)
   }
 }
 
-function extractNumber(reqId: string): number {
-  // Find the last dash and extract the number after it
-  const lastDash = reqId.lastIndexOf('-')
-  if (lastDash >= 0 && lastDash < reqId.length - 1) {
-    const numPart = reqId.substring(lastDash + 1)
-    return parseInt(numPart, 10)
-  }
-  return 0
-}
 </script>
 
 <style scoped>

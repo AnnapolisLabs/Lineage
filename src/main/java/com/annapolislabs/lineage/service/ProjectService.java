@@ -1,5 +1,6 @@
 package com.annapolislabs.lineage.service;
 
+import com.annapolislabs.lineage.common.ServiceConstants;
 import com.annapolislabs.lineage.dto.request.CreateProjectRequest;
 import com.annapolislabs.lineage.dto.response.ProjectResponse;
 import com.annapolislabs.lineage.entity.Project;
@@ -7,6 +8,9 @@ import com.annapolislabs.lineage.entity.ProjectMember;
 import com.annapolislabs.lineage.entity.ProjectRole;
 import com.annapolislabs.lineage.entity.Requirement;
 import com.annapolislabs.lineage.entity.User;
+import com.annapolislabs.lineage.exception.AccessDeniedException;
+import com.annapolislabs.lineage.exception.DuplicateKeyException;
+import com.annapolislabs.lineage.exception.ResourceNotFoundException;
 import com.annapolislabs.lineage.repository.ProjectMemberRepository;
 import com.annapolislabs.lineage.repository.ProjectRepository;
 import com.annapolislabs.lineage.repository.RequirementRepository;
@@ -16,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class ProjectService {
@@ -42,7 +45,7 @@ public class ProjectService {
         User currentUser = authService.getCurrentUser();
 
         if (projectRepository.existsByProjectKey(request.getProjectKey())) {
-            throw new RuntimeException("Project key already exists: " + request.getProjectKey());
+            throw new DuplicateKeyException("Project key already exists: " + request.getProjectKey());
         }
 
         Project project = new Project(
@@ -67,18 +70,18 @@ public class ProjectService {
         return projectRepository.findAllByUserId(currentUser.getId())
                 .stream()
                 .map(ProjectResponse::new)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Transactional(readOnly = true)
     public ProjectResponse getProjectById(UUID projectId) {
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(ServiceConstants.PROJECT_NOT_FOUND));
 
         // Check if user has access
         User currentUser = authService.getCurrentUser();
         if (!projectMemberRepository.existsByProjectIdAndUserId(projectId, currentUser.getId())) {
-            throw new RuntimeException("Access denied");
+            throw new AccessDeniedException();
         }
 
         return new ProjectResponse(project);
@@ -87,15 +90,15 @@ public class ProjectService {
     @Transactional
     public ProjectResponse updateProject(UUID projectId, CreateProjectRequest request) {
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(ServiceConstants.PROJECT_NOT_FOUND));
 
         // Check if user has admin access
         User currentUser = authService.getCurrentUser();
         ProjectMember member = projectMemberRepository.findByProjectIdAndUserId(projectId, currentUser.getId())
-                .orElseThrow(() -> new RuntimeException("Access denied"));
+                .orElseThrow(() -> new AccessDeniedException("Access denied"));
 
         if (member.getRole() != ProjectRole.ADMIN) {
-            throw new RuntimeException("Admin access required");
+            throw new AccessDeniedException("Admin access required");
         }
 
         project.setName(request.getName());
@@ -110,15 +113,15 @@ public class ProjectService {
     @Transactional
     public void deleteProject(UUID projectId) {
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(ServiceConstants.PROJECT_NOT_FOUND));
 
         // Check if user has admin access
         User currentUser = authService.getCurrentUser();
         ProjectMember member = projectMemberRepository.findByProjectIdAndUserId(projectId, currentUser.getId())
-                .orElseThrow(() -> new RuntimeException("Access denied"));
+                .orElseThrow(() -> new AccessDeniedException("Access denied"));
 
         if (member.getRole() != ProjectRole.ADMIN) {
-            throw new RuntimeException("Admin access required");
+            throw new AccessDeniedException("Admin access required");
         }
 
         // Delete all requirements associated with this project first

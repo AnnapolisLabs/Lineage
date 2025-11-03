@@ -3,7 +3,7 @@
     <div class="space-y-5">
       <!-- Parent Info (if provided) -->
       <div v-if="parentRequirement">
-        <label class="block text-sm font-medium text-annapolis-gray-300 mb-2">Parent</label>
+        <div class="block text-sm font-medium text-annapolis-gray-300 mb-2">Parent</div>
         <div class="px-4 py-3 bg-annapolis-navy/50 border border-annapolis-teal/30 rounded-lg text-annapolis-teal">
           {{ parentRequirement.reqId }} - {{ parentRequirement.title }}
         </div>
@@ -11,8 +11,9 @@
 
       <!-- Title -->
       <div>
-        <label class="block text-sm font-medium text-annapolis-gray-300 mb-2">Title *</label>
+        <label for="req-title" class="block text-sm font-medium text-annapolis-gray-300 mb-2">Title *</label>
         <input
+          id="req-title"
           :value="modelValue.title"
           @input="updateField('title', ($event.target as HTMLInputElement).value)"
           type="text"
@@ -23,8 +24,9 @@
 
       <!-- Description -->
       <div>
-        <label class="block text-sm font-medium text-annapolis-gray-300 mb-2">Description</label>
+        <label for="req-description" class="block text-sm font-medium text-annapolis-gray-300 mb-2">Description</label>
         <textarea
+          id="req-description"
           :value="modelValue.description"
           @input="updateField('description', ($event.target as HTMLTextAreaElement).value)"
           rows="5"
@@ -34,8 +36,9 @@
 
       <!-- Section -->
       <div>
-        <label class="block text-sm font-medium text-annapolis-gray-300 mb-2">Section (Optional)</label>
+        <label for="req-section" class="block text-sm font-medium text-annapolis-gray-300 mb-2">Section (Optional)</label>
         <input
+          id="req-section"
           :value="modelValue.section"
           @input="updateField('section', ($event.target as HTMLInputElement).value)"
           type="text"
@@ -48,8 +51,9 @@
       <!-- Status and Priority -->
       <div class="grid grid-cols-2 gap-5">
         <div>
-          <label class="block text-sm font-medium text-annapolis-gray-300 mb-2">Status</label>
+          <label for="req-status" class="block text-sm font-medium text-annapolis-gray-300 mb-2">Status</label>
           <select
+            id="req-status"
             :value="modelValue.status"
             @change="updateField('status', ($event.target as HTMLSelectElement).value)"
             class="w-full px-4 py-3 bg-annapolis-navy/50 border border-annapolis-teal/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-annapolis-teal focus:border-transparent transition-all"
@@ -61,8 +65,9 @@
           </select>
         </div>
         <div>
-          <label class="block text-sm font-medium text-annapolis-gray-300 mb-2">Priority</label>
+          <label for="req-priority" class="block text-sm font-medium text-annapolis-gray-300 mb-2">Priority</label>
           <select
+            id="req-priority"
             :value="modelValue.priority"
             @change="updateField('priority', ($event.target as HTMLSelectElement).value)"
             class="w-full px-4 py-3 bg-annapolis-navy/50 border border-annapolis-teal/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-annapolis-teal focus:border-transparent transition-all"

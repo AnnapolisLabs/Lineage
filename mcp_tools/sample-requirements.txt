@@ -1,0 +1,26 @@
+Customer Requirements from Interview 2025-01-15
+
+Authentication & Security:
+1. The system must authenticate users securely with email and password
+2. High priority: Support OAuth2 integration with Google and GitHub
+3. Password reset functionality via email is required
+4. Critical: Lock accounts after 5 failed login attempts
+5. Should implement 2FA for admin accounts
+6. All authentication attempts must be logged for security audit
+
+User Management:
+- Admin users need to manage user accounts
+- Users should be able to update their profile information
+- Email verification is required for new accounts
+- Support for role-based access control (Admin, Editor, Viewer)
+
+Data Requirements:
+- Critical: All data must be encrypted at rest
+- High priority: Regular automated backups
+- Must support PostgreSQL database
+- Data export to CSV and JSON formats needed
+
+Performance:
+- System should handle 1000 concurrent users
+- Page load time must be under 2 seconds
+- API response time should be under 500ms

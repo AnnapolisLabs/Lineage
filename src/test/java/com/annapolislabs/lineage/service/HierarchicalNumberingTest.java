@@ -319,15 +319,15 @@ class HierarchicalNumberingTest {
         req1.setId(UUID.randomUUID());
         req1.setLevel(1);
 
-        Requirement req1_1 = new Requirement(testProject, "REQ-L2-001", "Req 1.1", "Req 1.1", testUser);
-        req1_1.setId(UUID.randomUUID());
-        req1_1.setLevel(2);
-        req1_1.setParent(req1);
+        Requirement req11 = new Requirement(testProject, "REQ-L2-001", "Req 1.1", "Req 1.1", testUser);
+        req11.setId(UUID.randomUUID());
+        req11.setLevel(2);
+        req11.setParent(req1);
 
-        Requirement req1_2 = new Requirement(testProject, "REQ-L2-002", "Req 1.2", "Req 1.2", testUser);
-        req1_2.setId(UUID.randomUUID());
-        req1_2.setLevel(2);
-        req1_2.setParent(req1);
+        Requirement req12 = new Requirement(testProject, "REQ-L2-002", "Req 1.2", "Req 1.2", testUser);
+        req12.setId(UUID.randomUUID());
+        req12.setLevel(2);
+        req12.setParent(req1);
 
         Requirement req2 = new Requirement(testProject, "REQ-L1-002", "Req 2", "Req 2", testUser);
         req2.setId(UUID.randomUUID());
@@ -345,7 +345,7 @@ class HierarchicalNumberingTest {
                 .thenReturn(Optional.of(testMember));
         when(projectRepository.findById(testProject.getId())).thenReturn(Optional.of(testProject));
         when(requirementRepository.findByProjectId(testProject.getId()))
-                .thenReturn(Arrays.asList(req1, req1_1, req1_2, req2));
+                .thenReturn(Arrays.asList(req1, req11, req12, req2));
         when(requirementRepository.findById(req2.getId())).thenReturn(Optional.of(req2));
         when(historyRepository.save(any(RequirementHistory.class))).thenReturn(new RequirementHistory());
         when(linkRepository.save(any(RequirementLink.class))).thenReturn(new RequirementLink());

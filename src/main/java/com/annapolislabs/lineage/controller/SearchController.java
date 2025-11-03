@@ -1,9 +1,9 @@
 package com.annapolislabs.lineage.controller;
 
 import com.annapolislabs.lineage.dto.response.RequirementResponse;
-import com.annapolislabs.lineage.entity.ProjectMember;
 import com.annapolislabs.lineage.entity.Requirement;
 import com.annapolislabs.lineage.entity.User;
+import com.annapolislabs.lineage.exception.SearchException;
 import com.annapolislabs.lineage.repository.ProjectMemberRepository;
 import com.annapolislabs.lineage.repository.RequirementRepository;
 import com.annapolislabs.lineage.service.AuthService;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/projects/{projectId}/search")
@@ -41,7 +40,7 @@ public class SearchController {
 
         User currentUser = authService.getCurrentUser();
         if (!projectMemberRepository.existsByProjectIdAndUserId(projectId, currentUser.getId())) {
-            throw new RuntimeException("Access denied");
+            throw new SearchException("Access denied");
         }
 
         List<Requirement> results;
@@ -54,12 +53,12 @@ public class SearchController {
             if (status != null) {
                 results = results.stream()
                         .filter(r -> r.getStatus().equals(status))
-                        .collect(Collectors.toList());
+                        .toList();
             }
             if (priority != null) {
                 results = results.stream()
                         .filter(r -> r.getPriority().equals(priority))
-                        .collect(Collectors.toList());
+                        .toList();
             }
         } else {
             // Filter-only search
@@ -69,7 +68,7 @@ public class SearchController {
         return ResponseEntity.ok(
                 results.stream()
                         .map(RequirementResponse::new)
-                        .collect(Collectors.toList())
+                        .toList()
         );
     }
 }

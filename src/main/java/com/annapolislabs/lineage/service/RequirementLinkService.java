@@ -1,15 +1,18 @@
 package com.annapolislabs.lineage.service;
 
+import com.annapolislabs.lineage.common.ServiceConstants;
 import com.annapolislabs.lineage.dto.request.CreateLinkRequest;
 import com.annapolislabs.lineage.dto.response.RequirementResponse;
 import com.annapolislabs.lineage.entity.*;
+import com.annapolislabs.lineage.exception.AccessDeniedException;
+import com.annapolislabs.lineage.exception.InvalidLinkException;
+import com.annapolislabs.lineage.exception.ResourceNotFoundException;
 import com.annapolislabs.lineage.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class RequirementLinkService {
@@ -44,15 +47,15 @@ public class RequirementLinkService {
 
         // Check project access
         ProjectMember member = projectMemberRepository.findByProjectIdAndUserId(fromReq.getProject().getId(), currentUser.getId())
-                .orElseThrow(() -> new RuntimeException("Access denied"));
+                .orElseThrow(AccessDeniedException::new);
 
         if (member.getRole() == ProjectRole.VIEWER) {
-            throw new RuntimeException("Editor access required");
+            throw new InvalidLinkException("Editor access required");
         }
 
         // Validate requirements are not on the same level
         if (fromReq.getLevel().equals(toReq.getLevel())) {
-            throw new RuntimeException("Cannot link requirements on the same level. Links must be between different hierarchical levels.");
+            throw new InvalidLinkException("Cannot link requirements on the same level. Links must be between different hierarchical levels.");
         }
 
         // Check if link already exists (in either direction)
@@ -66,7 +69,7 @@ public class RequirementLinkService {
                 });
 
         if (linkExists) {
-            throw new RuntimeException("Link already exists");
+            throw new InvalidLinkException("Link already exists");
         }
 
         RequirementLink link = new RequirementLink(fromReq, toReq, currentUser);
@@ -86,11 +89,11 @@ public class RequirementLinkService {
     @Transactional(readOnly = true)
     public List<Map<String, Object>> getAllLinksForRequirement(UUID requirementId) {
         Requirement requirement = requirementRepository.findById(requirementId)
-                .orElseThrow(() -> new RuntimeException("Requirement not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(ServiceConstants.REQUIREMENT_NOT_FOUND));
 
         User currentUser = authService.getCurrentUser();
         if (!projectMemberRepository.existsByProjectIdAndUserId(requirement.getProject().getId(), currentUser.getId())) {
-            throw new RuntimeException("Access denied");
+            throw new InvalidLinkException("Access denied");
         }
 
         List<RequirementLink> links = linkRepository.findAllLinksForRequirement(requirementId);
@@ -131,15 +134,15 @@ public class RequirementLinkService {
     @Transactional
     public void deleteLink(UUID linkId) {
         RequirementLink link = linkRepository.findById(linkId)
-                .orElseThrow(() -> new RuntimeException("Link not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(ServiceConstants.LINK_NOT_FOUND));
 
         User currentUser = authService.getCurrentUser();
         ProjectMember member = projectMemberRepository.findByProjectIdAndUserId(
                 link.getFromRequirement().getProject().getId(), currentUser.getId())
-                .orElseThrow(() -> new RuntimeException("Access denied"));
+                .orElseThrow(AccessDeniedException::new);
 
         if (member.getRole() == ProjectRole.VIEWER) {
-            throw new RuntimeException("Editor access required");
+            throw new InvalidLinkException("Editor access required");
         }
 
         // Create history entries before deleting
