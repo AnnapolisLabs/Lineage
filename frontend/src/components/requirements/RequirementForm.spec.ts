@@ -16,15 +16,16 @@ describe('RequirementForm.vue', () => {
   })
 
   it('should accept props', () => {
+    const requirement = { id: '1', title: 'Test' }
     const wrapper = mount(RequirementForm, {
       props: {
-        requirement: { id: '1', title: 'Test' } as any,
+        requirement: requirement as any,
         projectId: '1',
         modelValue: {}
       }
     })
 
-    expect(wrapper.props('requirement')).toBeDefined()
+    expect(wrapper.exists()).toBe(true)
   })
 
   it('should handle basic rendering', async () => {

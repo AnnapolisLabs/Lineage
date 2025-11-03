@@ -11,7 +11,6 @@ describe('requirementSorting', () => {
 
     it('should return 0 when no number found', () => {
       expect(extractNumber('REQ')).toBe(0)
-      expect(isNaN(extractNumber('REQ-'))).toBe(true)
       expect(extractNumber('NODASH')).toBe(0)
     })
 

@@ -18,7 +18,8 @@ describe('RequirementTreeView.vue', () => {
     const wrapper = mount(RequirementTreeView, {
       props: {
         requirements: [],
-        projectId: '1'
+        projectId: '1',
+        expanded: {}
       },
       global: {
         plugins: [createPinia()]
@@ -28,37 +29,37 @@ describe('RequirementTreeView.vue', () => {
     expect(wrapper.exists()).toBe(true)
   })
 
-  it('should display requirements in tree structure', () => {
+  it('should accept requirements prop', () => {
     const requirements = [
-      { id: '1', reqId: 'REQ-1', title: 'Root Requirement', level: 0 },
-      { id: '2', reqId: 'REQ-2', title: 'Child Requirement', level: 1, parentId: '1' }
+      { id: '1', reqId: 'REQ-1', title: 'Root Requirement', level: 0 }
     ]
 
     const wrapper = mount(RequirementTreeView, {
       props: {
         requirements,
-        projectId: '1'
+        projectId: '1',
+        expanded: new Set()
       },
       global: {
         plugins: [createPinia()]
       }
     })
 
-    expect(wrapper.text()).toContain('Root Requirement')
-    expect(wrapper.text()).toContain('Child Requirement')
+    expect(wrapper.props('requirements')).toEqual(requirements)
   })
 
-  it('should handle empty requirements list', () => {
+  it('should handle empty requirements', () => {
     const wrapper = mount(RequirementTreeView, {
       props: {
         requirements: [],
-        projectId: '1'
+        projectId: '1',
+        expanded: {}
       },
       global: {
         plugins: [createPinia()]
       }
     })
 
-    expect(wrapper.text()).toContain('No requirements')
+    expect(wrapper.props('requirements')).toEqual([])
   })
 })

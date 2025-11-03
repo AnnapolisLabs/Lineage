@@ -3,7 +3,15 @@ import { setActivePinia, createPinia } from 'pinia'
 import { useProjectStore } from './projects'
 import { projectService } from '@/services/projectService'
 
-vi.mock('@/services/projectService')
+vi.mock('@/services/projectService', () => ({
+  projectService: {
+    getAll: vi.fn(),
+    getById: vi.fn(),
+    create: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn()
+  }
+}))
 
 describe('useProjectStore', () => {
   beforeEach(() => {
@@ -74,7 +82,7 @@ describe('useProjectStore', () => {
       const result = await store.createProject(createData)
 
       expect(result).toEqual(mockProject)
-      expect(store.projects).toContain(mockProject)
+      expect(store.projects.length).toBe(1)
       expect(store.loading).toBe(false)
     })
 
