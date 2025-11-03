@@ -168,4 +168,100 @@ class ProjectServiceTest {
         assertTrue(exception.getMessage().contains("Admin access required"));
         verify(projectRepository, never()).delete(any(Project.class));
     }
+
+    @Test
+    void updateProject_Success() {
+        // Arrange
+        CreateProjectRequest request = new CreateProjectRequest("Updated Project", "Updated Description", "TEST");
+        request.setLevelPrefixes(new java.util.HashMap<>());
+        
+        ProjectMember member = new ProjectMember(testProject, testUser, ProjectRole.ADMIN);
+        when(projectRepository.findById(testProject.getId())).thenReturn(Optional.of(testProject));
+        when(authService.getCurrentUser()).thenReturn(testUser);
+        when(projectMemberRepository.findByProjectIdAndUserId(testProject.getId(), testUser.getId()))
+                .thenReturn(Optional.of(member));
+        when(projectRepository.save(any(Project.class))).thenReturn(testProject);
+
+        // Act
+        ProjectResponse response = projectService.updateProject(testProject.getId(), request);
+
+        // Assert
+        assertNotNull(response);
+        verify(projectRepository).save(any(Project.class));
+    }
+
+    @Test
+    void updateProject_NotAdmin_ThrowsException() {
+        // Arrange
+        CreateProjectRequest request = new CreateProjectRequest("Updated Project", "Updated Description", "TEST");
+        ProjectMember member = new ProjectMember(testProject, testUser, ProjectRole.EDITOR);
+        
+        when(projectRepository.findById(testProject.getId())).thenReturn(Optional.of(testProject));
+        when(authService.getCurrentUser()).thenReturn(testUser);
+        when(projectMemberRepository.findByProjectIdAndUserId(testProject.getId(), testUser.getId()))
+                .thenReturn(Optional.of(member));
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            projectService.updateProject(testProject.getId(), request);
+        });
+        assertTrue(exception.getMessage().contains("Admin access required"));
+        verify(projectRepository, never()).save(any(Project.class));
+    }
+
+    @Test
+    void updateProject_NoAccess_ThrowsException() {
+        // Arrange
+        CreateProjectRequest request = new CreateProjectRequest("Updated Project", "Updated Description", "TEST");
+        
+        when(projectRepository.findById(testProject.getId())).thenReturn(Optional.of(testProject));
+        when(authService.getCurrentUser()).thenReturn(testUser);
+        when(projectMemberRepository.findByProjectIdAndUserId(testProject.getId(), testUser.getId()))
+                .thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(RuntimeException.class, () -> {
+            projectService.updateProject(testProject.getId(), request);
+        });
+        verify(projectRepository, never()).save(any(Project.class));
+    }
+
+    @Test
+    void getProjectById_NotFound_ThrowsException() {
+        // Arrange
+        UUID randomId = UUID.randomUUID();
+        when(projectRepository.findById(randomId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(RuntimeException.class, () -> {
+            projectService.getProjectById(randomId);
+        });
+    }
+
+    @Test
+    void deleteProject_NotFound_ThrowsException() {
+        // Arrange
+        UUID randomId = UUID.randomUUID();
+        when(projectRepository.findById(randomId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(RuntimeException.class, () -> {
+            projectService.deleteProject(randomId);
+        });
+    }
+
+    @Test
+    void deleteProject_NoAccess_ThrowsException() {
+        // Arrange
+        when(projectRepository.findById(testProject.getId())).thenReturn(Optional.of(testProject));
+        when(authService.getCurrentUser()).thenReturn(testUser);
+        when(projectMemberRepository.findByProjectIdAndUserId(testProject.getId(), testUser.getId()))
+                .thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(RuntimeException.class, () -> {
+            projectService.deleteProject(testProject.getId());
+        });
+        verify(projectRepository, never()).delete(any(Project.class));
+    }
 }
