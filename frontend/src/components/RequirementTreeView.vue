@@ -104,8 +104,12 @@ const rootRequirements = computed(() => {
 
     // Combine both and remove duplicates
     const allChildrenMap = new Map<string, Requirement>()
-    childrenViaParent.forEach(req => allChildrenMap.set(req.id, req))
-    linkedChildren.forEach(req => allChildrenMap.set(req.id, req))
+    for (const req of childrenViaParent) {
+      allChildrenMap.set(req.id, req)
+    }
+    for (const req of linkedChildren) {
+      allChildrenMap.set(req.id, req)
+    }
 
     results = Array.from(allChildrenMap.values())
   }
@@ -127,8 +131,9 @@ function compareReqIds(reqId1: string, reqId2: string): number {
 
     // If numbers are same, sort by full string (handles different prefixes)
     return reqId1.localeCompare(reqId2)
-  } catch (e) {
+  } catch (e: any) {
     // Fallback to string comparison if parsing fails
+    console.debug('Error comparing requirement IDs:', e.message)
     return reqId1.localeCompare(reqId2)
   }
 }
@@ -138,7 +143,7 @@ function extractNumber(reqId: string): number {
   const lastDash = reqId.lastIndexOf('-')
   if (lastDash >= 0 && lastDash < reqId.length - 1) {
     const numPart = reqId.substring(lastDash + 1)
-    return parseInt(numPart, 10)
+    return Number.parseInt(numPart, 10)
   }
   return 0
 }

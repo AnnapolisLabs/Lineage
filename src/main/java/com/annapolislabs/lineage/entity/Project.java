@@ -32,7 +32,7 @@ public class Project {
 
     @Type(JsonBinaryType.class)
     @Column(name = "level_prefixes", columnDefinition = "jsonb")
-    private Map<String, String> levelPrefixes = new HashMap<>();  // e.g., {"1": "CR", "2": "REN", "3": "SYS"}
+    private Map<String, String> levelPrefixes = new HashMap<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by")

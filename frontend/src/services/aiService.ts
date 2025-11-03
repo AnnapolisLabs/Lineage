@@ -22,7 +22,7 @@ export interface AIMessageResponse {
 }
 
 export class AIService {
-  private apiUrl: string
+  private readonly apiUrl: string
 
   constructor() {
     this.apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080'

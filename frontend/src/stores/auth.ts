@@ -29,7 +29,9 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.setItem('user_id', response.email)
       return true
     } catch (err: any) {
-      error.value = err.response?.data?.message || 'Login failed'
+      const errorMsg = err.response?.data?.message || 'Login failed'
+      error.value = errorMsg
+      console.error('Login error:', errorMsg)
       return false
     } finally {
       loading.value = false
@@ -62,9 +64,10 @@ export const useAuthStore = defineStore('auth', () => {
       if (user.value) {
         localStorage.setItem('user_id', user.value.email)
       }
-    } catch (err) {
+    } catch (err: any) {
       // Token is invalid or expired, clear it
-      console.warn('Token validation failed, logging out')
+      const errorMsg = err.response?.data?.message || 'Token validation failed'
+      console.warn('Token validation failed, logging out:', errorMsg)
       logout()
     }
   }

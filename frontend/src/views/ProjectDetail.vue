@@ -346,8 +346,9 @@
         <form @submit.prevent="handleSaveRequirement">
           <div class="space-y-5">
             <div>
-              <label class="block text-sm font-medium text-annapolis-gray-300 mb-2">Title *</label>
+              <label for="modal-title" class="block text-sm font-medium text-annapolis-gray-300 mb-2">Title *</label>
               <input
+                id="modal-title"
                 v-model="formData.title"
                 type="text"
                 required
@@ -355,16 +356,18 @@
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-annapolis-gray-300 mb-2">Description</label>
+              <label for="modal-description" class="block text-sm font-medium text-annapolis-gray-300 mb-2">Description</label>
               <textarea
+                id="modal-description"
                 v-model="formData.description"
                 rows="5"
                 class="w-full px-4 py-3 bg-annapolis-navy/50 border border-annapolis-teal/30 rounded-lg text-white placeholder-annapolis-gray-400 focus:outline-none focus:ring-2 focus:ring-annapolis-teal focus:border-transparent transition-all"
               ></textarea>
             </div>
             <div>
-              <label class="block text-sm font-medium text-annapolis-gray-300 mb-2">Parent Requirement (Optional)</label>
+              <label for="modal-parent" class="block text-sm font-medium text-annapolis-gray-300 mb-2">Parent Requirement (Optional)</label>
               <select
+                id="modal-parent"
                 v-model="formData.parentId"
                 class="w-full px-4 py-3 bg-annapolis-navy/50 border border-annapolis-teal/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-annapolis-teal focus:border-transparent transition-all"
               >
@@ -380,8 +383,9 @@
               </select>
             </div>
             <div>
-              <label class="block text-sm font-medium text-annapolis-gray-300 mb-2">Section (Optional)</label>
+              <label for="modal-section" class="block text-sm font-medium text-annapolis-gray-300 mb-2">Section (Optional)</label>
               <input
+                id="modal-section"
                 v-model="formData.section"
                 type="text"
                 placeholder="e.g., 1.1.1, 2.3.4"
@@ -391,8 +395,9 @@
             </div>
             <div class="grid grid-cols-2 gap-5">
               <div>
-                <label class="block text-sm font-medium text-annapolis-gray-300 mb-2">Status</label>
+                <label for="modal-status" class="block text-sm font-medium text-annapolis-gray-300 mb-2">Status</label>
                 <select
+                  id="modal-status"
                   v-model="formData.status"
                   class="w-full px-4 py-3 bg-annapolis-navy/50 border border-annapolis-teal/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-annapolis-teal focus:border-transparent transition-all"
                 >
@@ -403,8 +408,9 @@
                 </select>
               </div>
               <div>
-                <label class="block text-sm font-medium text-annapolis-gray-300 mb-2">Priority</label>
+                <label for="modal-priority" class="block text-sm font-medium text-annapolis-gray-300 mb-2">Priority</label>
                 <select
+                  id="modal-priority"
                   v-model="formData.priority"
                   class="w-full px-4 py-3 bg-annapolis-navy/50 border border-annapolis-teal/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-annapolis-teal focus:border-transparent transition-all"
                 >
@@ -442,7 +448,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { projectService, type Project } from '@/services/projectService'
-import { requirementService, type Requirement, type RequirementLink } from '@/services/requirementService'
+import { requirementService, type Requirement } from '@/services/requirementService'
 import RequirementTreeView from '@/components/RequirementTreeView.vue'
 
 const route = useRoute()
@@ -578,8 +584,9 @@ function compareReqIds(reqId1: string, reqId2: string): number {
 
     // If numbers are same, sort by full string (handles different prefixes)
     return reqId1.localeCompare(reqId2)
-  } catch (e) {
+  } catch (e: any) {
     // Fallback to string comparison if parsing fails
+    console.debug('Error comparing requirement IDs:', e.message)
     return reqId1.localeCompare(reqId2)
   }
 }
@@ -589,7 +596,7 @@ function extractNumber(reqId: string): number {
   const lastDash = reqId.lastIndexOf('-')
   if (lastDash >= 0 && lastDash < reqId.length - 1) {
     const numPart = reqId.substring(lastDash + 1)
-    return parseInt(numPart, 10)
+    return Number.parseInt(numPart, 10)
   }
   return 0
 }

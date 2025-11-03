@@ -33,6 +33,9 @@ public class AIAgentService {
     
     private static final Logger logger = LoggerFactory.getLogger(AIAgentService.class);
     private static final int MAX_ITERATIONS = 10;
+    private static final String JSON_FIELD_CONTENT = "content";
+    private static final String JSON_FIELD_MESSAGE = "message";
+    private static final String JSON_FIELD_ARGUMENTS = "arguments";
     private static final String AGENT_SYSTEM_PROMPT = """
             You are an assistant for Lineage Requirements Management. Always respond with valid JSON.
             
@@ -146,7 +149,7 @@ public class AIAgentService {
                 
                 // Handle message to user
                 if (action.message != null && !action.message.isBlank()) {
-                    if (displayMessage.length() > 0) {
+                    if (!displayMessage.isEmpty()) {
                         displayMessage.append("\n\n");
                     }
                     displayMessage.append(action.message);
@@ -155,39 +158,13 @@ public class AIAgentService {
                 // Handle tool execution
                 if (action.tool != null && !action.tool.isBlank()) {
                     logger.info("Executing tool: {}", action.tool);
-
-                    try {
-                        // Execute tool
-                        Object toolResult = executeTool(action.tool, action.arguments, user);
-
-                        // Add tool result to conversation
-                        String toolResultStr = objectMapper.writeValueAsString(toolResult);
-                        conversation.getMessages().add(new ConversationMessage("user",
-                                "Tool " + action.tool + " returned: " + toolResultStr));
-                        conversationRepository.save(conversation);
-
-                        // Continue loop to get LLM's response to tool result
-                        nextInput = null;
-                        iterations++;
-                        continue;
-
-                    } catch (Exception e) {
-                        logger.error("Tool execution failed: {}", e.getMessage(), e);
-
-                        // Add error to conversation
-                        conversation.getMessages().add(new ConversationMessage("user",
-                                "Tool " + action.tool + " failed: " + e.getMessage()));
-                        conversationRepository.save(conversation);
-
-                        // Continue loop to let LLM handle the error
-                        nextInput = null;
-                        iterations++;
-                        continue;
-                    }
+                    handleToolExecution(action, conversation, user);
+                    iterations++;
+                    nextInput = null;
+                } else {
+                    // If no tool, we're done (message was already added above)
+                    break;
                 }
-
-                // If no tool, we're done (message was already added above)
-                break;
             }
             
             if (iterations >= MAX_ITERATIONS) {
@@ -264,7 +241,7 @@ public class AIAgentService {
 
         // Parse response
         JsonNode responseJson = objectMapper.readTree(response.body());
-        String content = responseJson.path("choices").get(0).path("message").path("content").asText();
+        String content = responseJson.path("choices").get(0).path(JSON_FIELD_MESSAGE).path(JSON_FIELD_CONTENT).asText();
 
         logger.debug("LLM content length: {} chars", content.length());
 
@@ -275,6 +252,30 @@ public class AIAgentService {
         return parseAgentResponse(content);
     }
     
+    /**
+     * Handle tool execution and update conversation
+     */
+    private void handleToolExecution(AgentAction action, AIConversation conversation, User user) {
+        try {
+            // Execute tool
+            Object toolResult = executeTool(action.tool, action.arguments, user);
+
+            // Add tool result to conversation
+            String toolResultStr = objectMapper.writeValueAsString(toolResult);
+            conversation.getMessages().add(new ConversationMessage("user",
+                    "Tool " + action.tool + " returned: " + toolResultStr));
+            conversationRepository.save(conversation);
+
+        } catch (Exception e) {
+            logger.error("Tool execution failed: {}", e.getMessage(), e);
+
+            // Add error to conversation
+            conversation.getMessages().add(new ConversationMessage("user",
+                    "Tool " + action.tool + " failed: " + e.getMessage()));
+            conversationRepository.save(conversation);
+        }
+    }
+
     /**
      * Parse LLM response into structured action
      * Strips thinking tags and extracts JSON
@@ -302,11 +303,11 @@ public class AIAgentService {
                 JsonNode parsed = objectMapper.readTree(jsonStr);
 
                 // Validate structure
-                if (parsed.has("tool") && parsed.has("arguments") && parsed.has("message")) {
+                if (parsed.has("tool") && parsed.has(JSON_FIELD_ARGUMENTS) && parsed.has(JSON_FIELD_MESSAGE)) {
                     String tool = parsed.path("tool").isNull() ? null : parsed.path("tool").asText();
-                    Map<String, Object> arguments = parsed.path("arguments").isNull() ? null :
-                            objectMapper.convertValue(parsed.path("arguments"), Map.class);
-                    String message = parsed.path("message").isNull() ? null : parsed.path("message").asText();
+                    Map<String, Object> arguments = parsed.path(JSON_FIELD_ARGUMENTS).isNull() ? null :
+                            objectMapper.convertValue(parsed.path(JSON_FIELD_ARGUMENTS), Map.class);
+                    String message = parsed.path(JSON_FIELD_MESSAGE).isNull() ? null : parsed.path(JSON_FIELD_MESSAGE).asText();
 
                     return new AgentAction(tool, arguments, message);
                 }

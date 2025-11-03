@@ -99,7 +99,7 @@ public class AIAgentController {
                                 .filter(m -> !"system".equals(m.getRole()))
                                 .count()
                 ))
-                .collect(Collectors.toList());
+                .toList();
         
         return ResponseEntity.ok(response);
     }

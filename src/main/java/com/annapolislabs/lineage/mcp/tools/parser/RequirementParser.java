@@ -77,7 +77,7 @@ public class RequirementParser {
         // Check if line starts a requirement
         Matcher reqMatcher = reqPattern.matcher(line);
         if (reqMatcher.matches()) {
-            handleNewRequirement(builder, requirements, reqMatcher, line);
+            handleNewRequirement(builder, requirements, reqMatcher);
             return;
         }
 
@@ -90,7 +90,7 @@ public class RequirementParser {
     }
 
     private void handleNewRequirement(RequirementBuilder builder, List<Map<String, String>> requirements,
-                                      Matcher reqMatcher, String line) {
+                                      Matcher reqMatcher) {
         // Save previous requirement if exists
         builder.addToListIfNotEmpty(requirements);
 

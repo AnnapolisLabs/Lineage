@@ -113,8 +113,9 @@
         <form @submit.prevent="handleCreateProject">
           <div class="space-y-5">
             <div>
-              <label class="block text-sm font-medium text-annapolis-gray-300 mb-2">Project Name *</label>
+              <label for="project-name" class="block text-sm font-medium text-annapolis-gray-300 mb-2">Project Name *</label>
               <input
+                id="project-name"
                 v-model="newProject.name"
                 type="text"
                 required
@@ -123,10 +124,11 @@
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-annapolis-gray-300 mb-2">
+              <label for="project-key" class="block text-sm font-medium text-annapolis-gray-300 mb-2">
                 Project Key * (2-10 uppercase letters)
               </label>
               <input
+                id="project-key"
                 v-model="newProject.projectKey"
                 type="text"
                 required
@@ -138,8 +140,9 @@
               <p class="mt-2 text-xs text-annapolis-gray-400">Used as a prefix for requirement IDs (e.g., PROJ-001)</p>
             </div>
             <div>
-              <label class="block text-sm font-medium text-annapolis-gray-300 mb-2">Description</label>
+              <label for="project-description" class="block text-sm font-medium text-annapolis-gray-300 mb-2">Description</label>
               <textarea
+                id="project-description"
                 v-model="newProject.description"
                 rows="3"
                 class="w-full px-4 py-3 bg-annapolis-navy/50 border border-annapolis-teal/30 rounded-lg text-white placeholder-annapolis-gray-400 focus:outline-none focus:ring-2 focus:ring-annapolis-teal focus:border-transparent transition-all"
@@ -189,10 +192,11 @@
         </div>
 
         <div class="mt-6">
-          <label class="block text-sm font-medium text-annapolis-gray-300 mb-2">
+          <label for="delete-confirm" class="block text-sm font-medium text-annapolis-gray-300 mb-2">
             Type <span class="font-mono font-semibold text-white">{{ projectToDelete?.name }}</span> to confirm:
           </label>
           <input
+            id="delete-confirm"
             v-model="deleteConfirmText"
             type="text"
             class="w-full px-4 py-3 bg-annapolis-navy/50 border border-red-500/30 rounded-lg text-white placeholder-annapolis-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"

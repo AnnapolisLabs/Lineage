@@ -262,10 +262,11 @@
           </p>
         </div>
         <div>
-          <label class="block text-sm font-medium text-annapolis-gray-300 mb-2">
+          <label for="link-requirement" class="block text-sm font-medium text-annapolis-gray-300 mb-2">
             Link to another requirement (Level {{ requirement?.level }})
           </label>
           <select
+            id="link-requirement"
             v-model="selectedRequirementToLink"
             class="w-full px-4 py-2 bg-annapolis-navy border border-annapolis-gray-600 rounded-lg text-white focus:ring-2 focus:ring-annapolis-teal focus:border-transparent"
           >
@@ -765,11 +766,11 @@ function expandParentNodes(reqId: string) {
   }
 
   // Also expand nodes with outgoing links to this requirement
-  allRequirementLinks.value.forEach(link => {
+  for (const link of allRequirementLinks.value) {
     if (link.requirement.id === reqId && link.direction === 'outgoing') {
       expandedNodes.value.add(link.sourceRequirementId)
     }
-  })
+  }
 }
 
 function compareReqIds(reqId1: string, reqId2: string): number {
@@ -785,8 +786,9 @@ function compareReqIds(reqId1: string, reqId2: string): number {
 
     // If numbers are same, sort by full string (handles different prefixes)
     return reqId1.localeCompare(reqId2)
-  } catch (e) {
+  } catch (e: any) {
     // Fallback to string comparison if parsing fails
+    console.debug('Error comparing requirement IDs:', e.message)
     return reqId1.localeCompare(reqId2)
   }
 }
@@ -796,7 +798,7 @@ function extractNumber(reqId: string): number {
   const lastDash = reqId.lastIndexOf('-')
   if (lastDash >= 0 && lastDash < reqId.length - 1) {
     const numPart = reqId.substring(lastDash + 1)
-    return parseInt(numPart, 10)
+    return Number.parseInt(numPart, 10)
   }
   return 0
 }
