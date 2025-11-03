@@ -13,21 +13,25 @@ public class RequirementParser {
 
     private static final String MEDIUM = "MEDIUM";
     private static final String DRAFT = "DRAFT";
+    private static final int MAX_LINE_LENGTH = 10000; // Prevent ReDoS attacks
 
     private final Pattern reqPattern;
     private final Pattern priorityPattern;
     private final Pattern titlePattern;
 
     public RequirementParser() {
+        // Fixed: Replaced greedy (.+) with possessive (.++) to prevent backtracking
         this.reqPattern = Pattern.compile(
-            "^\\s*(?:[-*•]|\\d+[.)]|REQ[-\\d]+:?|shall|must|should|will)\\s*(.+)",
+            "^\\s*+(?:[-*•]|\\d+[.)]|REQ[-\\d]+:?|shall|must|should|will)\\s*+(.++)",
             Pattern.CASE_INSENSITIVE
         );
+        // Fixed: Made optional group atomic to prevent backtracking
         this.priorityPattern = Pattern.compile(
-            "(critical|high|medium|low)(?:\\s+priority)?:?",
+            "(critical|high|medium|low)(?:\\s++priority)?+:?",
             Pattern.CASE_INSENSITIVE
         );
-        this.titlePattern = Pattern.compile("^#{1,3}\\s+(.+)$");
+        // Fixed: Replaced greedy (.+) with possessive (.++) to prevent backtracking
+        this.titlePattern = Pattern.compile("^#{1,3}\\s++(.++)$");
     }
 
     /**
@@ -61,6 +65,11 @@ public class RequirementParser {
     }
 
     private void processLine(String line, RequirementBuilder builder, List<Map<String, String>> requirements) {
+        // Truncate excessively long lines to prevent ReDoS
+        if (line.length() > MAX_LINE_LENGTH) {
+            line = line.substring(0, MAX_LINE_LENGTH);
+        }
+
         // Check for priority indicators
         Matcher priorityMatcher = priorityPattern.matcher(line);
         if (priorityMatcher.find()) {
