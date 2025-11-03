@@ -2,11 +2,15 @@ package com.annapolislabs.lineage.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@Data
+@NoArgsConstructor
 public class CreateRequirementRequest {
 
     @NotBlank(message = "Title is required")
@@ -23,58 +27,4 @@ public class CreateRequirementRequest {
     private UUID parentId;
 
     private Map<String, Object> customFields = new HashMap<>();
-
-    // Default constructor required for JSON deserialization
-    public CreateRequirementRequest() {
-        // Empty constructor for Jackson deserialization
-    }
-
-    // Getters and Setters
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getPriority() {
-        return priority;
-    }
-
-    public void setPriority(String priority) {
-        this.priority = priority;
-    }
-
-    public UUID getParentId() {
-        return parentId;
-    }
-
-    public void setParentId(UUID parentId) {
-        this.parentId = parentId;
-    }
-
-    public Map<String, Object> getCustomFields() {
-        return customFields;
-    }
-
-    public void setCustomFields(Map<String, Object> customFields) {
-        this.customFields = customFields;
-    }
 }

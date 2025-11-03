@@ -2,6 +2,9 @@ package com.annapolislabs.lineage.entity;
 
 import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -15,6 +18,9 @@ import java.util.UUID;
 @Entity
 @Table(name = "projects")
 @EntityListeners(AuditingEntityListener.class)
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Project {
 
     @Id
@@ -45,78 +51,10 @@ public class Project {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    // Constructors
-    public Project() {}
-
     public Project(String name, String description, String projectKey, User createdBy) {
         this.name = name;
         this.description = description;
         this.projectKey = projectKey;
         this.createdBy = createdBy;
-    }
-
-    // Getters and Setters
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getProjectKey() {
-        return projectKey;
-    }
-
-    public void setProjectKey(String projectKey) {
-        this.projectKey = projectKey;
-    }
-
-    public User getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(User createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public Map<String, String> getLevelPrefixes() {
-        return levelPrefixes;
-    }
-
-    public void setLevelPrefixes(Map<String, String> levelPrefixes) {
-        this.levelPrefixes = levelPrefixes;
     }
 }
