@@ -46,7 +46,12 @@ sonar-frontend:
       - sonar-scanner/
 
   before_script:
-    - find "${SONAR_USER_HOME}/cache" -type d -name "bin" -exec chmod -R +x {} + 2>/dev/null || true
+    - |
+      if [ -d "${SONAR_USER_HOME}/cache" ]; then
+        find "${SONAR_USER_HOME}/cache" -type d -name "bin" 2>/dev/null | while read dir; do
+          chmod -R +x "$dir" 2>/dev/null || true
+        done
+      fi
 
   script:
     - sonar-scanner -Dsonar.host.url="${SONAR_HOST_URL}"
