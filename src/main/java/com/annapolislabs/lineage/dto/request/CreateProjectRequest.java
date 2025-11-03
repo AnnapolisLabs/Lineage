@@ -3,9 +3,14 @@ package com.annapolislabs.lineage.dto.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.HashMap;
 import java.util.Map;
 
+@Data
+@NoArgsConstructor
 public class CreateProjectRequest {
 
     @NotBlank(message = "Project name is required")
@@ -21,43 +26,9 @@ public class CreateProjectRequest {
 
     private Map<String, String> levelPrefixes = new HashMap<>();
 
-    public CreateProjectRequest() {}
-
     public CreateProjectRequest(String name, String description, String projectKey) {
         this.name = name;
         this.description = description;
         this.projectKey = projectKey;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getProjectKey() {
-        return projectKey;
-    }
-
-    public void setProjectKey(String projectKey) {
-        this.projectKey = projectKey;
-    }
-
-    public Map<String, String> getLevelPrefixes() {
-        return levelPrefixes;
-    }
-
-    public void setLevelPrefixes(Map<String, String> levelPrefixes) {
-        this.levelPrefixes = levelPrefixes;
     }
 }

@@ -191,4 +191,215 @@ class RequirementServiceTest {
         assertNotNull(historyList);
         assertEquals(1, historyList.size());
     }
+
+    @Test
+    void createRequirement_WithParent_Success() {
+        // Arrange
+        Requirement parentReq = new Requirement(testProject, "TEST-001", "Parent", "Description", testUser);
+        parentReq.setId(UUID.randomUUID());
+        parentReq.setLevel(1);
+
+        CreateRequirementRequest request = new CreateRequirementRequest();
+        request.setTitle("Child Requirement");
+        request.setDescription("Description");
+        request.setStatus("DRAFT");
+        request.setPriority("MEDIUM");
+        request.setParentId(parentReq.getId());
+
+        when(authService.getCurrentUser()).thenReturn(testUser);
+        when(projectMemberRepository.findByProjectIdAndUserId(testProject.getId(), testUser.getId()))
+                .thenReturn(Optional.of(testMember));
+        when(projectRepository.findById(testProject.getId())).thenReturn(Optional.of(testProject));
+        when(requirementRepository.findByProjectId(testProject.getId())).thenReturn(new ArrayList<>());
+        when(requirementRepository.findById(parentReq.getId())).thenReturn(Optional.of(parentReq));
+        when(requirementRepository.save(any(Requirement.class))).thenReturn(testRequirement);
+        when(historyRepository.save(any(RequirementHistory.class))).thenReturn(new RequirementHistory());
+        when(linkRepository.save(any(RequirementLink.class))).thenReturn(new RequirementLink());
+        when(linkRepository.findAllLinksForRequirement(any(UUID.class))).thenReturn(new ArrayList<>());
+
+        // Act
+        RequirementResponse response = requirementService.createRequirement(testProject.getId(), request);
+
+        // Assert
+        assertNotNull(response);
+        verify(requirementRepository).save(any(Requirement.class));
+        verify(linkRepository).save(any(RequirementLink.class));
+    }
+
+    @Test
+    void createRequirement_WithCustomFields_Success() {
+        // Arrange
+        CreateRequirementRequest request = new CreateRequirementRequest();
+        request.setTitle("New Requirement");
+        request.setDescription("Description");
+        request.setStatus("DRAFT");
+        request.setPriority("MEDIUM");
+        Map<String, Object> customFields = new HashMap<>();
+        customFields.put("field1", "value1");
+        request.setCustomFields(customFields);
+
+        when(authService.getCurrentUser()).thenReturn(testUser);
+        when(projectMemberRepository.findByProjectIdAndUserId(testProject.getId(), testUser.getId()))
+                .thenReturn(Optional.of(testMember));
+        when(projectRepository.findById(testProject.getId())).thenReturn(Optional.of(testProject));
+        when(requirementRepository.findByProjectId(testProject.getId())).thenReturn(new ArrayList<>());
+        when(requirementRepository.save(any(Requirement.class))).thenReturn(testRequirement);
+        when(historyRepository.save(any(RequirementHistory.class))).thenReturn(new RequirementHistory());
+        when(linkRepository.findAllLinksForRequirement(any(UUID.class))).thenReturn(new ArrayList<>());
+
+        // Act
+        RequirementResponse response = requirementService.createRequirement(testProject.getId(), request);
+
+        // Assert
+        assertNotNull(response);
+        verify(requirementRepository).save(any(Requirement.class));
+    }
+
+    @Test
+    void getRequirementById_Success() {
+        // Arrange
+        when(requirementRepository.findById(testRequirement.getId())).thenReturn(Optional.of(testRequirement));
+        when(authService.getCurrentUser()).thenReturn(testUser);
+        when(projectMemberRepository.existsByProjectIdAndUserId(testProject.getId(), testUser.getId()))
+                .thenReturn(true);
+        when(linkRepository.findAllLinksForRequirement(testRequirement.getId()))
+                .thenReturn(new ArrayList<>());
+
+        // Act
+        RequirementResponse response = requirementService.getRequirementById(testRequirement.getId());
+
+        // Assert
+        assertNotNull(response);
+        assertEquals("TEST-001", response.getReqId());
+    }
+
+    @Test
+    void getRequirementById_NotFound_ThrowsException() {
+        // Arrange
+        UUID randomId = UUID.randomUUID();
+        when(requirementRepository.findById(randomId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(RuntimeException.class, () -> {
+            requirementService.getRequirementById(randomId);
+        });
+    }
+
+    @Test
+    void getRequirementById_AccessDenied_ThrowsException() {
+        // Arrange
+        when(requirementRepository.findById(testRequirement.getId())).thenReturn(Optional.of(testRequirement));
+        when(authService.getCurrentUser()).thenReturn(testUser);
+        when(projectMemberRepository.existsByProjectIdAndUserId(testProject.getId(), testUser.getId()))
+                .thenReturn(false);
+
+        // Act & Assert
+        assertThrows(RuntimeException.class, () -> {
+            requirementService.getRequirementById(testRequirement.getId());
+        });
+    }
+
+    @Test
+    void updateRequirement_WithParent_Success() {
+        // Arrange
+        Requirement parentReq = new Requirement(testProject, "TEST-002", "Parent", "Description", testUser);
+        parentReq.setId(UUID.randomUUID());
+
+        CreateRequirementRequest request = new CreateRequirementRequest();
+        request.setTitle("Updated Title");
+        request.setDescription("Updated Description");
+        request.setStatus("APPROVED");
+        request.setPriority("HIGH");
+        request.setParentId(parentReq.getId());
+
+        when(requirementRepository.findById(testRequirement.getId())).thenReturn(Optional.of(testRequirement));
+        when(authService.getCurrentUser()).thenReturn(testUser);
+        when(projectMemberRepository.findByProjectIdAndUserId(testProject.getId(), testUser.getId()))
+                .thenReturn(Optional.of(testMember));
+        when(requirementRepository.findById(parentReq.getId())).thenReturn(Optional.of(parentReq));
+        when(requirementRepository.save(any(Requirement.class))).thenReturn(testRequirement);
+        when(historyRepository.save(any(RequirementHistory.class))).thenReturn(new RequirementHistory());
+        when(linkRepository.findAllLinksForRequirement(any(UUID.class))).thenReturn(new ArrayList<>());
+
+        // Act
+        RequirementResponse response = requirementService.updateRequirement(testRequirement.getId(), request);
+
+        // Assert
+        assertNotNull(response);
+        verify(requirementRepository).save(any(Requirement.class));
+    }
+
+    @Test
+    void updateRequirement_RemoveParent_Success() {
+        // Arrange
+        Requirement parentReq = new Requirement(testProject, "TEST-002", "Parent", "Description", testUser);
+        parentReq.setId(UUID.randomUUID());
+        testRequirement.setParent(parentReq);
+
+        CreateRequirementRequest request = new CreateRequirementRequest();
+        request.setTitle("Updated Title");
+        request.setDescription("Updated Description");
+        request.setStatus("APPROVED");
+        request.setPriority("HIGH");
+        request.setParentId(null);
+
+        when(requirementRepository.findById(testRequirement.getId())).thenReturn(Optional.of(testRequirement));
+        when(authService.getCurrentUser()).thenReturn(testUser);
+        when(projectMemberRepository.findByProjectIdAndUserId(testProject.getId(), testUser.getId()))
+                .thenReturn(Optional.of(testMember));
+        when(requirementRepository.save(any(Requirement.class))).thenReturn(testRequirement);
+        when(historyRepository.save(any(RequirementHistory.class))).thenReturn(new RequirementHistory());
+        when(linkRepository.findAllLinksForRequirement(any(UUID.class))).thenReturn(new ArrayList<>());
+
+        // Act
+        RequirementResponse response = requirementService.updateRequirement(testRequirement.getId(), request);
+
+        // Assert
+        assertNotNull(response);
+        verify(requirementRepository).save(any(Requirement.class));
+    }
+
+    @Test
+    void deleteRequirement_AlreadyDeleted_ThrowsException() {
+        // Arrange
+        testRequirement.setDeletedAt(java.time.LocalDateTime.now());
+        when(requirementRepository.findById(testRequirement.getId())).thenReturn(Optional.of(testRequirement));
+
+        // Act & Assert
+        assertThrows(IllegalStateException.class, () -> {
+            requirementService.deleteRequirement(testRequirement.getId());
+        });
+    }
+
+    @Test
+    void toRequirementResponse_WithInAndOutLinks() {
+        // Arrange
+        Requirement parentReq = new Requirement(testProject, "TEST-001", "Parent", "Description", testUser);
+        parentReq.setId(UUID.randomUUID());
+        parentReq.setLevel(1);
+
+        testRequirement.setLevel(2);
+
+        Requirement childReq = new Requirement(testProject, "TEST-003", "Child", "Description", testUser);
+        childReq.setId(UUID.randomUUID());
+        childReq.setLevel(3);
+
+        RequirementLink linkToParent = new RequirementLink(parentReq, testRequirement, testUser);
+        RequirementLink linkToChild = new RequirementLink(testRequirement, childReq, testUser);
+
+        when(requirementRepository.findById(testRequirement.getId())).thenReturn(Optional.of(testRequirement));
+        when(authService.getCurrentUser()).thenReturn(testUser);
+        when(projectMemberRepository.existsByProjectIdAndUserId(testProject.getId(), testUser.getId()))
+                .thenReturn(true);
+        when(linkRepository.findAllLinksForRequirement(testRequirement.getId()))
+                .thenReturn(Arrays.asList(linkToParent, linkToChild));
+
+        // Act
+        RequirementResponse response = requirementService.getRequirementById(testRequirement.getId());
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(1, response.getInLinkCount());  // Link to parent (higher level)
+        assertEquals(1, response.getOutLinkCount()); // Link to child (lower level)
+    }
 }

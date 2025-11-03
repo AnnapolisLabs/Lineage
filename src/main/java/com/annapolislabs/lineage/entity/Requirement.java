@@ -2,6 +2,9 @@ package com.annapolislabs.lineage.entity;
 
 import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -13,6 +16,9 @@ import java.util.*;
 @Entity
 @Table(name = "requirements")
 @EntityListeners(AuditingEntityListener.class)
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Requirement {
 
     @Id
@@ -73,152 +79,12 @@ public class Requirement {
     @JoinColumn(name = "deleted_by")
     private User deletedBy;
 
-    // Constructors
-    public Requirement() {}
-
     public Requirement(Project project, String reqId, String title, String description, User createdBy) {
         this.project = project;
         this.reqId = reqId;
         this.title = title;
         this.description = description;
         this.createdBy = createdBy;
-    }
-
-    // Getters and Setters
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public Project getProject() {
-        return project;
-    }
-
-    public void setProject(Project project) {
-        this.project = project;
-    }
-
-    public String getReqId() {
-        return reqId;
-    }
-
-    public void setReqId(String reqId) {
-        this.reqId = reqId;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getPriority() {
-        return priority;
-    }
-
-    public void setPriority(String priority) {
-        this.priority = priority;
-    }
-
-    public Requirement getParent() {
-        return parent;
-    }
-
-    public void setParent(Requirement parent) {
-        this.parent = parent;
-    }
-
-    public List<Requirement> getChildren() {
-        return children;
-    }
-
-    public void setChildren(List<Requirement> children) {
-        this.children = children;
-    }
-
-    public Map<String, Object> getCustomFields() {
-        return customFields;
-    }
-
-    public void setCustomFields(Map<String, Object> customFields) {
-        this.customFields = customFields;
-    }
-
-    public User getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(User createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public Integer getLevel() {
-        return level;
-    }
-
-    public void setLevel(Integer level) {
-        this.level = level;
-    }
-
-    public String getSection() {
-        return section;
-    }
-
-    public void setSection(String section) {
-        this.section = section;
-    }
-
-    public LocalDateTime getDeletedAt() {
-        return deletedAt;
-    }
-
-    public void setDeletedAt(LocalDateTime deletedAt) {
-        this.deletedAt = deletedAt;
-    }
-
-    public User getDeletedBy() {
-        return deletedBy;
-    }
-
-    public void setDeletedBy(User deletedBy) {
-        this.deletedBy = deletedBy;
     }
 
     public boolean isDeleted() {
