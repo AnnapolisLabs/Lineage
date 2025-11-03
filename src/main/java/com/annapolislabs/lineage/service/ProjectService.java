@@ -9,6 +9,7 @@ import com.annapolislabs.lineage.entity.ProjectRole;
 import com.annapolislabs.lineage.entity.Requirement;
 import com.annapolislabs.lineage.entity.User;
 import com.annapolislabs.lineage.exception.AccessDeniedException;
+import com.annapolislabs.lineage.exception.DuplicateKeyException;
 import com.annapolislabs.lineage.exception.ResourceNotFoundException;
 import com.annapolislabs.lineage.repository.ProjectMemberRepository;
 import com.annapolislabs.lineage.repository.ProjectRepository;
@@ -44,7 +45,7 @@ public class ProjectService {
         User currentUser = authService.getCurrentUser();
 
         if (projectRepository.existsByProjectKey(request.getProjectKey())) {
-            throw new RuntimeException("Project key already exists: " + request.getProjectKey());
+            throw new DuplicateKeyException("Project key already exists: " + request.getProjectKey());
         }
 
         Project project = new Project(
@@ -94,10 +95,10 @@ public class ProjectService {
         // Check if user has admin access
         User currentUser = authService.getCurrentUser();
         ProjectMember member = projectMemberRepository.findByProjectIdAndUserId(projectId, currentUser.getId())
-                .orElseThrow(() -> new RuntimeException("Access denied"));
+                .orElseThrow(() -> new AccessDeniedException("Access denied"));
 
         if (member.getRole() != ProjectRole.ADMIN) {
-            throw new RuntimeException("Admin access required");
+            throw new AccessDeniedException("Admin access required");
         }
 
         project.setName(request.getName());
@@ -117,10 +118,10 @@ public class ProjectService {
         // Check if user has admin access
         User currentUser = authService.getCurrentUser();
         ProjectMember member = projectMemberRepository.findByProjectIdAndUserId(projectId, currentUser.getId())
-                .orElseThrow(() -> new RuntimeException("Access denied"));
+                .orElseThrow(() -> new AccessDeniedException("Access denied"));
 
         if (member.getRole() != ProjectRole.ADMIN) {
-            throw new RuntimeException("Admin access required");
+            throw new AccessDeniedException("Admin access required");
         }
 
         // Delete all requirements associated with this project first

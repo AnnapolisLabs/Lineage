@@ -94,7 +94,7 @@ public class RequirementService {
 
         // Check project access
         if (!projectMemberRepository.existsByProjectIdAndUserId(projectId, currentUser.getId())) {
-            throw new RuntimeException("Access denied");
+            throw new AccessDeniedException("Access denied");
         }
 
         return requirementRepository.findByProjectIdAndDeletedAtIsNull(projectId)
@@ -112,7 +112,7 @@ public class RequirementService {
         // Check project access
         User currentUser = authService.getCurrentUser();
         if (!projectMemberRepository.existsByProjectIdAndUserId(requirement.getProject().getId(), currentUser.getId())) {
-            throw new RuntimeException("Access denied");
+            throw new AccessDeniedException("Access denied");
         }
 
         return toRequirementResponse(requirement);
@@ -128,7 +128,7 @@ public class RequirementService {
                 .orElseThrow(AccessDeniedException::new);
 
         if (member.getRole() == ProjectRole.VIEWER) {
-            throw new RuntimeException("Editor access required");
+            throw new AccessDeniedException("Editor access required");
         }
 
         Map<String, Object> oldValue = toMap(requirement);
@@ -141,7 +141,7 @@ public class RequirementService {
 
         if (request.getParentId() != null) {
             Requirement parent = requirementRepository.findById(request.getParentId())
-                    .orElseThrow(() -> new RuntimeException("Parent requirement not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Parent requirement not found"));
             requirement.setParent(parent);
         } else {
             requirement.setParent(null);
@@ -161,7 +161,7 @@ public class RequirementService {
                 .orElseThrow(() -> new ResourceNotFoundException(ServiceConstants.REQUIREMENT_NOT_FOUND));
 
         if (requirement.isDeleted()) {
-            throw new RuntimeException("Requirement already deleted");
+            throw new IllegalStateException("Requirement already deleted");
         }
 
         User currentUser = authService.getCurrentUser();
@@ -169,7 +169,7 @@ public class RequirementService {
                 .orElseThrow(AccessDeniedException::new);
 
         if (member.getRole() == ProjectRole.VIEWER) {
-            throw new RuntimeException("Editor access required");
+            throw new AccessDeniedException("Editor access required");
         }
 
         // Soft delete: mark as deleted but preserve the record and ID
@@ -194,7 +194,7 @@ public class RequirementService {
 
         User currentUser = authService.getCurrentUser();
         if (!projectMemberRepository.existsByProjectIdAndUserId(requirement.getProject().getId(), currentUser.getId())) {
-            throw new RuntimeException("Access denied");
+            throw new AccessDeniedException("Access denied");
         }
 
         return historyRepository.findByRequirementIdOrderByChangedAtDesc(requirementId)

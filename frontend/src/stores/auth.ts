@@ -45,7 +45,8 @@ export const useAuthStore = defineStore('auth', () => {
       if (user.value) {
         localStorage.setItem('user_id', user.value.email)
       }
-    } catch (err) {
+    } catch (err: any) {
+      console.error('Failed to fetch current user:', err.response?.data?.message || err.message)
       logout()
     }
   }

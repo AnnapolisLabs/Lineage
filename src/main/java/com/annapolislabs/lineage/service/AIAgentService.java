@@ -3,6 +3,7 @@ package com.annapolislabs.lineage.service;
 import com.annapolislabs.lineage.entity.AIConversation;
 import com.annapolislabs.lineage.entity.AIConversation.ConversationMessage;
 import com.annapolislabs.lineage.entity.User;
+import com.annapolislabs.lineage.exception.LLMApiException;
 import com.annapolislabs.lineage.mcp.McpTool;
 import com.annapolislabs.lineage.repository.AIConversationRepository;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -195,7 +196,7 @@ public class AIAgentService {
         // Add system prompt
         ObjectNode systemMsg = messagesArray.addObject();
         systemMsg.put("role", "system");
-        systemMsg.put("content", AGENT_SYSTEM_PROMPT);
+        systemMsg.put(JSON_FIELD_CONTENT, AGENT_SYSTEM_PROMPT);
 
         // Add conversation history
         for (ConversationMessage msg : conversation.getMessages()) {
@@ -236,7 +237,7 @@ public class AIAgentService {
         logger.info("LLM response received: status={}", response.statusCode());
 
         if (response.statusCode() != 200) {
-            throw new RuntimeException("LLM API error: " + response.statusCode() + " - " + response.body());
+            throw new LLMApiException("LLM API error: " + response.statusCode() + " - " + response.body());
         }
 
         // Parse response
@@ -281,41 +282,13 @@ public class AIAgentService {
      * Strips thinking tags and extracts JSON
      */
     private AgentAction parseAgentResponse(String content) {
-        // Strip thinking tags and system-reminder tags
-        String cleanContent = content
-                .replaceAll("<think>[\\s\\S]*?</think>", "")
-                .replaceAll("<system-reminder>[\\s\\S]*?</system-reminder>", "")
-                .trim();
-        
-        // Remove markdown code blocks
-        cleanContent = cleanContent
-                .replaceAll("```json\\n?", "")
-                .replaceAll("```\\n?", "")
-                .trim();
-        
-        // Extract JSON - using greedy match to get complete JSON object
-        Pattern jsonPattern = Pattern.compile("\\{[\\s\\S]*\\}");
-        Matcher matcher = jsonPattern.matcher(cleanContent);
-        
-        if (matcher.find()) {
-            String jsonStr = matcher.group();
-            try {
-                JsonNode parsed = objectMapper.readTree(jsonStr);
+        String cleanContent = stripTagsAndMarkdown(content);
+        AgentAction action = extractJsonAction(cleanContent);
 
-                // Validate structure
-                if (parsed.has("tool") && parsed.has(JSON_FIELD_ARGUMENTS) && parsed.has(JSON_FIELD_MESSAGE)) {
-                    String tool = parsed.path("tool").isNull() ? null : parsed.path("tool").asText();
-                    Map<String, Object> arguments = parsed.path(JSON_FIELD_ARGUMENTS).isNull() ? null :
-                            objectMapper.convertValue(parsed.path(JSON_FIELD_ARGUMENTS), Map.class);
-                    String message = parsed.path(JSON_FIELD_MESSAGE).isNull() ? null : parsed.path(JSON_FIELD_MESSAGE).asText();
-
-                    return new AgentAction(tool, arguments, message);
-                }
-            } catch (Exception e) {
-                logger.error("Failed to parse JSON from LLM response: {}", jsonStr, e);
-            }
+        if (action != null) {
+            return action;
         }
-        
+
         // Fallback: treat remaining text as message
         if (!cleanContent.isBlank()) {
             return new AgentAction(null, null, cleanContent);
@@ -324,7 +297,49 @@ public class AIAgentService {
         // Ultimate fallback
         return new AgentAction(null, null, "I need more information to help with that.");
     }
-    
+
+    /**
+     * Strip thinking tags and markdown from content
+     */
+    private String stripTagsAndMarkdown(String content) {
+        return content
+                .replaceAll("<think>[\\s\\S]*?</think>", "")
+                .replaceAll("<system-reminder>[\\s\\S]*?</system-reminder>", "")
+                .replaceAll("```json\\n?", "")
+                .replaceAll("```\\n?", "")
+                .trim();
+    }
+
+    /**
+     * Extract JSON action from cleaned content
+     */
+    private AgentAction extractJsonAction(String cleanContent) {
+        Pattern jsonPattern = Pattern.compile("\\{[\\s\\S]*\\}");
+        Matcher matcher = jsonPattern.matcher(cleanContent);
+
+        if (!matcher.find()) {
+            return null;
+        }
+
+        String jsonStr = matcher.group();
+        try {
+            JsonNode parsed = objectMapper.readTree(jsonStr);
+
+            if (parsed.has("tool") && parsed.has(JSON_FIELD_ARGUMENTS) && parsed.has(JSON_FIELD_MESSAGE)) {
+                String tool = parsed.path("tool").isNull() ? null : parsed.path("tool").asText();
+                Map<String, Object> arguments = parsed.path(JSON_FIELD_ARGUMENTS).isNull() ? null :
+                        objectMapper.convertValue(parsed.path(JSON_FIELD_ARGUMENTS), Map.class);
+                String message = parsed.path(JSON_FIELD_MESSAGE).isNull() ? null : parsed.path(JSON_FIELD_MESSAGE).asText();
+
+                return new AgentAction(tool, arguments, message);
+            }
+        } catch (Exception e) {
+            logger.error("Failed to parse JSON from LLM response: {}", jsonStr, e);
+        }
+
+        return null;
+    }
+
     /**
      * Execute MCP tool
      */

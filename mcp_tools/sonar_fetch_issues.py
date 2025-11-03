@@ -6,10 +6,25 @@ Export SonarQube issues in a format optimized for JetBrains Claude Agent to fix.
 import requests
 import json
 import sys
+import os
+from base64 import b64encode
+from pathlib import Path
+
+# Load .env file from project root
+try:
+    from dotenv import load_dotenv
+    env_path = Path(__file__).parent.parent / '.env'
+    load_dotenv(env_path)
+except ImportError:
+    print("Warning: python-dotenv not installed. Install with: pip install python-dotenv", file=sys.stderr)
 
 # Configuration
-SONARQUBE_URL = "http://192.168.2.200:9000"
-PROJECT_KEY = "lineage-sonar"
+SONARQUBE_URL = os.getenv("SONARQUBE_URL", "http://192.168.2.200:9000")
+PROJECT_KEY = os.getenv("SONARQUBE_PROJECT_KEY", "lineage-sonar")
+SONARQUBE_TOKEN = os.getenv("SONARQUBE_TOKEN")
+
+if not SONARQUBE_TOKEN:
+    raise ValueError("SONARQUBE_TOKEN environment variable must be set")
 
 def fetch_issues():
     """Fetch all open issues from SonarQube"""
@@ -20,12 +35,19 @@ def fetch_issues():
         "ps": 500  # page size
     }
 
+    # Create Basic Auth header (SonarQube tokens use token as username, empty password)
+    auth_string = f"{SONARQUBE_TOKEN}:"
+    auth_header = b64encode(auth_string.encode()).decode()
+    headers = {
+        "Authorization": f"Basic {auth_header}"
+    }
+
     all_issues = []
     page = 1
 
     while True:
         params['p'] = page
-        response = requests.get(url, params=params)
+        response = requests.get(url, params=params, headers=headers)
         response.raise_for_status()
         data = response.json()
 
