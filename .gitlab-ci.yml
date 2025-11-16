@@ -7,6 +7,10 @@ stages:
 variables:
   DOCKER_HOST: tcp://docker:2375
   DOCKER_TLS_CERTDIR: ""
+  DOCKER_IMAGE: registry.ftco.ca/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
+  DOCKER_IMAGE_LATEST: registry.ftco.ca/$CI_PROJECT_PATH:latest
+  DOCKER_IMAGE: registry.ftco.ca/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
+  DOCKER_IMAGE_LATEST: registry.ftco.ca/$CI_PROJECT_PATH:latest
 
 build-backend:
   image: gradle:8.10.0-jdk21-jammy
@@ -43,29 +47,17 @@ build-docker:
       command: ["--insecure-registry=registry.ftco.ca"]
   variables:
     DOCKER_DRIVER: overlay2
-    DOCKER_BUILDKIT: 1
+    DOCKER_BUILDKIT: 0
   before_script:
-    - |
-      echo "Waiting for Docker daemon to be ready..."
-      for i in {1..30}; do
-        if docker info >/dev/null 2>&1; then
-          echo "Docker daemon is ready"
-          break
-        fi
-        echo "Attempt $i: Docker daemon not ready yet..."
-        sleep 2
-      done
-      if ! docker info >/dev/null 2>&1; then
-        echo "Docker daemon failed to start"
-        exit 1
-      fi
-      export DOCKER_BUILDKIT=0
+    - sleep 5
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD registry.ftco.ca
   script:
-    - docker build -t lineage-app:$CI_COMMIT_SHA -t lineage-app:latest .
-    - docker tag lineage-app:$CI_COMMIT_SHA registry.ftco.ca/lineage-app:$CI_COMMIT_SHA || true
-    - docker push registry.ftco.ca/lineage-app:$CI_COMMIT_SHA || echo "Registry push failed, will build on production server"
-    # Note: Skipping push to registry as it's not accessible from CI runners
-    # The production server will pull from the registry directly
+    - IMAGE_LOWER=$(echo $DOCKER_IMAGE | tr '[:upper:]' '[:lower:]')
+    - IMAGE_LATEST_LOWER=$(echo $DOCKER_IMAGE_LATEST | tr '[:upper:]' '[:lower:]')
+    - docker build -t $IMAGE_LOWER .
+    - docker push $IMAGE_LOWER
+    - 'if [ "$CI_COMMIT_REF_NAME" = "master" ] || [ "$CI_COMMIT_REF_NAME" = "main" ] || [ "$CI_COMMIT_REF_NAME" = "production" ]; then docker tag $IMAGE_LOWER $IMAGE_LATEST_LOWER; fi'
+    - 'if [ "$CI_COMMIT_REF_NAME" = "master" ] || [ "$CI_COMMIT_REF_NAME" = "main" ] || [ "$CI_COMMIT_REF_NAME" = "production" ]; then docker push $IMAGE_LATEST_LOWER; fi'
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_COMMIT_BRANCH == 'master'
@@ -124,20 +116,19 @@ sync-to-prod:
       optional: true
   script:
     - |
-      echo "Debugging variables:"
-      echo "CONTAINER_APP_NAME: $CONTAINER_APP_NAME"
-      echo "CONTAINER_PROJECT_HOST: $CONTAINER_PROJECT_HOST"
-      echo "SSH_USER: $SSH_USER"
-      CONTAINER_NAME=$(echo "$CI_PROJECT_PATH_SLUG-$CONTAINER_APP_NAME" | tr '[:upper:]' '[:lower:]')
-      IMAGE_TAG=$CI_COMMIT_SHA
-      echo "CONTAINER_NAME: $CONTAINER_NAME"
-      echo "IMAGE_TAG: $IMAGE_TAG"
-      # Test SSH connection
-      ssh -o BatchMode=yes -o ConnectTimeout=10 $SSH_USER@$CONTAINER_PROJECT_HOST echo "SSH connection successful" || (echo "SSH connection failed"; exit 1)
-      # Copy compose file to server
-      scp docker-compose.prod.yml $SSH_USER@$CONTAINER_PROJECT_HOST:~/docker-compose.prod.yml
-      ssh $SSH_USER@$CONTAINER_PROJECT_HOST env CONTAINER_NAME="$CONTAINER_NAME" IMAGE_TAG="$IMAGE_TAG" DB_USERNAME="$DB_USERNAME" DB_PASSWORD="$DB_PASSWORD" << 'EOF'
-        # Deploy using Podman Compose
-        podman-compose -f ~/docker-compose.prod.yml pull
-        podman-compose -f ~/docker-compose.prod.yml up -d --force-recreate
+      IMAGE_NAME=$(echo "registry.ftco.ca/$CI_PROJECT_PATH:latest" | tr '[:upper:]' '[:lower:]')
+      ssh $SSH_USER@$CONTAINER_PROJECT_HOST bash << EOF
+        echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin registry.ftco.ca
+        docker pull $IMAGE_NAME
+        docker stop $CI_PROJECT_PATH_SLUG-$CONTAINER_APP_NAME || true
+        docker rm $CI_PROJECT_PATH_SLUG-$CONTAINER_APP_NAME || true
+        docker run -d \
+          --name $CI_PROJECT_PATH_SLUG-$CONTAINER_APP_NAME \
+          --restart always \
+          -p 8080:8080 \
+          -v ~/$CONTAINER_APP_NAME/.env:/app/.env:ro \
+          -e SPRING_PROFILES_ACTIVE=prod \
+          -e DB_USERNAME=$DB_USERNAME \
+          -e DB_PASSWORD=$DB_PASSWORD \
+          $IMAGE_NAME
       EOF
