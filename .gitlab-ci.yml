@@ -72,6 +72,7 @@ build-docker-prod:
     - name: docker:24.0.5-dind
   variables:
     DOCKER_DRIVER: overlay2
+    DOCKER_BUILDKIT: 0
   before_script:
     - |
       echo "Waiting for Docker daemon to be ready..."
@@ -93,14 +94,25 @@ build-docker-prod:
     - |
       PRODUCTION_IMAGE="registry.ftco.ca/$CI_PROJECT_PATH:production"
       LATEST_IMAGE="registry.ftco.ca/$CI_PROJECT_PATH:latest"
-      echo "Building production image: $PRODUCTION_IMAGE"
-      docker build -t "$PRODUCTION_IMAGE" .
-      echo "Verifying image exists locally"
-      docker inspect "$PRODUCTION_IMAGE"
+      
+      echo "Building production image with ID capture: $PRODUCTION_IMAGE"
+      docker build --iidfile /tmp/image_id.txt .
+      
+      IMAGE_ID=$(cat /tmp/image_id.txt)
+      echo "Built image ID: $IMAGE_ID"
+      
+      echo "Tagging image with production tag"
+      docker tag "$IMAGE_ID" "$PRODUCTION_IMAGE"
+      
+      echo "Tagging image with latest tag"
+      docker tag "$IMAGE_ID" "$LATEST_IMAGE"
+      
+      echo "Verifying images exist locally"
+      docker images | grep "$(echo $CI_PROJECT_PATH | cut -d'/' -f2)"
+      
       echo "Pushing production image to registry"
       docker push "$PRODUCTION_IMAGE"
-      echo "Building latest image: $LATEST_IMAGE"
-      docker build -t "$LATEST_IMAGE" .
+      
       echo "Pushing latest image to registry"
       docker push "$LATEST_IMAGE"
   rules:
