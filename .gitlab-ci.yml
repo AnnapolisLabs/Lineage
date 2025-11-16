@@ -64,8 +64,15 @@ sync-to-github:
 
 # Configure CONTAINER_APP_NAME, CONTAINER_PROJECT_HOST variable in GitLab CI/CD Settings -> Variables
 sync-to-prod:
-  image: bitnami/git:latest
   stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh-client
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan -H $CONTAINER_PROJECT_HOST >> ~/.ssh/known_hosts
   only:
     - production
   script:
