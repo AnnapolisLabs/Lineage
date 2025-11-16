@@ -5,9 +5,8 @@ stages:
   - deploy
 
 variables:
-  # Global Docker settings - empty TLS for simplicity
-  DOCKER_HOST: tcp://docker:2376
-  DOCKER_TLS_CERTDIR: "/certs"
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_TLS_CERTDIR: ""
 
 build-backend:
   image: gradle:8.10.0-jdk21-jammy
@@ -38,15 +37,15 @@ build-frontend:
 # Docker build stage - builds the container image
 build-docker:
   stage: docker-build
-  image: docker:24-cli
+  image: docker:24.0.5
   services:
-    - docker:24-dind
+    - name: docker:24.0.5-dind
+      command: ["--insecure-registry=registry.ftco.ca"]
   variables:
     DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: "/certs"
+    DOCKER_BUILDKIT: 0
   before_script:
-    # Wait for Docker daemon to be ready
-    - until docker info; do sleep 1; done
+    - sleep 5
   script:
     - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA .
     - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE:latest
