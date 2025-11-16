@@ -47,8 +47,8 @@ build-docker:
   before_script:
     - sleep 5
   script:
-    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA .
-    - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE:latest
+    - docker build -t lineage-app:$CI_COMMIT_SHA .
+    - docker tag lineage-app:$CI_COMMIT_SHA lineage-app:latest
     # Note: Skipping push to registry as it's not accessible from CI runners
     # The production server will pull from the registry directly
   rules:
