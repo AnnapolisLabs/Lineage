@@ -109,6 +109,7 @@ sync-to-prod:
     - ssh-keyscan -H $CONTAINER_PROJECT_HOST >> ~/.ssh/known_hosts
   rules:
     - if: $CI_COMMIT_BRANCH == 'production'
+    - if: $CI_COMMIT_BRANCH == 'develop'
   needs:
     - job: build-docker
       optional: true
