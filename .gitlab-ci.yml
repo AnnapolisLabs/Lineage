@@ -66,6 +66,33 @@ build-docker:
     - job: build-backend
       optional: true
 
+build-docker-prod:
+  stage: docker-build
+  image: docker:24.0.5
+  services:
+    - name: docker:24.0.5-dind
+      command: ["--insecure-registry=registry.ftco.ca"]
+  variables:
+    DOCKER_DRIVER: overlay2
+    DOCKER_BUILDKIT: 0
+  before_script:
+    - sleep 5
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD registry.ftco.ca
+  script:
+    - |
+      PRODUCTION_IMAGE="registry.ftco.ca/$CI_PROJECT_PATH:production"
+      LATEST_IMAGE="registry.ftco.ca/$CI_PROJECT_PATH:latest"
+      docker build -t $PRODUCTION_IMAGE .
+      docker push $PRODUCTION_IMAGE
+      docker build -t $LATEST_IMAGE .
+      docker push $LATEST_IMAGE
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'production'
+    - if: $CI_COMMIT_BRANCH == 'develop'
+  needs:
+    - job: build-backend
+      optional: true
+
 sonar-scan:
   image:
     name: sonarsource/sonar-scanner-cli:11
@@ -85,6 +112,8 @@ sonar-scan:
     - job: build-frontend
       optional: true
     - job: build-docker
+      optional: true
+    - job: build-docker-prod
       optional: true
 
 sync-to-github:
@@ -111,7 +140,7 @@ sync-to-prod:
     - if: $CI_COMMIT_BRANCH == 'production'
     - if: $CI_COMMIT_BRANCH == 'develop'
   needs:
-    - job: build-docker
+    - job: build-docker-prod
       optional: true
   script:
     - |
@@ -120,6 +149,6 @@ sync-to-prod:
       scp docker-compose.prod.yml $SSH_USER@$CONTAINER_PROJECT_HOST:~/docker-compose.prod.yml
       ssh $SSH_USER@$CONTAINER_PROJECT_HOST env CONTAINER_NAME="$CI_PROJECT_PATH_SLUG-$CONTAINER_APP_NAME" DB_USERNAME="$DB_USERNAME" DB_PASSWORD="$DB_PASSWORD" << 'EOF'
         # Deploy using Podman Compose
-        podman-compose -f ~/docker-compose.prod.yml pull
+        podman-compose  -f ~/docker-compose.prod.yml pull
         podman-compose -f ~/docker-compose.prod.yml up -d --force-recreate
       EOF
