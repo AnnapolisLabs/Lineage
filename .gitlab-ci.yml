@@ -1,5 +1,6 @@
 stages:
   - build-gradle
+  - docker-build
   - sonar
   - deploy
 
@@ -17,8 +18,10 @@ build-backend:
   artifacts:
     paths:
       - build/classes/
+      - build/libs/*.jar
       - build/reports/jacoco/
     expire_in: 1 hour
+  needs: []
 
 build-frontend:
   image: node:20
@@ -32,6 +35,29 @@ build-frontend:
       - frontend/coverage/
       - frontend/test-report.xml
     expire_in: 1 hour
+  needs: []
+
+# Podman build stage - builds the container image
+build-docker:
+  stage: docker-build
+  image: quay.io/podman/stable:latest
+  variables:
+    STORAGE_DRIVER: vfs
+  before_script:
+    - podman login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - podman build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA .
+    - podman push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - podman tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE:latest
+    - podman push $CI_REGISTRY_IMAGE:latest
+  dependencies:
+    - build-backend
+  only:
+    - main
+    - master
+    - develop
+    - merge_requests
+  needs: ["build-backend"]
 
 sonar-scan:
   image:
@@ -52,6 +78,7 @@ sonar-scan:
     - if: $CI_COMMIT_BRANCH == 'master'
     - if: $CI_COMMIT_BRANCH == 'main'
     - if: $CI_COMMIT_BRANCH == 'develop'
+  needs: ["build-docker"]
 
 sync-to-github:
   image: bitnami/git:latest
@@ -75,12 +102,13 @@ sync-to-prod:
     - ssh-keyscan -H $CONTAINER_PROJECT_HOST >> ~/.ssh/known_hosts
   only:
     - production
+  needs: ["build-docker"]
   script:
     - |
-      IMAGE_NAME=$(echo "registry.ftco.ca/$CI_PROJECT_PATH:latest" | tr '[:upper:]' '[:lower:]')
+      IMAGE_NAME=$(echo "$CI_REGISTRY_IMAGE:latest" | tr '[:upper:]' '[:lower:]')
       CONTAINER_NAME=$(echo "$CI_PROJECT_PATH_SLUG-$CONTAINER_APP_NAME" | tr '[:upper:]' '[:lower:]')
-      ssh $CONTAINER_PROJECT_HOST bash << EOF
-        echo $CI_REGISTRY_PASSWORD | podman login -u $CI_REGISTRY_USER --password-stdin registry.ftco.ca
+      ssh $SSH_USER@$CONTAINER_PROJECT_HOST bash << EOF
+        echo $CI_REGISTRY_PASSWORD | podman login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
         podman pull $IMAGE_NAME
         podman stop $CONTAINER_NAME || true
         podman rm $CONTAINER_NAME || true
