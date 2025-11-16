@@ -43,6 +43,7 @@ build-docker:
       command: ["--insecure-registry=registry.ftco.ca"]
   variables:
     DOCKER_DRIVER: overlay2
+    DOCKER_BUILDKIT: 0
   before_script:
     - |
       echo "Waiting for Docker daemon to be ready..."
@@ -58,6 +59,7 @@ build-docker:
         echo "Docker daemon failed to start"
         exit 1
       fi
+      export DOCKER_BUILDKIT=0
   script:
     - docker build -t lineage-app:$CI_COMMIT_SHA .
     - docker tag lineage-app:$CI_COMMIT_SHA lineage-app:latest
