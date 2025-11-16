@@ -180,12 +180,12 @@ No artificial feature restrictions. Pay for convenience, not the software itself
 - [x] JWT authentication
 - [x] Frontend with Vue 3
 - [x] Login/Logout UI
-- [x] Requirements CRUD UI
+- [ ] Requirements CRUD UI
 - [x] Search and filtering
 - [x] Hierarchical requirement numbering
 - [x] Bi-directional requirement linking
 - [x] Multi-project support
-- [x] Export to CSV, JSON, and Markdown
+- [ ] Export to CSV, JSON, and Markdown
 - [x] Project settings management
 - [x] Version history system
   - [x] Track all requirement changes (content, links, status, deletions)
