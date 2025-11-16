@@ -129,17 +129,20 @@ sync-to-prod:
       echo "CONTAINER_NAME: $CONTAINER_NAME"
       # Test SSH connection
       ssh -o BatchMode=yes -o ConnectTimeout=10 $SSH_USER@$CONTAINER_PROJECT_HOST echo "SSH connection successful" || (echo "SSH connection failed"; exit 1)
-      ssh $SSH_USER@$CONTAINER_PROJECT_HOST << 'EOF'
+      ssh $SSH_USER@$CONTAINER_PROJECT_HOST env CONTAINER_NAME="$CONTAINER_NAME" GITHUB_TOKEN="$GITHUB_TOKEN" DB_USERNAME="$DB_USERNAME" DB_PASSWORD="$DB_PASSWORD" << 'EOF'
         # Clone the repository (always fresh for production)
         rm -rf ~/lineage
         git clone https://$GITHUB_TOKEN@github.com/AnnapolisLabs/Lineage.git ~/lineage
 
-        # Build the Docker image
+        # Create production .env file
         cd ~/lineage
+        echo "DB_USERNAME=$DB_USERNAME" > .env
+        echo "DB_PASSWORD=$DB_PASSWORD" >> .env
+
+        # Build the Docker image
         podman build -t lineage-app:latest .
 
         # Deploy using Podman Compose
-        export CONTAINER_NAME='$CONTAINER_NAME'
-        export ENV_DIR="$HOME"
+        export ENV_DIR="$HOME/lineage"
         podman-compose -f docker-compose.prod.yml up -d --force-recreate
       EOF
