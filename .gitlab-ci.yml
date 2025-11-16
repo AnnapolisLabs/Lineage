@@ -1,162 +1,208 @@
+# GitLab CI/CD Pipeline for Lineage
+# Simplified, reliable pipeline with frontend + backend bundled in single image
+
 stages:
-  - build-gradle
-  - docker-build
-  - sonar
-  - deploy
+  - build
+  - test
+  - quality
+  - package
 
 variables:
-  DOCKER_HOST: tcp://docker:2375
+  # Registry configuration
+  REGISTRY_URL: registry.ftco.ca
+  IMAGE_NAME: ${REGISTRY_URL}/${CI_PROJECT_PATH}
+  
+  # Disable Docker-in-Docker TLS for simplicity
   DOCKER_TLS_CERTDIR: ""
-  DOCKER_IMAGE: registry.ftco.ca/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
-  DOCKER_IMAGE_LATEST: registry.ftco.ca/$CI_PROJECT_PATH:latest
 
-build-backend:
+# ============================================================================
+# BUILD STAGE
+# ============================================================================
+
+build:backend:
+  stage: build
   image: gradle:8.10.0-jdk21-jammy
-  stage: build-gradle
   script:
-    - gradle build test jacocoTestReport
+    - echo "Building backend with Gradle..."
+    - gradle build -x test --no-daemon
   artifacts:
     paths:
       - build/libs/*.jar
-      - build/reports/jacoco/test/jacocoTestReport.xml
     expire_in: 1 hour
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}-gradle
+    paths:
+      - .gradle/
   needs: []
 
-build-frontend:
-  image: node:20
-  stage: build-gradle
+build:frontend:
+  stage: build
+  image: node:20-alpine
   script:
+    - echo "Building frontend with npm..."
     - cd frontend
-    - npm ci
+    - npm ci --prefer-offline --no-audit
+    - npm run build
+  artifacts:
+    paths:
+      - frontend/dist/
+    expire_in: 1 hour
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}-npm
+    paths:
+      - frontend/node_modules/
+  needs: []
+
+# ============================================================================
+# TEST STAGE
+# ============================================================================
+
+test:backend:
+  stage: test
+  image: gradle:8.10.0-jdk21-jammy
+  script:
+    - echo "Running backend tests..."
+    - gradle test jacocoTestReport --no-daemon
+  artifacts:
+    paths:
+      - build/reports/jacoco/test/jacocoTestReport.xml
+      - build/test-results/test/
+    reports:
+      junit: build/test-results/test/**/TEST-*.xml
+    expire_in: 1 week
+  coverage: '/Total.*?([0-9]{1,3})%/'
+  needs:
+    - build:backend
+
+test:frontend:
+  stage: test
+  image: node:20-alpine
+  script:
+    - echo "Running frontend tests..."
+    - cd frontend
+    - npm ci --prefer-offline --no-audit
     - npm run test:coverage
   artifacts:
     paths:
       - frontend/coverage/lcov.info
       - frontend/test-report.xml
-    expire_in: 1 hour
-  needs: []
-
-# Docker build stage - builds the container image
-build-docker:
-  stage: docker-build
-  image: docker:24.0.5
-  services:
-    - name: docker:24.0.5-dind
-  variables:
-    DOCKER_DRIVER: overlay2
-    DOCKER_BUILDKIT: 0
-  before_script:
-    - sleep 5
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD registry.ftco.ca
-  script:
-    - IMAGE_LOWER=$(echo $DOCKER_IMAGE | tr '[:upper:]' '[:lower:]')
-    - IMAGE_LATEST_LOWER=$(echo $DOCKER_IMAGE_LATEST | tr '[:upper:]' '[:lower:]')
-    - docker build -t $IMAGE_LOWER .
-    - docker push $IMAGE_LOWER
-    - 'if [ "$CI_COMMIT_REF_NAME" = "master" ] || [ "$CI_COMMIT_REF_NAME" = "main" ] || [ "$CI_COMMIT_REF_NAME" = "production" ]; then docker build -t $IMAGE_LATEST_LOWER .; fi'
-    - 'if [ "$CI_COMMIT_REF_NAME" = "master" ] || [ "$CI_COMMIT_REF_NAME" = "main" ] || [ "$CI_COMMIT_REF_NAME" = "production" ]; then docker push $IMAGE_LATEST_LOWER; fi'
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-    - if: $CI_COMMIT_BRANCH == 'master'
-    - if: $CI_COMMIT_BRANCH == 'main'
-    - if: $CI_COMMIT_BRANCH == 'develop'
-    - if: $CI_COMMIT_BRANCH == 'production'
+    reports:
+      junit: frontend/test-report.xml
+    expire_in: 1 week
+  coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}-npm
+    paths:
+      - frontend/node_modules/
+    policy: pull
   needs:
-    - job: build-backend
-      optional: true
+    - build:frontend
 
-build-docker-prod:
-  stage: docker-build
-  image:
-    name: gcr.io/kaniko-project/executor:v1.23.0-debug
-    entrypoint: [""]
-  before_script:
-    - mkdir -p /kaniko/.docker
-    - echo "{\"auths\":{\"registry.ftco.ca\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
-  script:
-    - |
-      /kaniko/executor \
-        --context "${CI_PROJECT_DIR}" \
-        --dockerfile "${CI_PROJECT_DIR}/Dockerfile" \
-        --destination "registry.ftco.ca/${CI_PROJECT_PATH}:production" \
-        --destination "registry.ftco.ca/${CI_PROJECT_PATH}:latest" \
-        --cache=true \
-        --cache-repo="registry.ftco.ca/${CI_PROJECT_PATH}/cache"
-  rules:
-    - if: $CI_COMMIT_BRANCH == 'production'
-    - if: $CI_COMMIT_BRANCH == 'develop'
-  needs:
-    - job: build-backend
-      optional: true
+# ============================================================================
+# QUALITY STAGE
+# ============================================================================
 
-sonar-scan:
+quality:sonar:
+  stage: quality
   image:
     name: sonarsource/sonar-scanner-cli:11
-    entrypoint: [ "" ]
-  stage: sonar
+    entrypoint: [""]
   variables:
     SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
     GIT_DEPTH: "0"
   script:
-    - sonar-scanner -Dsonar.host.url="${SONAR_HOST_URL}" -Dsonar.token="${SONAR_TOKEN}"
+    - echo "Running SonarQube analysis..."
+    - sonar-scanner
+      -Dsonar.host.url="${SONAR_HOST_URL}"
+      -Dsonar.token="${SONAR_TOKEN}"
+      -Dsonar.projectKey="${CI_PROJECT_PATH_SLUG}"
+      -Dsonar.projectName="${CI_PROJECT_NAME}"
+      -Dsonar.sources=src/main/java,frontend/src
+      -Dsonar.tests=src/test/java,frontend/src
+      -Dsonar.java.binaries=build/classes
+      -Dsonar.coverage.jacoco.xmlReportPaths=build/reports/jacoco/test/jacocoTestReport.xml
+      -Dsonar.javascript.lcov.reportPaths=frontend/coverage/lcov.info
   allow_failure: true
   rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "develop"
+    - if: $CI_COMMIT_BRANCH == "production"
   needs:
-    - job: build-backend
-      optional: true
-    - job: build-frontend
-      optional: true
-    - job: build-docker
-      optional: true
-    - job: build-docker-prod
-      optional: true
+    - test:backend
+    - test:frontend
 
-sync-to-github:
-  image: bitnami/git:latest
-  stage: deploy
-  rules:
-    - if: $CI_COMMIT_BRANCH == 'main'
-  script:
-    - git remote add github https://${GITHUB_TOKEN}@github.com/AnnapolisLabs/Lineage.git || git remote set-url github https://${GITHUB_TOKEN}@github.com/AnnapolisLabs/Lineage.git
-    - git push github HEAD:refs/heads/main --force
+# ============================================================================
+# PACKAGE STAGE - Build and Push Docker Image
+# ============================================================================
 
-# Configure CONTAINER_APP_NAME, CONTAINER_PROJECT_HOST, SSH_USER variables in GitLab CI/CD Settings -> Variables
-sync-to-prod:
-  stage: deploy
-  image: alpine:latest
+package:image:
+  stage: package
+  image:
+    name: gcr.io/kaniko-project/executor:v1.23.0-debug
+    entrypoint: [""]
   before_script:
-    - apk add --no-cache openssh-client podman podman-compose
-    - eval $(ssh-agent -s)
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - ssh-keyscan -H $CONTAINER_PROJECT_HOST >> ~/.ssh/known_hosts
-  rules:
-    - if: $CI_COMMIT_BRANCH == 'production'
-    - if: $CI_COMMIT_BRANCH == 'develop'
-  needs:
-    - job: build-docker-prod
-      optional: true
+    - echo "Preparing Kaniko authentication..."
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"${REGISTRY_URL}\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
   script:
     - |
-      # Copy compose file to server
-      scp docker-compose.prod.yml $SSH_USER@$CONTAINER_PROJECT_HOST:~/docker-compose.prod.yml
-      ssh $SSH_USER@$CONTAINER_PROJECT_HOST env CONTAINER_NAME="$CI_PROJECT_PATH_SLUG-$CONTAINER_APP_NAME" DB_USERNAME="$DB_USERNAME" DB_PASSWORD="$DB_PASSWORD" IMAGE_TAG="production" << 'EOF'
-        # Install Podman on remote server if not already installed
-        if ! command -v podman &> /dev/null; then
-          echo "Podman not found, installing..."
-          if command -v apk &> /dev/null; then
-            apk add --no-cache podman podman-compose
-          elif command -v apt &> /dev/null; then
-            apt-get update && apt-get install -y podman podman-compose
-          elif command -v yum &> /dev/null; then
-            yum install -y podman podman-compose
-          fi
-        fi
-        
-        # Deploy using Podman Compose
-        echo "$CI_REGISTRY_PASSWORD" | podman login -u "$CI_REGISTRY_USER" --password-stdin registry.ftco.ca
-        podman-compose -f ~/docker-compose.prod.yml pull
-        podman-compose -f ~/docker-compose.prod.yml up -d --force-recreate
-      EOF
+      echo "Building and pushing Docker image..."
+      
+      # Determine tags based on branch
+      TAGS=""
+      
+      # Always tag with commit ref slug (branch name)
+      TAGS="--destination ${IMAGE_NAME}:${CI_COMMIT_REF_SLUG}"
+      
+      # Add 'latest' tag for main/master/production branches
+      if [ "$CI_COMMIT_REF_NAME" = "main" ] || [ "$CI_COMMIT_REF_NAME" = "master" ] || [ "$CI_COMMIT_REF_NAME" = "production" ]; then
+        TAGS="$TAGS --destination ${IMAGE_NAME}:latest"
+      fi
+      
+      # Add 'production' tag for production branch
+      if [ "$CI_COMMIT_REF_NAME" = "production" ]; then
+        TAGS="$TAGS --destination ${IMAGE_NAME}:production"
+      fi
+      
+      # Build and push with Kaniko
+      /kaniko/executor \
+        --context "${CI_PROJECT_DIR}" \
+        --dockerfile "${CI_PROJECT_DIR}/Dockerfile" \
+        $TAGS \
+        --cache=true \
+        --cache-repo="${IMAGE_NAME}/cache" \
+        --cache-ttl=168h \
+        --cleanup
+      
+      echo "✅ Image pushed successfully!"
+      echo "📦 Available tags:"
+      echo "$TAGS" | sed 's/--destination/  -/g'
+  rules:
+    # Build on merge requests
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    # Build on main branches
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "master"
+    - if: $CI_COMMIT_BRANCH == "develop"
+    - if: $CI_COMMIT_BRANCH == "production"
+  needs:
+    - test:backend
+    - test:frontend
+
+# ============================================================================
+# OPTIONAL: GitHub Sync (if using mirror)
+# ============================================================================
+
+sync:github:
+  stage: package
+  image: bitnami/git:latest
+  script:
+    - echo "Syncing to GitHub mirror..."
+    - git remote add github https://${GITHUB_TOKEN}@github.com/AnnapolisLabs/Lineage.git || git remote set-url github https://${GITHUB_TOKEN}@github.com/AnnapolisLabs/Lineage.git
+    - git push github HEAD:refs/heads/main --force
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: on_success
+  needs: []
+  allow_failure: true

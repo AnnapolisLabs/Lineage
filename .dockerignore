@@ -1,55 +1,57 @@
-# Git and version control
+# Git
 .git
 .gitignore
 .gitattributes
 
-# Gradle cache and build artifacts
-.gradle
-build/
-.gradle/
-
-# Frontend development files (we're building backend only)
-frontend/node_modules
-frontend/coverage
-frontend/dist
-frontend/.env
-
-# IDE files
-.idea/
-.vscode/
-*.swp
-*.swo
-*~
-
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# Test reports and coverage
-test-report.xml
-coverage/
-*.xml
+# CI/CD
+.gitlab-ci.yml
+.gitlab-ci.yml.bak
 
 # Documentation
-README.md
 *.md
-docs/
+LICENSE
 
-# CI/CD files
-.gitlab-ci.yml
-test-containerization.sh
+# IDE
+.idea
+.vscode
+*.iml
 
-# Environment files (these should be mounted at runtime)
+# Build artifacts (will be built inside Docker)
+build/
+target/
+.gradle/
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/coverage/
+
+# Test and coverage
+frontend/coverage/
+frontend/test-report.xml
+build/reports/
+build/test-results/
+
+# Development
 .env
-.env.*
+.env.local
+.env.*.local
+docker-compose.dev.yml
+docker-compose.yml
 
-# Temporary files
-tmp/
-temp/
-*.tmp
+# Logs
 *.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python virtual env
+.venv/
+__pycache__/
+*.pyc
+
+# MCP tools (not needed in container)
+mcp_tools/
+
+# Gradle wrapper jar is needed
+!gradle/wrapper/gradle-wrapper.jar
