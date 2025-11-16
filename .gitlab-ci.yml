@@ -68,30 +68,10 @@ build-docker:
 build-docker-prod:
   stage: docker-build
   image: docker:24.0.5
-  services:
-    - name: docker:24.0.5-dind
-      command: ["--tls=false"]
   variables:
-    DOCKER_DRIVER: overlay2
-    DOCKER_BUILDKIT: 1
-    BUILDKIT_PROGRESS: plain
+    DOCKER_HOST: unix:///var/run/docker.sock
   before_script:
-    - |
-      echo "Waiting for Docker daemon to be ready..."
-      for i in {1..30}; do
-        if docker info >/dev/null 2>&1; then
-          echo "Docker daemon is ready"
-          docker version
-          break
-        fi
-        echo "Attempt $i: Docker daemon not ready yet..."
-        sleep 2
-      done
-      if ! docker info >/dev/null 2>&1; then
-        echo "Docker daemon failed to start"
-        exit 1
-      fi
-      echo "Docker daemon is fully initialized and ready"
+    - docker info
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD registry.ftco.ca
   script:
     - |
