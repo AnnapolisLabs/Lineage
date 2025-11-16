@@ -15,7 +15,6 @@ build-backend:
     - gradle build test jacocoTestReport
   artifacts:
     paths:
-      - build/classes/
       - build/libs/*.jar
       - build/reports/jacoco/
     expire_in: 1 hour
@@ -30,7 +29,7 @@ build-frontend:
     - npm run test:coverage
   artifacts:
     paths:
-      - frontend/coverage/
+      - frontend/coverage/lcov.info
       - frontend/test-report.xml
     expire_in: 1 hour
   needs: []
