@@ -42,7 +42,6 @@ build-docker:
   image: docker:24.0.5
   services:
     - name: docker:24.0.5-dind
-      command: ["--insecure-registry=registry.ftco.ca"]
   variables:
     DOCKER_DRIVER: overlay2
     DOCKER_BUILDKIT: 0
@@ -71,20 +70,39 @@ build-docker-prod:
   image: docker:24.0.5
   services:
     - name: docker:24.0.5-dind
-      command: ["--insecure-registry=registry.ftco.ca"]
   variables:
     DOCKER_DRIVER: overlay2
     DOCKER_BUILDKIT: 0
   before_script:
-    - sleep 5
+    - |
+      echo "Waiting for Docker daemon to be ready..."
+      for i in {1..30}; do
+        if docker info >/dev/null 2>&1; then
+          echo "Docker daemon is ready"
+          break
+        fi
+        echo "Attempt $i: Docker daemon not ready yet..."
+        sleep 2
+      done
+      if ! docker info >/dev/null 2>&1; then
+        echo "Docker daemon failed to start"
+        exit 1
+      fi
+      echo "Docker daemon is fully initialized and ready"
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD registry.ftco.ca
   script:
     - |
       PRODUCTION_IMAGE="registry.ftco.ca/$CI_PROJECT_PATH:production"
       LATEST_IMAGE="registry.ftco.ca/$CI_PROJECT_PATH:latest"
+      echo "Building production image: $PRODUCTION_IMAGE"
       docker build -t $PRODUCTION_IMAGE .
+      echo "Verifying image exists locally"
+      docker inspect $PRODUCTION_IMAGE
+      echo "Pushing production image to registry"
       docker push $PRODUCTION_IMAGE
+      echo "Building latest image: $LATEST_IMAGE"
       docker build -t $LATEST_IMAGE .
+      echo "Pushing latest image to registry"
       docker push $LATEST_IMAGE
   rules:
     - if: $CI_COMMIT_BRANCH == 'production'
