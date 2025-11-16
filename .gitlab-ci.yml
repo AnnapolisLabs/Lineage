@@ -70,15 +70,18 @@ build-docker-prod:
   image: docker:24.0.5
   services:
     - name: docker:24.0.5-dind
+      command: ["--tls=false"]
   variables:
     DOCKER_DRIVER: overlay2
-    DOCKER_BUILDKIT: 0
+    DOCKER_BUILDKIT: 1
+    BUILDKIT_PROGRESS: plain
   before_script:
     - |
       echo "Waiting for Docker daemon to be ready..."
       for i in {1..30}; do
         if docker info >/dev/null 2>&1; then
           echo "Docker daemon is ready"
+          docker version
           break
         fi
         echo "Attempt $i: Docker daemon not ready yet..."
@@ -95,20 +98,13 @@ build-docker-prod:
       PRODUCTION_IMAGE="registry.ftco.ca/$CI_PROJECT_PATH:production"
       LATEST_IMAGE="registry.ftco.ca/$CI_PROJECT_PATH:latest"
       
-      echo "Building production image with ID capture: $PRODUCTION_IMAGE"
-      docker build --iidfile /tmp/image_id.txt .
-      
-      IMAGE_ID=$(cat /tmp/image_id.txt)
-      echo "Built image ID: $IMAGE_ID"
-      
-      echo "Tagging image with production tag"
-      docker tag "$IMAGE_ID" "$PRODUCTION_IMAGE"
-      
-      echo "Tagging image with latest tag"
-      docker tag "$IMAGE_ID" "$LATEST_IMAGE"
+      echo "Building and tagging images directly: $PRODUCTION_IMAGE"
+      docker build --progress=plain -t "$PRODUCTION_IMAGE" -t "$LATEST_IMAGE" .
       
       echo "Verifying images exist locally"
-      docker images | grep "$(echo $CI_PROJECT_PATH | cut -d'/' -f2)"
+      docker images
+      docker inspect "$PRODUCTION_IMAGE" || echo "WARNING: Production image not found in daemon"
+      docker inspect "$LATEST_IMAGE" || echo "WARNING: Latest image not found in daemon"
       
       echo "Pushing production image to registry"
       docker push "$PRODUCTION_IMAGE"
