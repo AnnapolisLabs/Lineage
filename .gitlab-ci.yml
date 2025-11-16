@@ -43,7 +43,7 @@ build-docker:
       command: ["--insecure-registry=registry.ftco.ca"]
   variables:
     DOCKER_DRIVER: overlay2
-    DOCKER_BUILDKIT: 0
+    DOCKER_BUILDKIT: 1
   before_script:
     - |
       echo "Waiting for Docker daemon to be ready..."
