@@ -95,15 +95,15 @@ build-docker-prod:
       PRODUCTION_IMAGE="registry.ftco.ca/$CI_PROJECT_PATH:production"
       LATEST_IMAGE="registry.ftco.ca/$CI_PROJECT_PATH:latest"
       echo "Building production image: $PRODUCTION_IMAGE"
-      docker build -t $PRODUCTION_IMAGE .
+      docker build -t "$PRODUCTION_IMAGE" .
       echo "Verifying image exists locally"
-      docker inspect $PRODUCTION_IMAGE
+      docker inspect "$PRODUCTION_IMAGE"
       echo "Pushing production image to registry"
-      docker push $PRODUCTION_IMAGE
+      docker push "$PRODUCTION_IMAGE"
       echo "Building latest image: $LATEST_IMAGE"
-      docker build -t $LATEST_IMAGE .
+      docker build -t "$LATEST_IMAGE" .
       echo "Pushing latest image to registry"
-      docker push $LATEST_IMAGE
+      docker push "$LATEST_IMAGE"
   rules:
     - if: $CI_COMMIT_BRANCH == 'production'
     - if: $CI_COMMIT_BRANCH == 'develop'
