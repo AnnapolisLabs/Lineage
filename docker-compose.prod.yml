@@ -2,8 +2,8 @@ version: '3.8'
 
 services:
   lineage:
-    image: registry.ftco.ca/lineage-app:${IMAGE_TAG:-latest}
-    container_name: ${CONTAINER_NAME:-lineage-app}
+    image: registry.ftco.ca/mfraser/lineage:${IMAGE_TAG:-production}
+    container_name: ${CONTAINER_NAME}
     restart: always
     ports:
       - "8080:8080"
