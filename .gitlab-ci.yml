@@ -54,7 +54,7 @@ build-docker:
     - IMAGE_LATEST_LOWER=$(echo $DOCKER_IMAGE_LATEST | tr '[:upper:]' '[:lower:]')
     - docker build -t $IMAGE_LOWER .
     - docker push $IMAGE_LOWER
-    - 'if [ "$CI_COMMIT_REF_NAME" = "master" ] || [ "$CI_COMMIT_REF_NAME" = "main" ] || [ "$CI_COMMIT_REF_NAME" = "production" ]; then docker tag $IMAGE_LOWER $IMAGE_LATEST_LOWER; fi'
+    - 'if [ "$CI_COMMIT_REF_NAME" = "master" ] || [ "$CI_COMMIT_REF_NAME" = "main" ] || [ "$CI_COMMIT_REF_NAME" = "production" ]; then docker build -t $IMAGE_LATEST_LOWER .; fi'
     - 'if [ "$CI_COMMIT_REF_NAME" = "master" ] || [ "$CI_COMMIT_REF_NAME" = "main" ] || [ "$CI_COMMIT_REF_NAME" = "production" ]; then docker push $IMAGE_LATEST_LOWER; fi'
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
