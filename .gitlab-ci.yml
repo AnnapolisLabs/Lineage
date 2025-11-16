@@ -115,19 +115,11 @@ sync-to-prod:
       optional: true
   script:
     - |
-      IMAGE_NAME=$(echo "registry.ftco.ca/$CI_PROJECT_PATH:latest" | tr '[:upper:]' '[:lower:]')
-      ssh $SSH_USER@$CONTAINER_PROJECT_HOST bash << EOF
-        echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin registry.ftco.ca
-        docker pull $IMAGE_NAME
-        docker stop $CI_PROJECT_PATH_SLUG-$CONTAINER_APP_NAME || true
-        docker rm $CI_PROJECT_PATH_SLUG-$CONTAINER_APP_NAME || true
-        docker run -d \
-          --name $CI_PROJECT_PATH_SLUG-$CONTAINER_APP_NAME \
-          --restart always \
-          -p 8080:8080 \
-          -v ~/$CONTAINER_APP_NAME/.env:/app/.env:ro \
-          -e SPRING_PROFILES_ACTIVE=prod \
-          -e DB_USERNAME=$DB_USERNAME \
-          -e DB_PASSWORD=$DB_PASSWORD \
-          $IMAGE_NAME
+      echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin registry.ftco.ca
+      # Copy compose file to server
+      scp docker-compose.prod.yml $SSH_USER@$CONTAINER_PROJECT_HOST:~/docker-compose.prod.yml
+      ssh $SSH_USER@$CONTAINER_PROJECT_HOST env CONTAINER_NAME="$CI_PROJECT_PATH_SLUG-$CONTAINER_APP_NAME" DB_USERNAME="$DB_USERNAME" DB_PASSWORD="$DB_PASSWORD" << 'EOF'
+        # Deploy using Podman Compose
+        podman-compose -f ~/docker-compose.prod.yml pull
+        podman-compose -f ~/docker-compose.prod.yml up -d --force-recreate
       EOF
