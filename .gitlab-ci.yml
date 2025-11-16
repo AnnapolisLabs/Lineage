@@ -9,8 +9,6 @@ variables:
   DOCKER_TLS_CERTDIR: ""
   DOCKER_IMAGE: registry.ftco.ca/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
   DOCKER_IMAGE_LATEST: registry.ftco.ca/$CI_PROJECT_PATH:latest
-  DOCKER_IMAGE: registry.ftco.ca/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
-  DOCKER_IMAGE_LATEST: registry.ftco.ca/$CI_PROJECT_PATH:latest
 
 build-backend:
   image: gradle:8.10.0-jdk21-jammy
