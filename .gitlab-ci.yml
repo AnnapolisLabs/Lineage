@@ -41,13 +41,11 @@ build-docker:
   image: docker:24-cli
   services:
     - docker:24-dind
-  before_script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
     - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA .
-    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
     - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE:latest
-    - docker push $CI_REGISTRY_IMAGE:latest
+    # Note: Skipping push to registry as it's not accessible from CI runners
+    # The production server will pull from the registry directly
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_COMMIT_BRANCH == 'master'
@@ -105,17 +103,30 @@ sync-to-prod:
       optional: true
   script:
     - |
-      IMAGE_NAME=$(echo "$CI_REGISTRY_IMAGE:latest" | tr '[:upper:]' '[:lower:]')
       CONTAINER_NAME=$(echo "$CI_PROJECT_PATH_SLUG-$CONTAINER_APP_NAME" | tr '[:upper:]' '[:lower:]')
       ssh $SSH_USER@$CONTAINER_PROJECT_HOST bash << 'EOF'
-        echo $CI_REGISTRY_PASSWORD | podman login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
-        podman pull $IMAGE_NAME
+        # Clone the repository if it doesn't exist
+        if [ ! -d "/opt/$CONTAINER_APP_NAME/lineage" ]; then
+          git clone https://$GITHUB_TOKEN@github.com/AnnapolisLabs/Lineage.git /opt/$CONTAINER_APP_NAME/lineage
+        else
+          cd /opt/$CONTAINER_APP_NAME/lineage
+          git fetch origin
+          git reset --hard origin/production
+        fi
+        
+        # Build the Docker image
+        cd /opt/$CONTAINER_APP_NAME/lineage
+        podman build -t lineage-app .
+        
+        # Stop and remove old container
         podman stop $CONTAINER_NAME || true
         podman rm $CONTAINER_NAME || true
+        
+        # Run new container
         podman run -d \
           --name $CONTAINER_NAME \
           --restart always \
           -p 8080:8080 \
           -v /opt/$CONTAINER_APP_NAME/.env:/app/.env:ro \
-          $IMAGE_NAME
+          lineage-app
       EOF
