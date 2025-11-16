@@ -72,7 +72,6 @@ build-docker-prod:
     - name: docker:24.0.5-dind
   variables:
     DOCKER_DRIVER: overlay2
-    DOCKER_BUILDKIT: 0
   before_script:
     - |
       echo "Waiting for Docker daemon to be ready..."
