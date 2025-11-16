@@ -45,10 +45,23 @@ build-docker:
     DOCKER_DRIVER: overlay2
     DOCKER_BUILDKIT: 0
   before_script:
-    - sleep 5
+    - |
+      echo "Waiting for Docker daemon to be ready..."
+      for i in {1..30}; do
+        if docker info >/dev/null 2>&1; then
+          echo "Docker daemon is ready"
+          break
+        fi
+        echo "Attempt $i: Docker daemon not ready yet..."
+        sleep 2
+      done
+      if ! docker info >/dev/null 2>&1; then
+        echo "Docker daemon failed to start"
+        exit 1
+      fi
+      export DOCKER_BUILDKIT=0
   script:
-    - docker build -t lineage-app:$CI_COMMIT_SHA .
-    - docker tag lineage-app:$CI_COMMIT_SHA lineage-app:latest
+    - docker build -t lineage-app:$CI_COMMIT_SHA -t lineage-app:latest .
     # Note: Skipping push to registry as it's not accessible from CI runners
     # The production server will pull from the registry directly
   rules:
@@ -90,7 +103,7 @@ sync-to-github:
     - git remote add github https://${GITHUB_TOKEN}@github.com/AnnapolisLabs/Lineage.git || git remote set-url github https://${GITHUB_TOKEN}@github.com/AnnapolisLabs/Lineage.git
     - git push github HEAD:refs/heads/main --force
 
-# Configure CONTAINER_APP_NAME, CONTAINER_PROJECT_HOST variable in GitLab CI/CD Settings -> Variables
+# Configure CONTAINER_APP_NAME, CONTAINER_PROJECT_HOST, SSH_USER variables in GitLab CI/CD Settings -> Variables
 sync-to-prod:
   stage: deploy
   image: alpine:latest
@@ -111,27 +124,20 @@ sync-to-prod:
       CONTAINER_NAME=$(echo "$CI_PROJECT_PATH_SLUG-$CONTAINER_APP_NAME" | tr '[:upper:]' '[:lower:]')
       ssh $SSH_USER@$CONTAINER_PROJECT_HOST bash << 'EOF'
         # Clone the repository if it doesn't exist
-        if [ ! -d "/opt/$CONTAINER_APP_NAME/lineage" ]; then
-          git clone https://$GITHUB_TOKEN@github.com/AnnapolisLabs/Lineage.git /opt/$CONTAINER_APP_NAME/lineage
+        if [ ! -d "~/$CONTAINER_APP_NAME/lineage" ]; then
+          git clone https://$GITHUB_TOKEN@github.com/AnnapolisLabs/Lineage.git ~/$CONTAINER_APP_NAME/lineage
         else
-          cd /opt/$CONTAINER_APP_NAME/lineage
+          cd ~/$CONTAINER_APP_NAME/lineage
           git fetch origin
           git reset --hard origin/production
         fi
-        
+
         # Build the Docker image
-        cd /opt/$CONTAINER_APP_NAME/lineage
-        podman build -t lineage-app .
-        
-        # Stop and remove old container
-        podman stop $CONTAINER_NAME || true
-        podman rm $CONTAINER_NAME || true
-        
-        # Run new container
-        podman run -d \
-          --name $CONTAINER_NAME \
-          --restart always \
-          -p 8080:8080 \
-          -v /opt/$CONTAINER_APP_NAME/.env:/app/.env:ro \
-          lineage-app
+        cd ~/$CONTAINER_APP_NAME/lineage
+        podman build -t lineage-app:latest .
+
+        # Deploy using Podman Compose
+        export CONTAINER_NAME='$CONTAINER_NAME'
+        export ENV_DIR="$HOME/$CONTAINER_APP_NAME"
+        podman-compose -f docker-compose.prod.yml up -d --force-recreate
       EOF
