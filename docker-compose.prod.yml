@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  lineage:
+    image: lineage-app:latest
+    container_name: ${CONTAINER_NAME:-lineage-app}
+    restart: always
+    ports:
+      - "8080:8080"
+    volumes:
+      - ${ENV_DIR:-/opt/lineage}/.env:/app/.env:ro
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod

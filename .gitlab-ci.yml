@@ -44,7 +44,20 @@ build-docker:
   variables:
     DOCKER_DRIVER: overlay2
   before_script:
-    - sleep 5
+    - |
+      echo "Waiting for Docker daemon to be ready..."
+      for i in {1..30}; do
+        if docker info >/dev/null 2>&1; then
+          echo "Docker daemon is ready"
+          break
+        fi
+        echo "Attempt $i: Docker daemon not ready yet..."
+        sleep 2
+      done
+      if ! docker info >/dev/null 2>&1; then
+        echo "Docker daemon failed to start"
+        exit 1
+      fi
   script:
     - docker build -t lineage-app:$CI_COMMIT_SHA .
     - docker tag lineage-app:$CI_COMMIT_SHA lineage-app:latest
@@ -117,20 +130,13 @@ sync-to-prod:
           git fetch origin
           git reset --hard origin/production
         fi
-        
+
         # Build the Docker image
         cd ~/$CONTAINER_APP_NAME/lineage
-        podman build -t lineage-app .
-        
-        # Stop and remove old container
-        podman stop $CONTAINER_NAME || true
-        podman rm $CONTAINER_NAME || true
-        
-        # Run new container
-        podman run -d \
-          --name $CONTAINER_NAME \
-          --restart always \
-          -p 8080:8080 \
-          -v ~/$CONTAINER_APP_NAME/.env:/app/.env:ro \
-          lineage-app
+        podman build -t lineage-app:latest .
+
+        # Deploy using Podman Compose
+        export CONTAINER_NAME='$CONTAINER_NAME'
+        export ENV_DIR="$HOME/$CONTAINER_APP_NAME"
+        podman-compose -f docker-compose.prod.yml up -d --force-recreate
       EOF
