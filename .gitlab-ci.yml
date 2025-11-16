@@ -61,8 +61,7 @@ build-docker:
       fi
       export DOCKER_BUILDKIT=0
   script:
-    - docker build -t lineage-app:$CI_COMMIT_SHA .
-    - docker tag lineage-app:$CI_COMMIT_SHA lineage-app:latest
+    - docker build -t lineage-app:$CI_COMMIT_SHA -t lineage-app:latest .
     # Note: Skipping push to registry as it's not accessible from CI runners
     # The production server will pull from the registry directly
   rules:
