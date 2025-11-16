@@ -129,7 +129,7 @@ sync-to-prod:
       echo "CONTAINER_NAME: $CONTAINER_NAME"
       # Test SSH connection
       ssh -o BatchMode=yes -o ConnectTimeout=10 $SSH_USER@$CONTAINER_PROJECT_HOST echo "SSH connection successful" || (echo "SSH connection failed"; exit 1)
-      ssh $SSH_USER@$CONTAINER_PROJECT_HOST sh << 'EOF'
+      ssh $SSH_USER@$CONTAINER_PROJECT_HOST << 'EOF'
         # Clone the repository if it doesn't exist
         if [ ! -d "~/lineage" ]; then
           git clone https://$GITHUB_TOKEN@github.com/AnnapolisLabs/Lineage.git ~/lineage
