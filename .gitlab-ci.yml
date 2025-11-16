@@ -140,9 +140,12 @@ sync-to-prod:
       optional: true
   script:
     - |
+      # Set the correct image tag
+      IMAGE_TAG="production"
+      
       # Copy compose file to server
       scp docker-compose.prod.yml $SSH_USER@$CONTAINER_PROJECT_HOST:~/docker-compose.prod.yml
-      ssh $SSH_USER@$CONTAINER_PROJECT_HOST env CONTAINER_NAME="$CI_PROJECT_PATH_SLUG-$CONTAINER_APP_NAME" DB_USERNAME="$DB_USERNAME" DB_PASSWORD="$DB_PASSWORD" << 'EOF'
+      ssh $SSH_USER@$CONTAINER_PROJECT_HOST env CONTAINER_NAME="$CI_PROJECT_PATH_SLUG-$CONTAINER_APP_NAME" DB_USERNAME="$DB_USERNAME" DB_PASSWORD="$DB_PASSWORD" IMAGE_TAG="$IMAGE_TAG" << 'EOF'
         # Install Podman on remote server if not already installed
         if ! command -v podman &> /dev/null; then
           echo "Podman not found, installing..."
@@ -155,8 +158,24 @@ sync-to-prod:
           fi
         fi
         
-        # Authenticate to registry and deploy using Podman Compose
+        echo "=== Podman Version ==="
+        podman version
+        
+        echo "=== Authenticate to registry ==="
         echo "$CI_REGISTRY_PASSWORD" | podman login -u "$CI_REGISTRY_USER" --password-stdin registry.ftco.ca
+        
+        echo "=== Check available images ==="
+        podman images
+        
+        echo "=== Pulling images with tag: $IMAGE_TAG ==="
         podman-compose -f ~/docker-compose.prod.yml pull
+        
+        echo "=== Starting containers ==="
         podman-compose -f ~/docker-compose.prod.yml up -d --force-recreate
+        
+        echo "=== Container status ==="
+        podman ps -a
+        
+        echo "=== Container logs ==="
+        podman logs --tail=20 "$CONTAINER_NAME"
       EOF
