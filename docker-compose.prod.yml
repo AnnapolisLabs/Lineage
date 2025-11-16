@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   lineage:
-    image: registry.ftco.ca:5050/lineage-app:${IMAGE_TAG:-latest}
+    image: registry.ftco.ca/lineage-app:${IMAGE_TAG:-latest}
     container_name: ${CONTAINER_NAME:-lineage-app}
     restart: always
     ports:
