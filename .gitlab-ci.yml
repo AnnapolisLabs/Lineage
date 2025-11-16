@@ -1,11 +1,10 @@
 stages:
   - build-gradle
+  - docker-build
   - sonar
   - deploy
 
 variables:
-  DOCKER_IMAGE: registry.ftco.ca/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
-  DOCKER_IMAGE_LATEST: registry.ftco.ca/$CI_PROJECT_PATH:latest
   DOCKER_HOST: tcp://docker:2375
   DOCKER_TLS_CERTDIR: ""
 
@@ -16,9 +15,10 @@ build-backend:
     - gradle build test jacocoTestReport
   artifacts:
     paths:
-      - build/classes/
-      - build/reports/jacoco/
+      - build/libs/*.jar
+      - build/reports/jacoco/test/jacocoTestReport.xml
     expire_in: 1 hour
+  needs: []
 
 build-frontend:
   image: node:20
@@ -29,18 +29,42 @@ build-frontend:
     - npm run test:coverage
   artifacts:
     paths:
-      - frontend/coverage/
+      - frontend/coverage/lcov.info
       - frontend/test-report.xml
     expire_in: 1 hour
+  needs: []
+
+# Docker build stage - builds the container image
+build-docker:
+  stage: docker-build
+  image: docker:24.0.5
+  services:
+    - name: docker:24.0.5-dind
+      command: ["--insecure-registry=registry.ftco.ca"]
+  variables:
+    DOCKER_DRIVER: overlay2
+    DOCKER_BUILDKIT: 0
+  before_script:
+    - sleep 5
+  script:
+    - docker build -t lineage-app:$CI_COMMIT_SHA .
+    - docker tag lineage-app:$CI_COMMIT_SHA lineage-app:latest
+    # Note: Skipping push to registry as it's not accessible from CI runners
+    # The production server will pull from the registry directly
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_BRANCH == 'master'
+    - if: $CI_COMMIT_BRANCH == 'main'
+    - if: $CI_COMMIT_BRANCH == 'develop'
+  needs:
+    - job: build-backend
+      optional: true
 
 sonar-scan:
   image:
     name: sonarsource/sonar-scanner-cli:11
     entrypoint: [ "" ]
   stage: sonar
-  dependencies:
-    - build-backend
-    - build-frontend
   variables:
     SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
     GIT_DEPTH: "0"
@@ -49,17 +73,21 @@ sonar-scan:
   allow_failure: true
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-    - if: $CI_COMMIT_BRANCH == 'master'
-    - if: $CI_COMMIT_BRANCH == 'main'
-    - if: $CI_COMMIT_BRANCH == 'develop'
+  needs:
+    - job: build-backend
+      optional: true
+    - job: build-frontend
+      optional: true
+    - job: build-docker
+      optional: true
 
 sync-to-github:
   image: bitnami/git:latest
   stage: deploy
-  only:
-    - main
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
   script:
-    - git remote add github https://${GITHUB_TOKEN}@github.com/AnnapolisLabs/Lineage.git
+    - git remote add github https://${GITHUB_TOKEN}@github.com/AnnapolisLabs/Lineage.git || git remote set-url github https://${GITHUB_TOKEN}@github.com/AnnapolisLabs/Lineage.git
     - git push github HEAD:refs/heads/main --force
 
 # Configure CONTAINER_APP_NAME, CONTAINER_PROJECT_HOST variable in GitLab CI/CD Settings -> Variables
@@ -73,21 +101,37 @@ sync-to-prod:
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
     - ssh-keyscan -H $CONTAINER_PROJECT_HOST >> ~/.ssh/known_hosts
-  only:
-    - production
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'production'
+  needs:
+    - job: build-docker
+      optional: true
   script:
     - |
-      IMAGE_NAME=$(echo "registry.ftco.ca/$CI_PROJECT_PATH:latest" | tr '[:upper:]' '[:lower:]')
       CONTAINER_NAME=$(echo "$CI_PROJECT_PATH_SLUG-$CONTAINER_APP_NAME" | tr '[:upper:]' '[:lower:]')
-      ssh $CONTAINER_PROJECT_HOST bash << EOF
-        echo $CI_REGISTRY_PASSWORD | podman login -u $CI_REGISTRY_USER --password-stdin registry.ftco.ca
-        podman pull $IMAGE_NAME
+      ssh $SSH_USER@$CONTAINER_PROJECT_HOST bash << 'EOF'
+        # Clone the repository if it doesn't exist
+        if [ ! -d "/opt/$CONTAINER_APP_NAME/lineage" ]; then
+          git clone https://$GITHUB_TOKEN@github.com/AnnapolisLabs/Lineage.git /opt/$CONTAINER_APP_NAME/lineage
+        else
+          cd /opt/$CONTAINER_APP_NAME/lineage
+          git fetch origin
+          git reset --hard origin/production
+        fi
+        
+        # Build the Docker image
+        cd /opt/$CONTAINER_APP_NAME/lineage
+        podman build -t lineage-app .
+        
+        # Stop and remove old container
         podman stop $CONTAINER_NAME || true
         podman rm $CONTAINER_NAME || true
+        
+        # Run new container
         podman run -d \
           --name $CONTAINER_NAME \
           --restart always \
           -p 8080:8080 \
           -v /opt/$CONTAINER_APP_NAME/.env:/app/.env:ro \
-          $IMAGE_NAME
+          lineage-app
       EOF
