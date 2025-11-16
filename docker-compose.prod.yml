@@ -2,12 +2,12 @@ version: '3.8'
 
 services:
   lineage:
-    image: lineage-app:latest
+    image: registry.ftco.ca:5050/lineage-app:${IMAGE_TAG:-latest}
     container_name: ${CONTAINER_NAME:-lineage-app}
     restart: always
     ports:
       - "8080:8080"
-    volumes:
-      - ${ENV_DIR:-/opt/lineage}/.env:/app/.env:ro
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
