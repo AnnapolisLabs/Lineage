@@ -62,6 +62,8 @@ build-docker:
       export DOCKER_BUILDKIT=0
   script:
     - docker build -t lineage-app:$CI_COMMIT_SHA -t lineage-app:latest .
+    - docker tag lineage-app:$CI_COMMIT_SHA registry.ftco.ca:5050/lineage-app:$CI_COMMIT_SHA
+    - docker push registry.ftco.ca:5050/lineage-app:$CI_COMMIT_SHA
     # Note: Skipping push to registry as it's not accessible from CI runners
     # The production server will pull from the registry directly
   rules:
@@ -126,23 +128,15 @@ sync-to-prod:
       echo "CONTAINER_PROJECT_HOST: $CONTAINER_PROJECT_HOST"
       echo "SSH_USER: $SSH_USER"
       CONTAINER_NAME=$(echo "$CI_PROJECT_PATH_SLUG-$CONTAINER_APP_NAME" | tr '[:upper:]' '[:lower:]')
+      IMAGE_TAG=$CI_COMMIT_SHA
       echo "CONTAINER_NAME: $CONTAINER_NAME"
+      echo "IMAGE_TAG: $IMAGE_TAG"
       # Test SSH connection
       ssh -o BatchMode=yes -o ConnectTimeout=10 $SSH_USER@$CONTAINER_PROJECT_HOST echo "SSH connection successful" || (echo "SSH connection failed"; exit 1)
-      ssh $SSH_USER@$CONTAINER_PROJECT_HOST env CONTAINER_NAME="$CONTAINER_NAME" GITHUB_TOKEN="$GITHUB_TOKEN" DB_USERNAME="$DB_USERNAME" DB_PASSWORD="$DB_PASSWORD" << 'EOF'
-        # Clone the repository (always fresh for production)
-        rm -rf ~/lineage
-        git clone https://$GITHUB_TOKEN@github.com/AnnapolisLabs/Lineage.git ~/lineage
-
-        # Create production .env file
-        cd ~/lineage
-        echo "DB_USERNAME=$DB_USERNAME" > .env
-        echo "DB_PASSWORD=$DB_PASSWORD" >> .env
-
-        # Build the Docker image
-        podman build -t lineage-app:latest .
-
+      # Copy compose file to server
+      scp docker-compose.prod.yml $SSH_USER@$CONTAINER_PROJECT_HOST:~/docker-compose.prod.yml
+      ssh $SSH_USER@$CONTAINER_PROJECT_HOST env CONTAINER_NAME="$CONTAINER_NAME" IMAGE_TAG="$IMAGE_TAG" DB_USERNAME="$DB_USERNAME" DB_PASSWORD="$DB_PASSWORD" << 'EOF'
         # Deploy using Podman Compose
-        export ENV_DIR="$HOME/lineage"
-        podman-compose -f docker-compose.prod.yml up -d --force-recreate
+        podman-compose -f ~/docker-compose.prod.yml pull
+        podman-compose -f ~/docker-compose.prod.yml up -d --force-recreate
       EOF
