@@ -5,8 +5,6 @@ stages:
   - deploy
 
 variables:
-  DOCKER_IMAGE: registry.ftco.ca/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
-  DOCKER_IMAGE_LATEST: registry.ftco.ca/$CI_PROJECT_PATH:latest
   DOCKER_HOST: tcp://docker:2375
   DOCKER_TLS_CERTDIR: ""
 
@@ -50,14 +48,14 @@ build-docker:
     - podman push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
     - podman tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE:latest
     - podman push $CI_REGISTRY_IMAGE:latest
-  dependencies:
-    - build-backend
-  only:
-    - main
-    - master
-    - develop
-    - merge_requests
-  needs: ["build-backend"]
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_BRANCH == 'master'
+    - if: $CI_COMMIT_BRANCH == 'main'
+    - if: $CI_COMMIT_BRANCH == 'develop'
+  needs:
+    - job: build-backend
+      optional: true
 
 sonar-scan:
   image:
@@ -73,17 +71,20 @@ sonar-scan:
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
   needs:
-    - build-backend
-    - build-frontend
-    - build-docker
+    - job: build-backend
+      optional: true
+    - job: build-frontend
+      optional: true
+    - job: build-docker
+      optional: true
 
 sync-to-github:
   image: bitnami/git:latest
   stage: deploy
-  only:
-    - main
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
   script:
-    - git remote add github https://${GITHUB_TOKEN}@github.com/AnnapolisLabs/Lineage.git
+    - git remote add github https://${GITHUB_TOKEN}@github.com/AnnapolisLabs/Lineage.git || git remote set-url github https://${GITHUB_TOKEN}@github.com/AnnapolisLabs/Lineage.git
     - git push github HEAD:refs/heads/main --force
 
 # Configure CONTAINER_APP_NAME, CONTAINER_PROJECT_HOST variable in GitLab CI/CD Settings -> Variables
@@ -97,14 +98,16 @@ sync-to-prod:
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
     - ssh-keyscan -H $CONTAINER_PROJECT_HOST >> ~/.ssh/known_hosts
-  only:
-    - production
-  needs: ["build-docker"]
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'production'
+  needs:
+    - job: build-docker
+      optional: true
   script:
     - |
       IMAGE_NAME=$(echo "$CI_REGISTRY_IMAGE:latest" | tr '[:upper:]' '[:lower:]')
       CONTAINER_NAME=$(echo "$CI_PROJECT_PATH_SLUG-$CONTAINER_APP_NAME" | tr '[:upper:]' '[:lower:]')
-      ssh $SSH_USER@$CONTAINER_PROJECT_HOST bash << EOF
+      ssh $SSH_USER@$CONTAINER_PROJECT_HOST bash << 'EOF'
         echo $CI_REGISTRY_PASSWORD | podman login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
         podman pull $IMAGE_NAME
         podman stop $CONTAINER_NAME || true
