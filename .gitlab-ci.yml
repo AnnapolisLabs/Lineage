@@ -122,6 +122,8 @@ sync-to-prod:
   script:
     - |
       CONTAINER_NAME=$(echo "$CI_PROJECT_PATH_SLUG-$CONTAINER_APP_NAME" | tr '[:upper:]' '[:lower:]')
+      # Test SSH connection
+      ssh -o BatchMode=yes -o ConnectTimeout=10 $SSH_USER@$CONTAINER_PROJECT_HOST echo "SSH connection successful" || (echo "SSH connection failed"; exit 1)
       ssh $SSH_USER@$CONTAINER_PROJECT_HOST bash << 'EOF'
         # Clone the repository if it doesn't exist
         if [ ! -d "~/$CONTAINER_APP_NAME/lineage" ]; then
