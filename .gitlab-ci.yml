@@ -3,6 +3,12 @@ stages:
   - sonar
   - deploy
 
+variables:
+  DOCKER_IMAGE: registry.ftco.ca/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
+  DOCKER_IMAGE_LATEST: registry.ftco.ca/$CI_PROJECT_PATH:latest
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_TLS_CERTDIR: ""
+
 build-backend:
   image: gradle:8.10.0-jdk21-jammy
   stage: build-gradle
@@ -13,11 +19,6 @@ build-backend:
       - build/classes/
       - build/reports/jacoco/
     expire_in: 1 hour
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-    - if: $CI_COMMIT_BRANCH == 'master'
-    - if: $CI_COMMIT_BRANCH == 'main'
-    - if: $CI_COMMIT_BRANCH == 'develop'
 
 build-frontend:
   image: node:20
@@ -31,11 +32,6 @@ build-frontend:
       - frontend/coverage/
       - frontend/test-report.xml
     expire_in: 1 hour
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-    - if: $CI_COMMIT_BRANCH == 'master'
-    - if: $CI_COMMIT_BRANCH == 'main'
-    - if: $CI_COMMIT_BRANCH == 'develop'
 
 sonar-scan:
   image:
@@ -65,3 +61,26 @@ sync-to-github:
   script:
     - git remote add github https://${GITHUB_TOKEN}@github.com/AnnapolisLabs/Lineage.git
     - git push github HEAD:refs/heads/main --force
+
+# Configure CONTAINER_APP_NAME, CONTAINER_PROJECT_HOST variable in GitLab CI/CD Settings -> Variables
+sync-to-prod:
+  image: bitnami/git:latest
+  stage: deploy
+  only:
+    - production
+  script:
+    - |
+      IMAGE_NAME=$(echo "registry.ftco.ca/$CI_PROJECT_PATH:latest" | tr '[:upper:]' '[:lower:]')
+      CONTAINER_NAME=$(echo "$CI_PROJECT_PATH_SLUG-$CONTAINER_APP_NAME" | tr '[:upper:]' '[:lower:]')
+      ssh $CONTAINER_PROJECT_HOST bash << EOF
+        echo $CI_REGISTRY_PASSWORD | podman login -u $CI_REGISTRY_USER --password-stdin registry.ftco.ca
+        podman pull $IMAGE_NAME
+        podman stop $CONTAINER_NAME || true
+        podman rm $CONTAINER_NAME || true
+        podman run -d \
+          --name $CONTAINER_NAME \
+          --restart always \
+          -p 8080:8080 \
+          -v /opt/$CONTAINER_APP_NAME/.env:/app/.env:ro \
+          $IMAGE_NAME
+      EOF

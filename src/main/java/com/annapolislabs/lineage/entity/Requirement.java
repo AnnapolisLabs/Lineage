@@ -2,6 +2,8 @@ package com.annapolislabs.lineage.entity;
 
 import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,6 +31,12 @@ public class Requirement {
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
+    /**
+     * Unique requirement identifier.
+     * Must be non-empty and cannot exceed 200 characters to match database constraints.
+     */
+    @NotBlank(message = "Requirement ID cannot be blank")
+    @Size(max = 200, message = "Requirement ID cannot exceed 200 characters")
     @Column(unique = true, nullable = false)
     private String reqId;
 

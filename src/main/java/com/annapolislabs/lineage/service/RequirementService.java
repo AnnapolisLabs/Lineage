@@ -208,14 +208,28 @@ public class RequirementService {
      * Format: PREFIX-001, PREFIX-002, etc. where PREFIX is configured per level
      * Examples: CR-001, REN-001, SYS-001
      *
+     * Validates that the generated requirement ID does not exceed database constraints.
+     * - Custom prefixes must not exceed 190 characters (leaving room for dash + numbering)
+     * - Final generated req_id must not exceed 200 characters
+     *
      * @param project The project
      * @param allRequirements All existing requirements in the project
      * @param level The requirement level
      * @return The generated requirement ID
+     * @throws IllegalArgumentException if validation fails
      */
     private String generateReqId(Project project, List<Requirement> allRequirements, int level) {
         // Get the prefix for this level, or use a default
         String prefix = project.getLevelPrefixes().getOrDefault(String.valueOf(level), "REQ-L" + level);
+        
+        // Validate prefix length - leave room for dash + 3-digit number + potential overflow
+        // Maximum prefix length is 190 to ensure final ID doesn't exceed 200 characters
+        if (prefix.length() > 190) {
+            throw new IllegalArgumentException(String.format(
+                "Custom prefix '%s' for level %d exceeds maximum length of 190 characters. " +
+                "Current length: %d characters. This would cause the final requirement ID to exceed the database limit of 200 characters.",
+                prefix, level, prefix.length()));
+        }
 
         // Find the max number for this prefix
         int maxNumber = allRequirements.stream()
@@ -232,7 +246,17 @@ public class RequirementService {
                 .max(Integer::compare)
                 .orElse(0);
 
-        return prefix + "-" + String.format("%03d", maxNumber + 1);
+        String reqId = prefix + "-" + String.format("%03d", maxNumber + 1);
+        
+        // Final validation to ensure generated req_id doesn't exceed database constraint
+        if (reqId.length() > 200) {
+            throw new IllegalArgumentException(String.format(
+                "Generated requirement ID '%s' exceeds maximum length of 200 characters. " +
+                "Current length: %d characters. Please reduce the prefix length for level %d.",
+                reqId, reqId.length(), level));
+        }
+
+        return reqId;
     }
 
     private void createHistoryEntry(Requirement requirement, User user, ChangeType changeType, Map<String, Object> oldValue, Map<String, Object> newValue) {
