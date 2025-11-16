@@ -130,14 +130,9 @@ sync-to-prod:
       # Test SSH connection
       ssh -o BatchMode=yes -o ConnectTimeout=10 $SSH_USER@$CONTAINER_PROJECT_HOST echo "SSH connection successful" || (echo "SSH connection failed"; exit 1)
       ssh $SSH_USER@$CONTAINER_PROJECT_HOST << 'EOF'
-        # Clone the repository if it doesn't exist
-        if [ ! -d "~/lineage" ]; then
-          git clone https://$GITHUB_TOKEN@github.com/AnnapolisLabs/Lineage.git ~/lineage
-        else
-          cd ~/lineage
-          git fetch origin
-          git reset --hard origin/production
-        fi
+        # Clone the repository (always fresh for production)
+        rm -rf ~/lineage
+        git clone https://$GITHUB_TOKEN@github.com/AnnapolisLabs/Lineage.git ~/lineage
 
         # Build the Docker image
         cd ~/lineage
