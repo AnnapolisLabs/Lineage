@@ -71,6 +71,7 @@ build-docker:
     - if: $CI_COMMIT_BRANCH == 'master'
     - if: $CI_COMMIT_BRANCH == 'main'
     - if: $CI_COMMIT_BRANCH == 'develop'
+    - if: $CI_COMMIT_BRANCH == 'production'
   needs:
     - job: build-backend
       optional: true
