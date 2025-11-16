@@ -121,25 +121,30 @@ sync-to-prod:
       optional: true
   script:
     - |
+      echo "Debugging variables:"
+      echo "CONTAINER_APP_NAME: $CONTAINER_APP_NAME"
+      echo "CONTAINER_PROJECT_HOST: $CONTAINER_PROJECT_HOST"
+      echo "SSH_USER: $SSH_USER"
       CONTAINER_NAME=$(echo "$CI_PROJECT_PATH_SLUG-$CONTAINER_APP_NAME" | tr '[:upper:]' '[:lower:]')
+      echo "CONTAINER_NAME: $CONTAINER_NAME"
       # Test SSH connection
       ssh -o BatchMode=yes -o ConnectTimeout=10 $SSH_USER@$CONTAINER_PROJECT_HOST echo "SSH connection successful" || (echo "SSH connection failed"; exit 1)
-      ssh $SSH_USER@$CONTAINER_PROJECT_HOST bash << 'EOF'
+      ssh $SSH_USER@$CONTAINER_PROJECT_HOST sh << 'EOF'
         # Clone the repository if it doesn't exist
-        if [ ! -d "~/$CONTAINER_APP_NAME/lineage" ]; then
-          git clone https://$GITHUB_TOKEN@github.com/AnnapolisLabs/Lineage.git ~/$CONTAINER_APP_NAME/lineage
+        if [ ! -d "~/lineage" ]; then
+          git clone https://$GITHUB_TOKEN@github.com/AnnapolisLabs/Lineage.git ~/lineage
         else
-          cd ~/$CONTAINER_APP_NAME/lineage
+          cd ~/lineage
           git fetch origin
           git reset --hard origin/production
         fi
 
         # Build the Docker image
-        cd ~/$CONTAINER_APP_NAME/lineage
+        cd ~/lineage
         podman build -t lineage-app:latest .
 
         # Deploy using Podman Compose
         export CONTAINER_NAME='$CONTAINER_NAME'
-        export ENV_DIR="$HOME/$CONTAINER_APP_NAME"
+        export ENV_DIR="$HOME"
         podman-compose -f docker-compose.prod.yml up -d --force-recreate
       EOF
