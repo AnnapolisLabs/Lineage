@@ -1,72 +1,54 @@
 version: '3.8'
 
+# Simplified compose file - uses bundled postgres, simple configuration
 services:
   postgres:
-    image: postgres:15-alpine
+    image: docker.io/library/postgres:15-alpine
     container_name: ${CONTAINER_NAME:-lineage}-db
     restart: unless-stopped
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
     environment:
-      POSTGRES_DB: ${DB_NAME:-lineage}
-      POSTGRES_USER: ${DB_USERNAME:-lineage}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:?Database password required}
+      POSTGRES_DB: lineage
+      POSTGRES_USER: lineage
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-lineage123}
+    volumes:
+      - lineage-postgres-data:/var/lib/postgresql/data
+    networks:
+      - lineage-net
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-lineage}"]
-      interval: 10s
+      test: ["CMD-SHELL", "pg_isready -U lineage -d lineage"]
+      interval: 5s
       timeout: 5s
       retries: 5
-    networks:
-      - lineage-network
+      start_period: 10s
 
   app:
-    image: ${IMAGE_NAME:-registry.ftco.ca/mfraser/lineage}:${IMAGE_TAG:-production}
+    image: ${IMAGE_NAME:-registry.ftco.ca/mfraser/lineage}:${IMAGE_TAG:-develop}
     container_name: ${CONTAINER_NAME:-lineage}-app
     restart: unless-stopped
-    ports:
-      - "${APP_PORT:-8080}:8080"
-    environment:
-      # Spring Profile
-      SPRING_PROFILES_ACTIVE: prod
-      
-      # Database Configuration
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_NAME: ${DB_NAME:-lineage}
-      DB_USERNAME: ${DB_USERNAME:-lineage}
-      DB_PASSWORD: ${DB_PASSWORD:?Database password required}
-      
-      # Server Configuration
-      SERVER_PORT: 8080
-      
-      # Optional: LLM Configuration
-      LLM_API_URL: ${LLM_API_URL:-}
-      LLM_MODEL: ${LLM_MODEL:-}
-      LLM_TEMPERATURE: ${LLM_TEMPERATURE:-0.7}
-      LLM_MAX_TOKENS: ${LLM_MAX_TOKENS:-20000}
     depends_on:
       postgres:
         condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
-      interval: 30s
-      timeout: 3s
-      retries: 3
-      start_period: 60s
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: lineage
+      DB_USERNAME: lineage
+      DB_PASSWORD: ${DB_PASSWORD:-lineage123}
+      SERVER_PORT: 8080
     networks:
-      - lineage-network
+      - lineage-net
     labels:
-      # Watchtower auto-update (if using watchtower)
       - "com.centurylinklabs.watchtower.enable=true"
-      # Optional: Traefik labels (for reverse proxy)
-      - "traefik.enable=true"
-      - "traefik.http.routers.${CONTAINER_NAME:-lineage}.rule=Host(`${DOMAIN:-localhost}`)"
-      - "traefik.http.services.${CONTAINER_NAME:-lineage}.loadbalancer.server.port=8080"
 
 volumes:
-  postgres-data:
+  lineage-postgres-data:
     driver: local
 
 networks:
-  lineage-network:
+  lineage-net:
     driver: bridge

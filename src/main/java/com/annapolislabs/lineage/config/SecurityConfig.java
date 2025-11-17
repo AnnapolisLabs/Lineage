@@ -50,7 +50,13 @@ public class SecurityConfig {
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/mcp").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers("/actuator/health", "/actuator/info").permitAll()
+                        // Allow frontend static resources
+                        .requestMatchers("/", "/index.html", "/assets/**", "/vite.svg", "/favicon.ico").permitAll()
+                        // Require authentication for API endpoints
+                        .requestMatchers("/api/**").authenticated()
+                        // Allow everything else (for SPA routing)
+                        .anyRequest().permitAll()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
