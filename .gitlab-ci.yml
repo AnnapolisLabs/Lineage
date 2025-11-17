@@ -172,18 +172,24 @@ deploy:production:
       APP_PORT=8080
       IMAGE_NAME=registry.ftco.ca/mfraser/lineage
       IMAGE_TAG=production
-      DB_PASSWORD=${PROD_DB_PASSWORD:-ChangeThisPassword123}
+      DB_PASSWORD=${PROD_DB_PASSWORD}
       EOF
     - podman-compose -f docker-compose.prod.yml pull
     - podman-compose -f docker-compose.prod.yml up -d --force-recreate
-    - sleep 60
     - |
-      for i in {1..10}; do
-        if curl -f http://localhost:8080/actuator/health > /dev/null 2>&1; then
+      echo "Waiting for application to be healthy..."
+      MAX_ATTEMPTS=30
+      ATTEMPT=0
+      while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
+        if curl -f -s http://localhost:8080/actuator/health > /dev/null 2>&1; then
+          echo "Application is healthy!"
           exit 0
         fi
-        sleep 10
+        ATTEMPT=$((ATTEMPT + 1))
+        echo "Attempt $ATTEMPT/$MAX_ATTEMPTS: Application not ready yet, waiting..."
+        sleep 5
       done
+      echo "Application failed to become healthy after $MAX_ATTEMPTS attempts"
       podman-compose -f docker-compose.prod.yml logs --tail=50 app
       exit 1
   rules:
