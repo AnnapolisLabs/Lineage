@@ -165,25 +165,31 @@ deploy:production:
     - mkdir -p /opt/lineage
     - cd /opt/lineage
     - cp ${CI_PROJECT_DIR}/docker-compose.prod.yml ./docker-compose.prod.yml
-    - echo "${CI_REGISTRY_PASSWORD}" | podman login -u "${CI_REGISTRY_USER}" --password-stdin registry.ftco.ca
+    - echo "${PODMAN_ACCESS_TOKEN}" | podman login -u podman_token --password-stdin registry.ftco.ca
     - |
       cat > .env << EOF
       CONTAINER_NAME=lineage-prod
       APP_PORT=8080
       IMAGE_NAME=registry.ftco.ca/mfraser/lineage
       IMAGE_TAG=production
-      DB_PASSWORD=${PROD_DB_PASSWORD:-ChangeThisPassword123}
+      DB_PASSWORD=${PROD_DB_PASSWORD}
       EOF
     - podman-compose -f docker-compose.prod.yml pull
     - podman-compose -f docker-compose.prod.yml up -d --force-recreate
-    - sleep 60
     - |
-      for i in {1..10}; do
-        if curl -f http://localhost:8080/actuator/health > /dev/null 2>&1; then
+      echo "Waiting for application to be healthy..."
+      MAX_ATTEMPTS=30
+      ATTEMPT=0
+      while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
+        if curl -f -s http://localhost:8080/actuator/health > /dev/null 2>&1; then
+          echo "Application is healthy!"
           exit 0
         fi
-        sleep 10
+        ATTEMPT=$((ATTEMPT + 1))
+        echo "Attempt $ATTEMPT/$MAX_ATTEMPTS: Application not ready yet, waiting..."
+        sleep 5
       done
+      echo "Application failed to become healthy after $MAX_ATTEMPTS attempts"
       podman-compose -f docker-compose.prod.yml logs --tail=50 app
       exit 1
   rules:
