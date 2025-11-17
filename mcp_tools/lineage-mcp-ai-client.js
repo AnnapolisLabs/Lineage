@@ -515,7 +515,7 @@ async function main() {
         console.error('\nOr manually:');
         console.error('  curl -X POST http://localhost:8080/api/auth/login \\');
         console.error('    -H "Content-Type: application/json" \\');
-        console.error('    -d \'{"email": "admin@lineage.local", "password": "admin123"}\'');
+        console.error('    -d \'{"email": "your-email", "password": "your-password"}\'');
         process.exit(1);
     }
 

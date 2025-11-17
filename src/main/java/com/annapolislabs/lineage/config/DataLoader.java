@@ -18,10 +18,10 @@ public class DataLoader implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Value("${lineage.admin.email:admin@lineage.local}")
+    @Value("${lineage.admin.email:}")
     private String adminEmail;
 
-    @Value("${lineage.admin.password:admin123}")
+    @Value("${lineage.admin.password:}")
     private String adminPassword;
 
     public DataLoader(UserRepository userRepository, PasswordEncoder passwordEncoder) {
@@ -31,7 +31,14 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        logger.info("DataLoader: Checking for admin user...");
+        logger.info("DataLoader: Checking for admin user configuration...");
+
+        // Skip DataLoader if admin credentials are not configured
+        if (adminEmail == null || adminEmail.trim().isEmpty() || adminPassword == null || adminPassword.trim().isEmpty()) {
+            logger.warn("DataLoader: Admin credentials not configured via environment variables. Skipping admin user creation.");
+            logger.warn("DataLoader: Please set LINEAGE_ADMIN_EMAIL and LINEAGE_ADMIN_PASSWORD environment variables.");
+            return;
+        }
 
         String encodedPassword = passwordEncoder.encode(adminPassword);
 
@@ -53,6 +60,6 @@ public class DataLoader implements CommandLineRunner {
         }
 
         userRepository.save(admin);
-        logger.info("DataLoader: Admin user ready: {} / {}", adminEmail, adminPassword);
+        logger.info("DataLoader: Admin user ready");
     }
 }

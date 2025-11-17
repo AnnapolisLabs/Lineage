@@ -29,7 +29,7 @@ describe('Login.vue', () => {
     expect(wrapper.find('#password').exists()).toBe(true)
   })
 
-  it('should have default credentials pre-filled', () => {
+  it('should have empty credentials initially', () => {
     const wrapper = mount(Login, {
       global: {
         plugins: [createPinia()]
@@ -39,8 +39,8 @@ describe('Login.vue', () => {
     const emailInput = wrapper.find('#email').element as HTMLInputElement
     const passwordInput = wrapper.find('#password').element as HTMLInputElement
 
-    expect(emailInput.value).toBe('admin@lineage.local')
-    expect(passwordInput.value).toBe('admin123')
+    expect(emailInput.value).toBe('')
+    expect(passwordInput.value).toBe('')
   })
 
   it('should submit form and redirect on successful login', async () => {
@@ -50,6 +50,10 @@ describe('Login.vue', () => {
       }
     })
 
+    // Set test credentials
+    await wrapper.find('#email').setValue('test@example.com')
+    await wrapper.find('#password').setValue('password123')
+
     const authStore = useAuthStore()
     authStore.login = vi.fn().mockResolvedValue(true)
 
@@ -57,8 +61,8 @@ describe('Login.vue', () => {
     await wrapper.vm.$nextTick()
 
     expect(authStore.login).toHaveBeenCalledWith({
-      email: 'admin@lineage.local',
-      password: 'admin123'
+      email: 'test@example.com',
+      password: 'password123'
     })
     expect(mockPush).toHaveBeenCalledWith('/')
   })
