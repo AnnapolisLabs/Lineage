@@ -6,6 +6,7 @@ stages:
   - test
   - quality
   - package
+  - deploy
 
 variables:
   # Registry configuration
@@ -196,7 +197,7 @@ package:image:
 # ============================================================================
 
 sync:github:
-  stage: package
+  stage: quality
   image: bitnami/git:latest
   script:
     - echo "Syncing to GitHub mirror..."
@@ -207,3 +208,60 @@ sync:github:
       when: on_success
   needs: []
   allow_failure: true
+
+
+deploy:production:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh-client curl
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan -H $PRODUCTION_HOST >> ~/.ssh/known_hosts
+  script:
+    - |
+      echo "🚀 Deploying to production server: $PRODUCTION_HOST"
+      ssh $SSH_USER@$PRODUCTION_HOST << 'ENDSSH'
+        set -e
+        cd ~/lineage
+        echo "📦 Pulling latest image..."
+        podman-compose -f docker-compose.yml pull
+        echo "🔄 Restarting services..."
+        podman-compose -f docker-compose.yml up -d
+        echo "⏳ Waiting for application to start..."
+        sleep 60
+      ENDSSH
+      
+      echo "🔍 Verifying deployment health..."
+      MAX_RETRIES=10
+      RETRY_COUNT=0
+      
+      while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+        echo "Attempt $((RETRY_COUNT + 1))/$MAX_RETRIES..."
+        HEALTH_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" http://$PRODUCTION_HOST:8080/actuator/health || echo "000")
+        
+        if [ "$HEALTH_RESPONSE" = "200" ]; then
+          echo "✅ Deployment successful! Application is healthy."
+          exit 0
+        fi
+        
+        echo "⚠️  Health check failed (HTTP $HEALTH_RESPONSE), retrying in 10 seconds..."
+        RETRY_COUNT=$((RETRY_COUNT + 1))
+        sleep 10
+      done
+      
+      echo "❌ Deployment failed! Application not healthy after $MAX_RETRIES attempts."
+      ssh $SSH_USER@$PRODUCTION_HOST << 'ENDSSH'
+        cd ~/lineage
+        podman-compose logs --tail=50 app
+      ENDSSH
+      exit 1
+  rules:
+    - if: $CI_COMMIT_BRANCH == "production"
+  needs:
+    - package:image
+  environment:
+    name: production
+    url: http://$PRODUCTION_HOST:8080
