@@ -212,51 +212,34 @@ sync:github:
 
 deploy:production:
   stage: deploy
-  image: alpine:latest
-  before_script:
-    - apk add --no-cache openssh-client curl
-    - eval $(ssh-agent -s)
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - ssh-keyscan -H $CONTAINER_PROJECT_HOST >> ~/.ssh/known_hosts
+  tags:
+    - production
   script:
+    - echo "🚀 Deploying on production server..."
+    - cd ~/lineage
+    - echo "📦 Pulling latest image from registry..."
+    - podman-compose -f docker-compose.prod.yml pull
+    - echo "🔄 Restarting services..."
+    - podman-compose -f docker-compose.prod.yml up -d
+    - echo "⏳ Waiting for application to start (60 seconds)..."
+    - sleep 60
+    - echo "🔍 Verifying deployment health..."
     - |
-      echo "🚀 Deploying to production server: $CONTAINER_PROJECT_HOST"
-      ssh $SSH_USER@$CONTAINER_PROJECT_HOST << 'ENDSSH'
-        set -e
-        cd ~/lineage
-        echo "📦 Pulling latest image..."
-        podman-compose -f docker-compose.yml pull
-        echo "🔄 Restarting services..."
-        podman-compose -f docker-compose.yml up -d
-        echo "⏳ Waiting for application to start..."
-        sleep 60
-      ENDSSH
-      
-      echo "🔍 Verifying deployment health..."
       MAX_RETRIES=10
       RETRY_COUNT=0
-      
       while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-        echo "Attempt $((RETRY_COUNT + 1))/$MAX_RETRIES..."
-        HEALTH_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" http://$CONTAINER_PROJECT_HOST:8080/actuator/health || echo "000")
-        
-        if [ "$HEALTH_RESPONSE" = "200" ]; then
+        echo "Health check attempt $((RETRY_COUNT + 1))/$MAX_RETRIES..."
+        if curl -f http://localhost:8080/actuator/health; then
           echo "✅ Deployment successful! Application is healthy."
           exit 0
         fi
-        
-        echo "⚠️  Health check failed (HTTP $HEALTH_RESPONSE), retrying in 10 seconds..."
+        echo "⚠️  Health check failed, retrying in 10 seconds..."
         RETRY_COUNT=$((RETRY_COUNT + 1))
-        sleep 10
+      sleep 10
       done
-      
       echo "❌ Deployment failed! Application not healthy after $MAX_RETRIES attempts."
-      ssh $SSH_USER@$CONTAINER_PROJECT_HOST << 'ENDSSH'
-        cd ~/lineage
-        podman-compose logs --tail=50 app
-      ENDSSH
+      echo "=== Last 50 log lines ==="
+      podman-compose -f docker-compose.prod.yml logs --tail=50 app
       exit 1
   rules:
     - if: $CI_COMMIT_BRANCH == "production"
@@ -264,4 +247,4 @@ deploy:production:
     - package:image
   environment:
     name: production
-    url: http://$CONTAINER_PROJECT_HOST:8080
+    url: http://localhost:8080
