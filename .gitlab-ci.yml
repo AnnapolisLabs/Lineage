@@ -216,7 +216,7 @@ deploy:production:
     - production
   script:
     - echo "🚀 Deploying on production server..."
-    - cd ~/lineage
+    - cd /opt/lineage || mkdir -p /opt/lineage && cd /opt/lineage
     - echo "📦 Pulling latest image from registry..."
     - podman-compose -f docker-compose.prod.yml pull
     - echo "🔄 Restarting services..."
@@ -235,7 +235,7 @@ deploy:production:
         fi
         echo "⚠️  Health check failed, retrying in 10 seconds..."
         RETRY_COUNT=$((RETRY_COUNT + 1))
-      sleep 10
+        sleep 10
       done
       echo "❌ Deployment failed! Application not healthy after $MAX_RETRIES attempts."
       echo "=== Last 50 log lines ==="
