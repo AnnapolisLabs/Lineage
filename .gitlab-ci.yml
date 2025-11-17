@@ -1,6 +1,3 @@
-# GitLab CI/CD Pipeline for Lineage
-# Simplified, reliable pipeline with frontend + backend bundled in single image
-
 stages:
   - build
   - test
@@ -9,22 +6,14 @@ stages:
   - deploy
 
 variables:
-  # Registry configuration
   REGISTRY_URL: registry.ftco.ca
   IMAGE_NAME: ${REGISTRY_URL}/${CI_PROJECT_PATH}
-  
-  # Disable Docker-in-Docker TLS for simplicity
   DOCKER_TLS_CERTDIR: ""
-
-# ============================================================================
-# BUILD STAGE
-# ============================================================================
 
 build:backend:
   stage: build
   image: gradle:8.10.0-jdk21-jammy
   script:
-    - echo "Building backend with Gradle..."
     - gradle build -x test --no-daemon
   artifacts:
     paths:
@@ -40,10 +29,8 @@ build:frontend:
   stage: build
   image: node:20-alpine
   script:
-    - echo "Building frontend with npm..."
     - cd frontend
     - npm ci --prefer-offline --no-audit
-    # Build without type-checking (tests run separately)
     - npx vite build
   artifacts:
     paths:
@@ -55,15 +42,10 @@ build:frontend:
       - frontend/node_modules/
   needs: []
 
-# ============================================================================
-# TEST STAGE
-# ============================================================================
-
 test:backend:
   stage: test
   image: gradle:8.10.0-jdk21-jammy
   script:
-    - echo "Running backend tests..."
     - gradle test jacocoTestReport --no-daemon
   artifacts:
     paths:
@@ -80,7 +62,6 @@ test:frontend:
   stage: test
   image: node:20-alpine
   script:
-    - echo "Running frontend tests..."
     - cd frontend
     - npm ci --prefer-offline --no-audit
     - npm run test:coverage
@@ -100,10 +81,6 @@ test:frontend:
   needs:
     - build:frontend
 
-# ============================================================================
-# QUALITY STAGE
-# ============================================================================
-
 quality:sonar:
   stage: quality
   image:
@@ -113,7 +90,6 @@ quality:sonar:
     SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
     GIT_DEPTH: "0"
   script:
-    - echo "Running SonarQube analysis..."
     - sonar-scanner
       -Dsonar.host.url="${SONAR_HOST_URL}"
       -Dsonar.token="${SONAR_TOKEN}"
@@ -134,40 +110,23 @@ quality:sonar:
     - test:backend
     - test:frontend
 
-# ============================================================================
-# PACKAGE STAGE - Build and Push Docker Image
-# ============================================================================
-
 package:image:
   stage: package
   image:
     name: gcr.io/kaniko-project/executor:v1.23.0-debug
     entrypoint: [""]
   before_script:
-    - echo "Preparing Kaniko authentication..."
     - mkdir -p /kaniko/.docker
     - echo "{\"auths\":{\"${REGISTRY_URL}\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
   script:
     - |
-      echo "Building and pushing Docker image..."
-      
-      # Determine tags based on branch
-      TAGS=""
-      
-      # Always tag with commit ref slug (branch name)
       TAGS="--destination ${IMAGE_NAME}:${CI_COMMIT_REF_SLUG}"
-      
-      # Add 'latest' tag for main/master/production branches
       if [ "$CI_COMMIT_REF_NAME" = "main" ] || [ "$CI_COMMIT_REF_NAME" = "master" ] || [ "$CI_COMMIT_REF_NAME" = "production" ]; then
         TAGS="$TAGS --destination ${IMAGE_NAME}:latest"
       fi
-      
-      # Add 'production' tag for production branch
       if [ "$CI_COMMIT_REF_NAME" = "production" ]; then
         TAGS="$TAGS --destination ${IMAGE_NAME}:production"
       fi
-      
-      # Build and push with Kaniko
       /kaniko/executor \
         --context "${CI_PROJECT_DIR}" \
         --dockerfile "${CI_PROJECT_DIR}/Dockerfile" \
@@ -176,14 +135,8 @@ package:image:
         --cache-repo="${IMAGE_NAME}/cache" \
         --cache-ttl=168h \
         --cleanup
-      
-      echo "✅ Image pushed successfully!"
-      echo "📦 Available tags:"
-      echo "$TAGS" | sed 's/--destination/  -/g'
   rules:
-    # Build on merge requests
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    # Build on main branches
     - if: $CI_COMMIT_BRANCH == "main"
     - if: $CI_COMMIT_BRANCH == "master"
     - if: $CI_COMMIT_BRANCH == "develop"
@@ -192,15 +145,10 @@ package:image:
     - test:backend
     - test:frontend
 
-# ============================================================================
-# OPTIONAL: GitHub Sync (if using mirror)
-# ============================================================================
-
 sync:github:
   stage: quality
   image: bitnami/git:latest
   script:
-    - echo "Syncing to GitHub mirror..."
     - git remote add github https://${GITHUB_TOKEN}@github.com/AnnapolisLabs/Lineage.git || git remote set-url github https://${GITHUB_TOKEN}@github.com/AnnapolisLabs/Lineage.git
     - git push github HEAD:refs/heads/main --force
   rules:
@@ -209,36 +157,33 @@ sync:github:
   needs: []
   allow_failure: true
 
-
 deploy:production:
   stage: deploy
   tags:
     - production
   script:
-    - echo "🚀 Deploying on production server..."
-    - cd ~/lineage
-    - echo "📦 Pulling latest image from registry..."
-    - podman-compose -f docker-compose.prod.yml pull
-    - echo "🔄 Restarting services..."
-    - podman-compose -f docker-compose.prod.yml up -d
-    - echo "⏳ Waiting for application to start (60 seconds)..."
-    - sleep 60
-    - echo "🔍 Verifying deployment health..."
+    - mkdir -p /opt/lineage
+    - cd /opt/lineage
+    - cp ${CI_PROJECT_DIR}/docker-compose.prod.yml ./docker-compose.prod.yml
+    - echo "${CI_REGISTRY_PASSWORD}" | podman login -u "${CI_REGISTRY_USER}" --password-stdin registry.ftco.ca
     - |
-      MAX_RETRIES=10
-      RETRY_COUNT=0
-      while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-        echo "Health check attempt $((RETRY_COUNT + 1))/$MAX_RETRIES..."
-        if curl -f http://localhost:8080/actuator/health; then
-          echo "✅ Deployment successful! Application is healthy."
+      cat > .env << EOF
+      CONTAINER_NAME=lineage-prod
+      APP_PORT=8080
+      IMAGE_NAME=registry.ftco.ca/mfraser/lineage
+      IMAGE_TAG=production
+      DB_PASSWORD=${PROD_DB_PASSWORD:-ChangeThisPassword123}
+      EOF
+    - podman-compose -f docker-compose.prod.yml pull
+    - podman-compose -f docker-compose.prod.yml up -d --force-recreate
+    - sleep 60
+    - |
+      for i in {1..10}; do
+        if curl -f http://localhost:8080/actuator/health > /dev/null 2>&1; then
           exit 0
         fi
-        echo "⚠️  Health check failed, retrying in 10 seconds..."
-        RETRY_COUNT=$((RETRY_COUNT + 1))
-      sleep 10
+        sleep 10
       done
-      echo "❌ Deployment failed! Application not healthy after $MAX_RETRIES attempts."
-      echo "=== Last 50 log lines ==="
       podman-compose -f docker-compose.prod.yml logs --tail=50 app
       exit 1
   rules:
