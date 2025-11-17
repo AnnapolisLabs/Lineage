@@ -219,11 +219,11 @@ deploy:production:
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
-    - ssh-keyscan -H $PRODUCTION_HOST >> ~/.ssh/known_hosts
+    - ssh-keyscan -H $CONTAINER_PROJECT_HOST >> ~/.ssh/known_hosts
   script:
     - |
-      echo "🚀 Deploying to production server: $PRODUCTION_HOST"
-      ssh $SSH_USER@$PRODUCTION_HOST << 'ENDSSH'
+      echo "🚀 Deploying to production server: $CONTAINER_PROJECT_HOST"
+      ssh $SSH_USER@$CONTAINER_PROJECT_HOST << 'ENDSSH'
         set -e
         cd ~/lineage
         echo "📦 Pulling latest image..."
@@ -240,7 +240,7 @@ deploy:production:
       
       while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
         echo "Attempt $((RETRY_COUNT + 1))/$MAX_RETRIES..."
-        HEALTH_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" http://$PRODUCTION_HOST:8080/actuator/health || echo "000")
+        HEALTH_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" http://$CONTAINER_PROJECT_HOST:8080/actuator/health || echo "000")
         
         if [ "$HEALTH_RESPONSE" = "200" ]; then
           echo "✅ Deployment successful! Application is healthy."
@@ -253,7 +253,7 @@ deploy:production:
       done
       
       echo "❌ Deployment failed! Application not healthy after $MAX_RETRIES attempts."
-      ssh $SSH_USER@$PRODUCTION_HOST << 'ENDSSH'
+      ssh $SSH_USER@$CONTAINER_PROJECT_HOST << 'ENDSSH'
         cd ~/lineage
         podman-compose logs --tail=50 app
       ENDSSH
@@ -264,4 +264,4 @@ deploy:production:
     - package:image
   environment:
     name: production
-    url: http://$PRODUCTION_HOST:8080
+    url: http://$CONTAINER_PROJECT_HOST:8080

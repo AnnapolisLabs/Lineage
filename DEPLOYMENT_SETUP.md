@@ -255,7 +255,7 @@ Solution:
 # Verify SSH_PRIVATE_KEY in GitLab variables
 # Ensure public key is in ~/.ssh/authorized_keys on server
 # Check SSH connection manually:
-ssh -i ~/.ssh/gitlab_deploy_key $SSH_USER@$PRODUCTION_HOST
+ssh -i ~/.ssh/gitlab_deploy_key $SSH_USER@$CONTAINER_PROJECT_HOST
 ```
 
 **Error: "Health check failed"**
@@ -263,7 +263,7 @@ ssh -i ~/.ssh/gitlab_deploy_key $SSH_USER@$PRODUCTION_HOST
 Solution:
 ```bash
 # SSH to server and check logs
-ssh $SSH_USER@$PRODUCTION_HOST
+ssh $SSH_USER@$CONTAINER_PROJECT_HOST
 cd ~/lineage
 podman-compose logs app
 
@@ -290,7 +290,7 @@ sudo apt install podman-compose  # Debian/Ubuntu
 Check logs in pipeline output, or manually:
 
 ```bash
-ssh $SSH_USER@$PRODUCTION_HOST
+ssh $SSH_USER@$CONTAINER_PROJECT_HOST
 cd ~/lineage
 podman-compose logs --tail=100 app
 ```
@@ -307,7 +307,7 @@ If deployment succeeds but app is broken:
 
 ```bash
 # SSH to server
-ssh $SSH_USER@$PRODUCTION_HOST
+ssh $SSH_USER@$CONTAINER_PROJECT_HOST
 cd ~/lineage
 
 # Stop current deployment
