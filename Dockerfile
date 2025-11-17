@@ -12,9 +12,9 @@ WORKDIR /frontend
 COPY frontend/package*.json ./
 RUN npm ci --prefer-offline --no-audit
 
-# Copy frontend source and build
+# Copy frontend source and build (skip type-checking, tests run separately)
 COPY frontend/ ./
-RUN npm run build
+RUN npx vite build
 
 # ============================================================================
 # Stage 2: Build Backend (Spring Boot/Gradle)

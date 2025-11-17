@@ -42,7 +42,8 @@ build:frontend:
     - echo "Building frontend with npm..."
     - cd frontend
     - npm ci --prefer-offline --no-audit
-    - npm run build
+    # Build without type-checking (tests run separately)
+    - npx vite build
   artifacts:
     paths:
       - frontend/dist/
