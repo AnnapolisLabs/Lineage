@@ -1,13 +1,52 @@
 version: '3.8'
 
+# Simplified compose file - uses bundled postgres, simple configuration
 services:
-  lineage:
-    image: registry.ftco.ca/lineage-app:${IMAGE_TAG:-latest}
-    container_name: ${CONTAINER_NAME:-lineage-app}
-    restart: always
+  postgres:
+    image: docker.io/library/postgres:15-alpine
+    container_name: ${CONTAINER_NAME:-lineage}-db
+    restart: unless-stopped
     ports:
-      - "8080:8080"
+      - "5432:5432"
     environment:
-      - SPRING_PROFILES_ACTIVE=prod
-      - DB_USERNAME=${DB_USERNAME}
-      - DB_PASSWORD=${DB_PASSWORD}
+      POSTGRES_DB: lineage
+      POSTGRES_USER: lineage
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-lineage123}
+    volumes:
+      - lineage-postgres-data:/var/lib/postgresql/data
+    networks:
+      - lineage-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lineage -d lineage"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  app:
+    image: ${IMAGE_NAME:-registry.ftco.ca/mfraser/lineage}:${IMAGE_TAG:-develop}
+    container_name: ${CONTAINER_NAME:-lineage}-app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: lineage
+      DB_USERNAME: lineage
+      DB_PASSWORD: ${DB_PASSWORD:-lineage123}
+      SERVER_PORT: 8080
+    networks:
+      - lineage-net
+
+volumes:
+  lineage-postgres-data:
+    driver: local
+
+networks:
+  lineage-net:
+    driver: bridge
