@@ -94,13 +94,6 @@ quality:sonar:
     - sonar-scanner
       -Dsonar.host.url="${SONAR_HOST_URL}"
       -Dsonar.token="${SONAR_TOKEN}"
-      -Dsonar.projectKey="${CI_PROJECT_PATH_SLUG}"
-      -Dsonar.projectName="${CI_PROJECT_NAME}"
-      -Dsonar.sources=src/main/java,frontend/src
-      -Dsonar.tests=src/test/java,frontend/src
-      -Dsonar.java.binaries=build/classes/java/main
-      -Dsonar.coverage.jacoco.xmlReportPaths=build/reports/jacoco/test/jacocoTestReport.xml
-      -Dsonar.javascript.lcov.reportPaths=frontend/coverage/lcov.info
   allow_failure: true
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
