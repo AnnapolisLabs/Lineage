@@ -42,7 +42,15 @@ public class AuthService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return new AuthResponse(token, user.getEmail(), user.getName(), user.getRole().name());
+        // Create user profile response
+        com.annapolislabs.lineage.dto.response.UserProfileResponse userProfile =
+            new com.annapolislabs.lineage.dto.response.UserProfileResponse();
+        userProfile.setId(user.getId());
+        userProfile.setEmail(user.getEmail());
+        userProfile.setName(user.getName());
+        userProfile.setGlobalRole(user.getGlobalRole());
+
+        return new AuthResponse(token, null, userProfile, null);
     }
 
     public User getCurrentUser() {

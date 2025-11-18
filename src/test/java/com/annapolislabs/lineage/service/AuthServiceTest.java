@@ -79,9 +79,10 @@ class AuthServiceTest {
         // Assert
         assertNotNull(response);
         assertEquals(expectedToken, response.getToken());
-        assertEquals(testUser.getEmail(), response.getEmail());
-        assertEquals(testUser.getName(), response.getName());
-        assertEquals(testUser.getRole().name(), response.getRole());
+        assertNotNull(response.getUser());
+        assertEquals(testUser.getEmail(), response.getUser().getEmail());
+        assertEquals(testUser.getName(), response.getUser().getName());
+        assertEquals(testUser.getGlobalRole().name(), response.getUser().getGlobalRole().name());
 
         verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
         verify(securityContext).setAuthentication(authentication);
@@ -162,7 +163,8 @@ class AuthServiceTest {
 
         // Assert
         assertNotNull(response);
-        assertEquals("ADMIN", response.getRole());
+        assertNotNull(response.getUser());
+        assertEquals("ADMIN", response.getUser().getGlobalRole().name());
         assertEquals(expectedToken, response.getToken());
     }
 }

@@ -1,15 +1,9 @@
-buildscript {
-    dependencies {
-        classpath "org.flywaydb:flyway-database-postgresql:11.7.2"
-    }
-}
-
 plugins {
     id 'java'
     id 'org.springframework.boot' version '3.5.7'
     id 'io.spring.dependency-management' version '1.1.7'
-    id "org.sonarqube" version "6.3.1.5724"
-    id 'org.flywaydb.flyway' version('11.7.2')
+    id "org.sonarqube" version "6.0.1.5171"
+    id 'org.flywaydb.flyway' version('11.0.1')
     id 'jacoco'
 }
 
@@ -24,7 +18,7 @@ sonar {
         property "sonar.projectKey", "lineage-sonar"
         property "sonar.projectName", "Lineage"
         property "sonar.qualitygate.wait", true
-        property "sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
+        property "sonar.coverage.jacoco.xmlReportPaths", "${layout.buildDirectory}/reports/jacoco/test/jacocoTestReport.xml"
     }
 }
 
@@ -32,10 +26,10 @@ group = 'com.annapolislabs'
 version = '0.0.1-SNAPSHOT'
 description = 'Lineage - Open Source Requirements Management Tool'
 
+// Set Java 21 compatibility for Gradle 9
 java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 repositories {
@@ -58,6 +52,9 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
+
+    // Multi-Factor Authentication (MFA)
+    implementation 'com.warrenstrange:googleauth:1.5.0'
 
     // JSON/JSONB Support
     implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.8.3'

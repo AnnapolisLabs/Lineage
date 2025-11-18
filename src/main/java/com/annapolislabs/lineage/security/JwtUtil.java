@@ -17,14 +17,21 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    @Value("${jwt.secret}")
+    @Value("${jwt.secret.key:#{null}}")
+    private String secretKey;
+
+    @Value("${jwt.secret:#{null}}")
     private String secret;
 
-    @Value("${jwt.expiration}")
+    @Value("${jwt.expiration:86400000}")
     private Long expiration;
 
     private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        // Use the same fallback secret as JwtTokenProvider to ensure consistency
+        String key = secretKey != null && !secretKey.isBlank() ? secretKey : 
+                    (secret != null && !secret.isBlank() ? secret : 
+                     "development-secret-key-for-jwt-signing-change-in-production");
+        return Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8));
     }
 
     public String extractUsername(String token) {

@@ -9,8 +9,8 @@ export const useAuthStore = defineStore('auth', () => {
   const error = ref<string | null>(null)
 
   const isAuthenticated = computed(() => !!token.value)
-  const isAdmin = computed(() => user.value?.role === 'ADMIN')
-  const isEditor = computed(() => user.value?.role === 'EDITOR' || user.value?.role === 'ADMIN')
+  const isAdmin = computed(() => user.value?.globalRole === 'ADMIN')
+  const isEditor = computed(() => user.value?.globalRole === 'DEVELOPER' || user.value?.globalRole === 'ADMIN')
 
   async function login(credentials: LoginRequest) {
     loading.value = true
@@ -19,14 +19,28 @@ export const useAuthStore = defineStore('auth', () => {
       const response = await authService.login(credentials)
       token.value = response.token
       localStorage.setItem('auth_token', response.token)
+      
+      // Use the user object from the response
       user.value = {
-        id: response.email, // Use email as user ID for AI history
-        email: response.email,
-        name: response.name,
-        role: response.role
+        id: response.user.id,
+        email: response.user.email,
+        name: response.user.name,
+        firstName: response.user.firstName,
+        lastName: response.user.lastName,
+        globalRole: response.user.globalRole,
+        status: response.user.status,
+        phoneNumber: response.user.phoneNumber,
+        avatarUrl: response.user.avatarUrl,
+        bio: response.user.bio,
+        preferences: response.user.preferences,
+        emailVerified: response.user.emailVerified,
+        createdAt: response.user.createdAt,
+        updatedAt: response.user.updatedAt,
+        lastLoginAt: response.user.lastLoginAt
       }
+      
       // Store user ID for AI service
-      localStorage.setItem('user_id', response.email)
+      localStorage.setItem('user_id', response.user.id)
       return true
     } catch (err: any) {
       const errorMsg = err.response?.data?.message || 'Login failed'
@@ -43,7 +57,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       user.value = await authService.getCurrentUser()
       if (user.value) {
-        localStorage.setItem('user_id', user.value.email)
+        localStorage.setItem('user_id', user.value.id)
       }
     } catch (err: any) {
       console.error('Failed to fetch current user:', err.response?.data?.message || err.message)
@@ -63,7 +77,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       user.value = await authService.getCurrentUser()
       if (user.value) {
-        localStorage.setItem('user_id', user.value.email)
+        localStorage.setItem('user_id', user.value.id)
       }
     } catch (err: any) {
       // Token is invalid or expired, clear it
