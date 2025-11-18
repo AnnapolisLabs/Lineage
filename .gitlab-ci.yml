@@ -18,6 +18,7 @@ build:backend:
   artifacts:
     paths:
       - build/libs/*.jar
+      - build/classes/
     expire_in: 1 hour
   cache:
     key: ${CI_COMMIT_REF_SLUG}-gradle
@@ -97,7 +98,7 @@ quality:sonar:
       -Dsonar.projectName="${CI_PROJECT_NAME}"
       -Dsonar.sources=src/main/java,frontend/src
       -Dsonar.tests=src/test/java,frontend/src
-      -Dsonar.java.binaries=build/classes
+      -Dsonar.java.binaries=build/classes/java/main
       -Dsonar.coverage.jacoco.xmlReportPaths=build/reports/jacoco/test/jacocoTestReport.xml
       -Dsonar.javascript.lcov.reportPaths=frontend/coverage/lcov.info
   allow_failure: true
@@ -107,6 +108,7 @@ quality:sonar:
     - if: $CI_COMMIT_BRANCH == "develop"
     - if: $CI_COMMIT_BRANCH == "production"
   needs:
+    - build:backend
     - test:backend
     - test:frontend
 
