@@ -312,11 +312,15 @@ const showUserMenu = ref(false)
 onMounted(async () => {
   await authStore.fetchCurrentUser()
   await projectStore.fetchProjects()
-  document.addEventListener('click', handleClickOutside)
+  if (typeof document !== 'undefined') {
+    document.addEventListener('click', handleClickOutside)
+  }
 })
 
 onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside)
+  if (typeof document !== 'undefined') {
+    document.removeEventListener('click', handleClickOutside)
+  }
 })
 
 function handleClickOutside(event: Event) {

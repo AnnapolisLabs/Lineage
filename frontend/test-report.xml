@@ -1,11 +1,174 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testExecutions version="1">
+  <file path="src/App.spec.ts">
+    <testCase name="App.vue - should render router view" duration="55" />
+    <testCase name="App.vue - should show AIAssistant when authenticated" duration="18" />
+    <testCase name="App.vue - should have auth store available" duration="9" />
+  </file>
+  <file path="src/components/AIAssistant.spec.ts">
+    <testCase name="AIAssistant.vue - should render AI assistant" duration="31" />
+    <testCase name="AIAssistant.vue - should have toggle functionality" duration="15" />
+    <testCase name="AIAssistant.vue - should send message" duration="6" />
+    <testCase name="AIAssistant.vue - should create new conversation" duration="5" />
+    <testCase name="AIAssistant.vue - should load chat list" duration="11" />
+    <testCase name="AIAssistant.vue - should delete conversation" duration="4" />
+  </file>
+  <file path="src/components/HelloWorld.spec.ts">
+    <testCase name="HelloWorld.vue - should render component" duration="20" />
+    <testCase name="HelloWorld.vue - should display the message prop" duration="4" />
+  </file>
+  <file path="src/components/RequirementTreeView.spec.ts">
+    <testCase name="RequirementTreeView.vue - should render tree view" duration="32" />
+    <testCase name="RequirementTreeView.vue - should accept requirements prop" duration="14" />
+    <testCase name="RequirementTreeView.vue - should handle empty requirements" duration="5" />
+  </file>
+  <file path="src/components/requirements/PriorityBadge.spec.ts">
+    <testCase name="PriorityBadge.vue - should render priority badge" duration="22" />
+    <testCase name="PriorityBadge.vue - should apply correct classes for CRITICAL priority" duration="15" />
+    <testCase name="PriorityBadge.vue - should apply correct classes for HIGH priority" duration="5" />
+    <testCase name="PriorityBadge.vue - should apply correct classes for MEDIUM priority" duration="5" />
+  </file>
+  <file path="src/components/requirements/RequirementCard.spec.ts">
+    <testCase name="RequirementCard.vue - should render requirement card" duration="24" />
+    <testCase name="RequirementCard.vue - should display requirement ID" duration="5" />
+  </file>
+  <file path="src/components/requirements/RequirementForm.spec.ts">
+    <testCase name="RequirementForm.vue - should render requirement form" duration="52" />
+    <testCase name="RequirementForm.vue - should accept props" duration="9" />
+    <testCase name="RequirementForm.vue - should handle basic rendering" duration="18" />
+  </file>
+  <file path="src/components/requirements/RequirementHistory.spec.ts">
+    <testCase name="RequirementHistory.vue - should render requirement history" duration="71" />
+    <testCase name="RequirementHistory.vue - should display history items" duration="10" />
+    <testCase name="RequirementHistory.vue - should show empty state when no history" duration="8" />
+  </file>
+  <file path="src/components/requirements/RequirementModal.spec.ts">
+    <testCase name="RequirementModal.vue - should render modal" duration="16" />
+    <testCase name="RequirementModal.vue - should emit close event" duration="2" />
+  </file>
+  <file path="src/components/requirements/StatusBadge.spec.ts">
+    <testCase name="StatusBadge.vue - should render status badge" duration="42" />
+    <testCase name="StatusBadge.vue - should apply correct classes for APPROVED status" duration="16" />
+    <testCase name="StatusBadge.vue - should apply correct classes for REVIEW status" duration="6" />
+    <testCase name="StatusBadge.vue - should apply correct classes for DEPRECATED status" duration="10" />
+  </file>
+  <file path="src/composables/useRequirementStyles.spec.ts">
+    <testCase name="useRequirementStyles - getStatusClasses - should return approved classes for APPROVED status" duration="2" />
+    <testCase name="useRequirementStyles - getStatusClasses - should return review classes for REVIEW status" duration="0" />
+    <testCase name="useRequirementStyles - getStatusClasses - should return deprecated classes for DEPRECATED status" duration="0" />
+    <testCase name="useRequirementStyles - getStatusClasses - should return default classes for unknown status" duration="0" />
+    <testCase name="useRequirementStyles - getStatusClasses - should include base classes for all statuses" duration="0" />
+    <testCase name="useRequirementStyles - getPriorityClasses - should return critical classes for CRITICAL priority" duration="0" />
+    <testCase name="useRequirementStyles - getPriorityClasses - should return high classes for HIGH priority" duration="0" />
+    <testCase name="useRequirementStyles - getPriorityClasses - should return medium classes for MEDIUM priority" duration="0" />
+    <testCase name="useRequirementStyles - getPriorityClasses - should return default classes for unknown priority" duration="0" />
+    <testCase name="useRequirementStyles - getPriorityClasses - should include base classes for all priorities" duration="0" />
+  </file>
+  <file path="src/services/aiService.spec.ts">
+    <testCase name="AIService - sendMessage - should send message successfully" duration="17" />
+    <testCase name="AIService - sendMessage - should throw error on failed request" duration="11" />
+    <testCase name="AIService - createNewConversation - should create new conversation successfully" duration="4" />
+    <testCase name="AIService - createNewConversation - should throw error on failed request" duration="1" />
+    <testCase name="AIService - getChatList - should get chat list successfully" duration="1" />
+    <testCase name="AIService - getChatList - should throw error on failed request" duration="0" />
+    <testCase name="AIService - deleteConversation - should delete conversation successfully" duration="1" />
+    <testCase name="AIService - deleteConversation - should throw error on failed request" duration="0" />
+  </file>
+  <file path="src/services/authService.spec.ts">
+    <testCase name="authService - login - should login successfully" duration="4" />
+    <testCase name="authService - getCurrentUser - should get current user successfully" duration="0" />
+    <testCase name="authService - logout - should remove auth token from localStorage" duration="1" />
+  </file>
+  <file path="src/services/projectService.spec.ts">
+    <testCase name="projectService - getAll - should get all projects" duration="3" />
+    <testCase name="projectService - getById - should get project by id" duration="0" />
+    <testCase name="projectService - create - should create project" duration="1" />
+    <testCase name="projectService - update - should update project" duration="0" />
+    <testCase name="projectService - delete - should delete project" duration="0" />
+  </file>
+  <file path="src/services/requirementService.spec.ts">
+    <testCase name="requirementService - getByProject - should get requirements by project id" duration="3" />
+    <testCase name="requirementService - getById - should get requirement by id" duration="0" />
+    <testCase name="requirementService - create - should create requirement" duration="1" />
+    <testCase name="requirementService - update - should update requirement" duration="0" />
+    <testCase name="requirementService - delete - should delete requirement" duration="0" />
+    <testCase name="requirementService - getHistory - should get requirement history" duration="0" />
+    <testCase name="requirementService - search - should search requirements" duration="1" />
+    <testCase name="requirementService - getLinks - should get requirement links" duration="0" />
+    <testCase name="requirementService - createLink - should create requirement link" duration="0" />
+    <testCase name="requirementService - deleteLink - should delete requirement link" duration="0" />
+  </file>
+  <file path="src/stores/auth.spec.ts">
+    <testCase name="useAuthStore - should initialize with null user and token from localStorage" duration="7" />
+    <testCase name="useAuthStore - should compute isAuthenticated correctly" duration="2" />
+    <testCase name="useAuthStore - should compute isAdmin correctly" duration="1" />
+    <testCase name="useAuthStore - should compute isEditor correctly" duration="1" />
+    <testCase name="useAuthStore - login - should login successfully" duration="3" />
+    <testCase name="useAuthStore - login - should handle login error" duration="4" />
+    <testCase name="useAuthStore - fetchCurrentUser - should fetch current user when token exists" duration="1" />
+    <testCase name="useAuthStore - fetchCurrentUser - should not fetch user when no token" duration="1" />
+    <testCase name="useAuthStore - fetchCurrentUser - should logout on fetch error" duration="1" />
+    <testCase name="useAuthStore - validateToken - should validate token and set user" duration="1" />
+    <testCase name="useAuthStore - validateToken - should logout on validation error" duration="2" />
+    <testCase name="useAuthStore - validateToken - should not validate when no token" duration="0" />
+    <testCase name="useAuthStore - logout - should clear user and token" duration="1" />
+  </file>
+  <file path="src/stores/projects.spec.ts">
+    <testCase name="useProjectStore - fetchProjects - should fetch projects successfully" duration="6" />
+    <testCase name="useProjectStore - fetchProjects - should handle fetch error" duration="1" />
+    <testCase name="useProjectStore - fetchProject - should fetch single project successfully" duration="1" />
+    <testCase name="useProjectStore - fetchProject - should handle fetch error" duration="1" />
+    <testCase name="useProjectStore - createProject - should create project successfully" duration="1" />
+    <testCase name="useProjectStore - createProject - should handle create error" duration="0" />
+    <testCase name="useProjectStore - updateProject - should update project successfully" duration="1" />
+    <testCase name="useProjectStore - updateProject - should update currentProject if it matches" duration="0" />
+    <testCase name="useProjectStore - updateProject - should handle update error" duration="1" />
+    <testCase name="useProjectStore - deleteProject - should delete project successfully" duration="1" />
+    <testCase name="useProjectStore - deleteProject - should clear currentProject if it matches deleted project" duration="0" />
+    <testCase name="useProjectStore - deleteProject - should handle delete error" duration="0" />
+  </file>
+  <file path="src/utils/requirementSorting.spec.ts">
+    <testCase name="requirementSorting - extractNumber - should extract number after last dash" duration="4" />
+    <testCase name="requirementSorting - extractNumber - should return 0 when no number found" duration="5" />
+    <testCase name="requirementSorting - extractNumber - should handle empty string" duration="0" />
+    <testCase name="requirementSorting - compareReqIds - should sort by number when prefixes are same" duration="1" />
+    <testCase name="requirementSorting - compareReqIds - should return 0 for identical IDs" duration="14" />
+    <testCase name="requirementSorting - compareReqIds - should sort by string when numbers are equal" duration="0" />
+    <testCase name="requirementSorting - compareReqIds - should handle mixed formats gracefully" duration="3" />
+    <testCase name="requirementSorting - compareReqIds - should sort naturally by number" duration="0" />
+  </file>
+  <file path="src/views/Dashboard.spec.ts">
+    <testCase name="Dashboard.vue - should render dashboard" duration="34" />
+  </file>
   <file path="src/views/Login.spec.ts">
-    <testCase name="Login.vue - should render login form" duration="32" />
-    <testCase name="Login.vue - should have empty credentials initially" duration="5" />
-    <testCase name="Login.vue - should submit form and redirect on successful login" duration="11" />
-    <testCase name="Login.vue - should not redirect on failed login" duration="4" />
-    <testCase name="Login.vue - should display error message when login fails" duration="5" />
-    <testCase name="Login.vue - should disable submit button when loading" duration="4" />
+    <testCase name="Login.vue - should render login form" duration="56" />
+    <testCase name="Login.vue - should have empty credentials initially" duration="8" />
+    <testCase name="Login.vue - should submit form and redirect on successful login" duration="16" />
+    <testCase name="Login.vue - should not redirect on failed login" duration="6" />
+    <testCase name="Login.vue - should display error message when login fails" duration="9" />
+    <testCase name="Login.vue - should disable submit button when loading" duration="9" />
+  </file>
+  <file path="src/views/ProjectDetail.spec.ts">
+    <testCase name="ProjectDetail.vue - should render project detail view" duration="79" />
+    <testCase name="ProjectDetail.vue - should have project component structure" duration="9" />
+    <testCase name="ProjectDetail.vue - should render basic elements" duration="14" />
+  </file>
+  <file path="src/views/ProjectSettings.spec.ts">
+    <testCase name="ProjectSettings.vue - should render project settings view" duration="66" />
+    <testCase name="ProjectSettings.vue - should have settings structure" duration="9" />
+    <testCase name="ProjectSettings.vue - should render form elements" duration="17" />
+  </file>
+  <file path="src/views/Projects.spec.ts">
+    <testCase name="Projects.vue - should render projects view" duration="75" />
+    <testCase name="Projects.vue - should fetch projects on mount" duration="13" />
+    <testCase name="Projects.vue - should display projects list" duration="17" />
+    <testCase name="Projects.vue - should show loading state" duration="12" />
+    <testCase name="Projects.vue - should show error message" duration="14" />
+    <testCase name="Projects.vue - should have project store available" duration="9" />
+  </file>
+  <file path="src/views/RequirementDetail.spec.ts">
+    <testCase name="RequirementDetail.vue - should render requirement detail view" duration="71" />
+    <testCase name="RequirementDetail.vue - should have requirement structure" duration="8" />
+    <testCase name="RequirementDetail.vue - should render elements" duration="14" />
   </file>
 </testExecutions>
