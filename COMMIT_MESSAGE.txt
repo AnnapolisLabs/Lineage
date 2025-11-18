@@ -1,0 +1,167 @@
+feat: implement comprehensive user management and RBAC system
+
+Add complete user authentication, authorization, and management system
+with role-based access control, multi-factor authentication, session
+management, and comprehensive audit logging.
+
+Backend Changes:
+----------------
+
+Security & Authentication:
+- Implement dual JWT token system (access + refresh tokens)
+- Add JwtTokenProvider with enhanced token generation and validation
+- Create JwtAuthenticationFilter with integrated audit logging
+- Remove duplicate JwtRequestFilter (consolidated functionality)
+- Add JwtAuthenticationEntryPoint for unauthorized access handling
+- Implement SecurityAuditService for comprehensive security event tracking
+
+User Management:
+- Extend User entity with security fields (MFA, verification, locking)
+- Add validation annotations (@NotBlank, @Email, @Size)
+- Create strategic database indexes for performance
+- Implement UserRole system with global and project-specific roles
+- Add UserRoleEntity for role assignments
+- Create UserSecurity entity for security-related data
+- Add UserSession entity for session management
+- Implement UserStatus enum for account states
+
+Role-Based Access Control (RBAC):
+- Define Role entity with RoleScope (GLOBAL, PROJECT)
+- Implement hierarchical role system:
+  * Global roles: ADMIN, PROJECT_MANAGER, DEVELOPER, VIEWER
+  * Project roles: PROJECT_ADMIN, PROJECT_EDITOR, PROJECT_VIEWER
+- Add role-based endpoint protection in SecurityConfig
+- Configure method-level security with @EnableMethodSecurity
+
+Services & Controllers:
+- Enhance AuthService with registration, verification, password reset
+- Add UserService for user profile management
+- Implement MfaService for two-factor authentication setup/validation
+- Create EmailService interface with EmailServiceImpl
+- Add SecurityController for security-related endpoints
+- Extend AuthController with enhanced authentication flows
+
+DTOs:
+- Add request DTOs: RegisterUserRequest, VerifyEmailRequest,
+  ResendVerificationRequest, ForgotPasswordRequest, ResetPasswordRequest,
+  ChangePasswordRequest, RefreshTokenRequest, SetupMfaRequest,
+  ValidateMfaRequest, UpdateUserRequest, CreateInvitationRequest
+- Add response DTOs: AuthResponse (enhanced), UserProfileResponse,
+  MfaSetupResponse, AuditLogResponse, InvitationResponse
+- Include comprehensive validation annotations
+
+Database:
+- Add V11 migration: Create user management tables (users, roles,
+  user_roles, user_security, user_sessions, audit_logs, invitations)
+- Add V12 migration: Insert default roles
+- Include proper indexing strategy for performance
+- Use JSONB for flexible metadata storage
+- Add audit log schema with severity levels
+
+Repositories:
+- Extend UserRepository with custom query methods
+- Add AuditLogRepository for security event access
+- Create UserSecurityRepository for security data
+- Add UserSessionRepository for session management
+- Implement UserInvitationRepository for invitation system
+
+Exception Handling:
+- Add GlobalExceptionHandler for consistent error responses
+- Create auth-specific exceptions package
+- Structured error responses with codes and timestamps
+
+Frontend Changes:
+-----------------
+
+Components:
+- Create profile management components:
+  * ProfileCard: Display user information
+  * ProfileForm: Edit profile details
+  * AvatarUpload: Handle avatar images
+- Add security components:
+  * MfaSetup: Two-factor authentication configuration
+- Implement admin components:
+  * UserManagementView: Admin user management interface
+
+Services:
+- Add profileService: User profile operations
+- Create securityService: Security settings (MFA, password, sessions)
+- Implement adminService: Admin user management functions
+- Update authService with enhanced authentication interfaces
+
+Stores:
+- Add profile store: User profile state management
+- Create security store: Security settings state
+- Implement admin store: Admin functionality state
+- Update auth store: Enhanced user model with globalRole
+
+Routing & Layouts:
+- Add AdminLayout: Layout for admin pages
+- Create admin routes with role-based guards
+- Add profile and security routes
+- Update Projects view with new role checks
+- Implement route guards for authorization
+
+Configuration & Build:
+----------------------
+- Update build.gradle dependencies
+- Update gradle wrapper properties
+- Update package.json and package-lock.json
+- Enhance SecurityConfig with:
+  * CSRF protection (selective for JWT endpoints)
+  * Enhanced security headers (HSTS, X-Content-Type-Options, etc.)
+  * Comprehensive CORS configuration
+  * Session management policies
+  * Role-based authorization rules
+
+Documentation:
+--------------
+- Add ACCOUNT_MANAGEMENT_ARCHITECTURE.md
+- Create GIT_AUDIT_REPORT.md with security analysis
+- Update roadmap.md with completed features
+
+Repository Cleanup:
+-------------------
+- Update .gitignore to exclude:
+  * System-specific files (gradle.properties)
+  * Development scripts (*.sh)
+  * Test/debug files (*_response.json)
+  * Coverage reports (/frontend/coverage/)
+- Remove empty/corrupted directories
+- Remove duplicate JWT filter implementation
+- Clean up incomplete files
+
+Security Features:
+------------------
+✅ JWT-based authentication with refresh tokens
+✅ Password hashing with BCrypt
+✅ Role-based access control (RBAC)
+✅ Multi-factor authentication (MFA) support
+✅ Email verification workflow
+✅ Password reset functionality
+✅ Account locking mechanism
+✅ Failed login attempt tracking
+✅ Comprehensive audit logging
+✅ Session management with device tracking
+✅ Security headers (HSTS, CSP-compatible)
+✅ CSRF protection for stateful operations
+✅ User invitation system
+✅ IP address and user agent tracking
+
+Breaking Changes:
+-----------------
+- User entity schema extended (requires database migration)
+- Authentication flow enhanced (may require client updates)
+- New authorization model (role-based access)
+
+Migration Notes:
+----------------
+- Run database migrations V11 and V12
+- Configure JWT secrets via environment variables
+- Update allowed CORS origins for production
+- Review and configure security headers
+- Set up email service configuration
+
+Resolves: User management and security enhancement requirements
+See: ACCOUNT_MANAGEMENT_ARCHITECTURE.md for detailed design
+See: GIT_AUDIT_REPORT.md for security audit analysis
