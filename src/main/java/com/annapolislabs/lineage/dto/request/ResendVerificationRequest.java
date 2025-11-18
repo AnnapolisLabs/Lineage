@@ -2,12 +2,17 @@ package com.annapolislabs.lineage.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Request DTO for resending email verification
  */
+@Setter
+@Getter
 public class ResendVerificationRequest {
-    
+
+    // Getters and Setters
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
     private String email;
@@ -16,15 +21,6 @@ public class ResendVerificationRequest {
     public ResendVerificationRequest() {}
 
     public ResendVerificationRequest(String email) {
-        this.email = email;
-    }
-
-    // Getters and Setters
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
         this.email = email;
     }
 

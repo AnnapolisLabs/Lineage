@@ -2,9 +2,14 @@ package com.annapolislabs.lineage.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 public class ChangePasswordRequest {
-    
+
+    // Getters and Setters
     @NotBlank(message = "Current password is required")
     private String currentPassword;
     
@@ -17,14 +22,5 @@ public class ChangePasswordRequest {
     
     // Constructors
     public ChangePasswordRequest() {}
-    
-    // Getters and Setters
-    public String getCurrentPassword() { return currentPassword; }
-    public void setCurrentPassword(String currentPassword) { this.currentPassword = currentPassword; }
-    
-    public String getNewPassword() { return newPassword; }
-    public void setNewPassword(String newPassword) { this.newPassword = newPassword; }
-    
-    public String getConfirmPassword() { return confirmPassword; }
-    public void setConfirmPassword(String confirmPassword) { this.confirmPassword = confirmPassword; }
+
 }

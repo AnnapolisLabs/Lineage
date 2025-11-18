@@ -1,9 +1,15 @@
 package com.annapolislabs.lineage.dto.response;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 
+@Setter
+@Getter
 public class MfaSetupResponse {
-    
+
+    // Getters and Setters
     private String secretKey;
     private String qrCodeUrl;
     private List<String> backupCodes;
@@ -17,17 +23,5 @@ public class MfaSetupResponse {
         this.qrCodeUrl = qrCodeUrl;
         this.backupCodes = backupCodes;
     }
-    
-    // Getters and Setters
-    public String getSecretKey() { return secretKey; }
-    public void setSecretKey(String secretKey) { this.secretKey = secretKey; }
-    
-    public String getQrCodeUrl() { return qrCodeUrl; }
-    public void setQrCodeUrl(String qrCodeUrl) { this.qrCodeUrl = qrCodeUrl; }
-    
-    public List<String> getBackupCodes() { return backupCodes; }
-    public void setBackupCodes(List<String> backupCodes) { this.backupCodes = backupCodes; }
-    
-    public boolean isSetupComplete() { return setupComplete; }
-    public void setSetupComplete(boolean setupComplete) { this.setupComplete = setupComplete; }
+
 }

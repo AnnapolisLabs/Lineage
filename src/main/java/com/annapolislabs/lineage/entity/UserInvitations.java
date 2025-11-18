@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -11,6 +13,8 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "user_invitations", indexes = {
     @Index(name = "idx_user_invitations_token", columnList = "token", unique = true),
@@ -23,6 +27,7 @@ import java.util.UUID;
 @EntityListeners(AuditingEntityListener.class)
 public class UserInvitations {
 
+    // Getters and Setters
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -119,111 +124,6 @@ public class UserInvitations {
 
     public void cancel() {
         this.status = InvitationStatus.CANCELLED;
-    }
-
-    // Getters and Setters
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public UUID getInvitedBy() {
-        return invitedBy;
-    }
-
-    public void setInvitedBy(UUID invitedBy) {
-        this.invitedBy = invitedBy;
-    }
-
-    public User getInvitedByUser() {
-        return invitedByUser;
-    }
-
-    public void setInvitedByUser(User invitedByUser) {
-        this.invitedByUser = invitedByUser;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public UUID getProjectId() {
-        return projectId;
-    }
-
-    public void setProjectId(UUID projectId) {
-        this.projectId = projectId;
-    }
-
-    public Project getProject() {
-        return project;
-    }
-
-    public void setProject(Project project) {
-        this.project = project;
-    }
-
-    public ProjectRole getProjectRole() {
-        return projectRole;
-    }
-
-    public void setProjectRole(ProjectRole projectRole) {
-        this.projectRole = projectRole;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public InvitationStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(InvitationStatus status) {
-        this.status = status;
-    }
-
-    public LocalDateTime getExpiryDate() {
-        return expiryDate;
-    }
-
-    public void setExpiryDate(LocalDateTime expiryDate) {
-        this.expiryDate = expiryDate;
-    }
-
-    public LocalDateTime getAcceptedAt() {
-        return acceptedAt;
-    }
-
-    public void setAcceptedAt(LocalDateTime acceptedAt) {
-        this.acceptedAt = acceptedAt;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
     }
 
     @Override

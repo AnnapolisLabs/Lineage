@@ -1,9 +1,13 @@
 package com.annapolislabs.lineage.dto.request;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.UUID;
 
+@Setter
+@Getter
 public class CreateLinkRequest {
 
     @NotNull(message = "Target requirement ID is required")
@@ -15,11 +19,4 @@ public class CreateLinkRequest {
         this.toRequirementId = toRequirementId;
     }
 
-    public UUID getToRequirementId() {
-        return toRequirementId;
-    }
-
-    public void setToRequirementId(UUID toRequirementId) {
-        this.toRequirementId = toRequirementId;
-    }
 }

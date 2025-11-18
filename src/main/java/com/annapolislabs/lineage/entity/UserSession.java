@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
+@Getter
 @Entity
 @Table(name = "user_sessions", indexes = {
     @Index(name = "idx_user_sessions_user_id", columnList = "user_id"),
@@ -24,6 +26,7 @@ import java.util.UUID;
 @EntityListeners(AuditingEntityListener.class)
 public class UserSession {
 
+    // Getters and Setters
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -134,129 +137,64 @@ public class UserSession {
         }
     }
 
-    // Getters and Setters
-    public UUID getId() {
-        return id;
-    }
-
     public void setId(UUID id) {
         this.id = id;
-    }
-
-    public UUID getUserId() {
-        return userId;
     }
 
     public void setUserId(UUID userId) {
         this.userId = userId;
     }
 
-    public User getUser() {
-        return user;
-    }
-
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public String getSessionId() {
-        return sessionId;
     }
 
     public void setSessionId(String sessionId) {
         this.sessionId = sessionId;
     }
 
-    public String getTokenHash() {
-        return tokenHash;
-    }
-
     public void setTokenHash(String tokenHash) {
         this.tokenHash = tokenHash;
-    }
-
-    public String getRefreshTokenHash() {
-        return refreshTokenHash;
     }
 
     public void setRefreshTokenHash(String refreshTokenHash) {
         this.refreshTokenHash = refreshTokenHash;
     }
 
-    public LocalDateTime getExpiresAt() {
-        return expiresAt;
-    }
-
     public void setExpiresAt(LocalDateTime expiresAt) {
         this.expiresAt = expiresAt;
-    }
-
-    public LocalDateTime getRefreshExpiresAt() {
-        return refreshExpiresAt;
     }
 
     public void setRefreshExpiresAt(LocalDateTime refreshExpiresAt) {
         this.refreshExpiresAt = refreshExpiresAt;
     }
 
-    public LocalDateTime getLastActivityAt() {
-        return lastActivityAt;
-    }
-
     public void setLastActivityAt(LocalDateTime lastActivityAt) {
         this.lastActivityAt = lastActivityAt;
-    }
-
-    public String getIpAddress() {
-        return ipAddress;
     }
 
     public void setIpAddress(String ipAddress) {
         this.ipAddress = ipAddress;
     }
 
-    public String getUserAgent() {
-        return userAgent;
-    }
-
     public void setUserAgent(String userAgent) {
         this.userAgent = userAgent;
-    }
-
-    public String getDeviceInfo() {
-        return deviceInfo;
     }
 
     public void setDeviceInfo(String deviceInfo) {
         this.deviceInfo = deviceInfo;
     }
 
-    public boolean isRevoked() {
-        return revoked;
-    }
-
     public void setRevoked(boolean revoked) {
         this.revoked = revoked;
-    }
-
-    public LocalDateTime getRevokedAt() {
-        return revokedAt;
     }
 
     public void setRevokedAt(LocalDateTime revokedAt) {
         this.revokedAt = revokedAt;
     }
 
-    public String getRevokedReason() {
-        return revokedReason;
-    }
-
     public void setRevokedReason(String revokedReason) {
         this.revokedReason = revokedReason;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
     }
 
     public void setCreatedAt(LocalDateTime createdAt) {

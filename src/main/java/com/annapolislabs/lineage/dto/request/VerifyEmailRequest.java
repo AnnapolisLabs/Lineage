@@ -1,9 +1,14 @@
 package com.annapolislabs.lineage.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 public class VerifyEmailRequest {
-    
+
+    // Getters and Setters
     @NotBlank(message = "Verification token is required")
     private String token;
     
@@ -13,8 +18,5 @@ public class VerifyEmailRequest {
     public VerifyEmailRequest(String token) {
         this.token = token;
     }
-    
-    // Getters and Setters
-    public String getToken() { return token; }
-    public void setToken(String token) { this.token = token; }
+
 }

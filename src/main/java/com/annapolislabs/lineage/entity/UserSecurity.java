@@ -3,6 +3,7 @@ package com.annapolislabs.lineage.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
 import org.hibernate.annotations.Type;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -16,6 +17,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
+@Getter
 @Entity
 @Table(name = "user_security", indexes = {
     @Index(name = "idx_user_security_user_id", columnList = "user_id"),
@@ -24,6 +26,7 @@ import java.util.UUID;
 @EntityListeners(AuditingEntityListener.class)
 public class UserSecurity {
 
+    // Getters and Setters
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -122,41 +125,20 @@ public class UserSecurity {
         this.lastSecurityCheck = LocalDateTime.now();
     }
 
-    // Getters and Setters
-    public UUID getId() {
-        return id;
-    }
-
     public void setId(UUID id) {
         this.id = id;
-    }
-
-    public UUID getUserId() {
-        return userId;
     }
 
     public void setUserId(UUID userId) {
         this.userId = userId;
     }
 
-    public User getUser() {
-        return user;
-    }
-
     public void setUser(User user) {
         this.user = user;
     }
 
-    public String getSecretKey() {
-        return secretKey;
-    }
-
     public void setSecretKey(String secretKey) {
         this.secretKey = secretKey;
-    }
-
-    public boolean isMfaEnabled() {
-        return mfaEnabled;
     }
 
     public void setMfaEnabled(boolean mfaEnabled) {
@@ -169,56 +151,28 @@ public class UserSecurity {
         }
     }
 
-    public String getMfaBackupCodes() {
-        return mfaBackupCodes;
-    }
-
     public void setMfaBackupCodes(String mfaBackupCodes) {
         this.mfaBackupCodes = mfaBackupCodes;
-    }
-
-    public LocalDateTime getMfaEnabledAt() {
-        return mfaEnabledAt;
     }
 
     public void setMfaEnabledAt(LocalDateTime mfaEnabledAt) {
         this.mfaEnabledAt = mfaEnabledAt;
     }
 
-    public Map<String, Object> getSecurityPreferences() {
-        return securityPreferences;
-    }
-
     public void setSecurityPreferences(Map<String, Object> securityPreferences) {
         this.securityPreferences = securityPreferences;
-    }
-
-    public String getDeviceFingerprint() {
-        return deviceFingerprint;
     }
 
     public void setDeviceFingerprint(String deviceFingerprint) {
         this.deviceFingerprint = deviceFingerprint;
     }
 
-    public LocalDateTime getLastSecurityCheck() {
-        return lastSecurityCheck;
-    }
-
     public void setLastSecurityCheck(LocalDateTime lastSecurityCheck) {
         this.lastSecurityCheck = lastSecurityCheck;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
     }
 
     public void setUpdatedAt(LocalDateTime updatedAt) {

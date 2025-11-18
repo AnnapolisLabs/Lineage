@@ -2,13 +2,18 @@ package com.annapolislabs.lineage.dto.response;
 
 import com.annapolislabs.lineage.entity.UserRole;
 import com.annapolislabs.lineage.entity.UserStatus;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
+@Setter
+@Getter
 public class AuthResponse {
-    
+
+    // Getters and Setters
     private boolean success;
     private String message;
     private UUID userId;
@@ -40,32 +45,5 @@ public class AuthResponse {
         this.refreshToken = refreshToken;
         this.user = user;
     }
-    
-    // Getters and Setters
-    public boolean isSuccess() { return success; }
-    public void setSuccess(boolean success) { this.success = success; }
-    
-    public String getMessage() { return message; }
-    public void setMessage(String message) { this.message = message; }
-    
-    public UUID getUserId() { return userId; }
-    public void setUserId(UUID userId) { this.userId = userId; }
-    
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-    
-    public String getToken() { return token; }
-    public void setToken(String token) { this.token = token; }
-    
-    public String getRefreshToken() { return refreshToken; }
-    public void setRefreshToken(String refreshToken) { this.refreshToken = refreshToken; }
-    
-    public UserProfileResponse getUser() { return user; }
-    public void setUser(UserProfileResponse user) { this.user = user; }
-    
-    public LocalDateTime getExpiresAt() { return expiresAt; }
-    public void setExpiresAt(LocalDateTime expiresAt) { this.expiresAt = expiresAt; }
-    
-    public boolean isMfaRequired() { return mfaRequired; }
-    public void setMfaRequired(boolean mfaRequired) { this.mfaRequired = mfaRequired; }
+
 }

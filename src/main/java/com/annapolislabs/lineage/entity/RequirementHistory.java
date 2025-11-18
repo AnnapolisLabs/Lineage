@@ -2,6 +2,8 @@ package com.annapolislabs.lineage.entity;
 
 import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Type;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -10,11 +12,14 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "requirement_history")
 @EntityListeners(AuditingEntityListener.class)
 public class RequirementHistory {
 
+    // Getters and Setters
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -55,60 +60,4 @@ public class RequirementHistory {
         this.newValue = newValue;
     }
 
-    // Getters and Setters
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public Requirement getRequirement() {
-        return requirement;
-    }
-
-    public void setRequirement(Requirement requirement) {
-        this.requirement = requirement;
-    }
-
-    public User getChangedBy() {
-        return changedBy;
-    }
-
-    public void setChangedBy(User changedBy) {
-        this.changedBy = changedBy;
-    }
-
-    public ChangeType getChangeType() {
-        return changeType;
-    }
-
-    public void setChangeType(ChangeType changeType) {
-        this.changeType = changeType;
-    }
-
-    public Map<String, Object> getOldValue() {
-        return oldValue;
-    }
-
-    public void setOldValue(Map<String, Object> oldValue) {
-        this.oldValue = oldValue;
-    }
-
-    public Map<String, Object> getNewValue() {
-        return newValue;
-    }
-
-    public void setNewValue(Map<String, Object> newValue) {
-        this.newValue = newValue;
-    }
-
-    public LocalDateTime getChangedAt() {
-        return changedAt;
-    }
-
-    public void setChangedAt(LocalDateTime changedAt) {
-        this.changedAt = changedAt;
-    }
 }

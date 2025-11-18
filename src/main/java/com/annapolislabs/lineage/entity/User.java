@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
 import org.hibernate.annotations.Type;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -20,6 +21,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
+@Getter
 @Entity
 @Table(name = "users", indexes = {
     @Index(name = "idx_users_email", columnList = "email"),
@@ -30,6 +32,7 @@ import java.util.UUID;
 @EntityListeners(AuditingEntityListener.class)
 public class User {
 
+    // Getters and Setters
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -188,33 +191,16 @@ public class User {
         this.lockedUntil = LocalDateTime.now().plus(lockDuration);
     }
 
-    // Getters and Setters
-    public UUID getId() {
-        return id;
-    }
-
     public void setId(UUID id) {
         this.id = id;
-    }
-
-    public String getEmail() {
-        return email;
     }
 
     public void setEmail(String email) {
         this.email = email;
     }
 
-    public String getPasswordHash() {
-        return passwordHash;
-    }
-
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
-    }
-
-    public String getFirstName() {
-        return firstName;
     }
 
     public void setFirstName(String firstName) {
@@ -225,10 +211,6 @@ public class User {
         }
     }
 
-    public String getLastName() {
-        return lastName;
-    }
-
     public void setLastName(String lastName) {
         this.lastName = lastName;
         // Update full name if both first and last name are set
@@ -237,56 +219,28 @@ public class User {
         }
     }
 
-    public String getName() {
-        return name;
-    }
-
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
     }
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getAvatarUrl() {
-        return avatarUrl;
-    }
-
     public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
-    }
-
-    public String getBio() {
-        return bio;
     }
 
     public void setBio(String bio) {
         this.bio = bio;
     }
 
-    public Map<String, Object> getPreferences() {
-        return preferences;
-    }
-
     public void setPreferences(Map<String, Object> preferences) {
         this.preferences = preferences;
     }
 
-    public UserStatus getStatus() {
-        return status;
-    }
-
     public void setStatus(UserStatus status) {
         this.status = status;
-    }
-
-    public UserRole getGlobalRole() {
-        return globalRole;
     }
 
     public void setGlobalRole(UserRole globalRole) {
@@ -302,104 +256,52 @@ public class User {
         setGlobalRole(role);
     }
 
-    public boolean isEmailVerified() {
-        return emailVerified;
-    }
-
     public void setEmailVerified(boolean emailVerified) {
         this.emailVerified = emailVerified;
-    }
-
-    public String getEmailVerificationToken() {
-        return emailVerificationToken;
     }
 
     public void setEmailVerificationToken(String emailVerificationToken) {
         this.emailVerificationToken = emailVerificationToken;
     }
 
-    public LocalDateTime getEmailVerificationExpiry() {
-        return emailVerificationExpiry;
-    }
-
     public void setEmailVerificationExpiry(LocalDateTime emailVerificationExpiry) {
         this.emailVerificationExpiry = emailVerificationExpiry;
-    }
-
-    public String getPasswordResetToken() {
-        return passwordResetToken;
     }
 
     public void setPasswordResetToken(String passwordResetToken) {
         this.passwordResetToken = passwordResetToken;
     }
 
-    public LocalDateTime getPasswordResetExpiry() {
-        return passwordResetExpiry;
-    }
-
     public void setPasswordResetExpiry(LocalDateTime passwordResetExpiry) {
         this.passwordResetExpiry = passwordResetExpiry;
-    }
-
-    public int getFailedLoginAttempts() {
-        return failedLoginAttempts;
     }
 
     public void setFailedLoginAttempts(int failedLoginAttempts) {
         this.failedLoginAttempts = failedLoginAttempts;
     }
 
-    public LocalDateTime getLockedUntil() {
-        return lockedUntil;
-    }
-
     public void setLockedUntil(LocalDateTime lockedUntil) {
         this.lockedUntil = lockedUntil;
-    }
-
-    public LocalDateTime getLastLoginAt() {
-        return lastLoginAt;
     }
 
     public void setLastLoginAt(LocalDateTime lastLoginAt) {
         this.lastLoginAt = lastLoginAt;
     }
 
-    public String getLastLoginIp() {
-        return lastLoginIp;
-    }
-
     public void setLastLoginIp(String lastLoginIp) {
         this.lastLoginIp = lastLoginIp;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
     }
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 
-    public UUID getCreatedBy() {
-        return createdBy;
-    }
-
     public void setCreatedBy(UUID createdBy) {
         this.createdBy = createdBy;
-    }
-
-    public UUID getUpdatedBy() {
-        return updatedBy;
     }
 
     public void setUpdatedBy(UUID updatedBy) {
