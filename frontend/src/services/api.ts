@@ -42,24 +42,21 @@ export async function exportData(projectId: string, format: 'csv' | 'json' | 'ma
 
         // Create download link
         const blob = new Blob([response.data], {
-            type: format === 'csv' ? 'text/csv' :
-                format === 'json' ? 'application/json' :
-                    'text/plain'
+            type: format === 'csv' ? 'text/csv' : (format === 'json' ? 'application/json' : 'text/plain')
         })
-        const url = window.URL.createObjectURL(blob)
+        const url = globalThis.URL.createObjectURL(blob)
         const link = document.createElement('a')
         link.href = url
 
         // Set filename based on format
         link.download = format === 'csv' ? 'requirements.csv' :
-            format === 'json' ? 'requirements.json' :
-                'requirements.md'
+            format === 'json' ? 'requirements.json' : 'requirements.md'
 
         // Trigger download
         document.body.appendChild(link)
         link.click()
-        document.body.removeChild(link)
-        window.URL.revokeObjectURL(url)
+        link.remove()
+        globalThis.URL.revokeObjectURL(url)
 
         return true
     } catch (error) {

@@ -25,6 +25,16 @@ public class SecurityAuditService {
 
     private static final Logger logger = LoggerFactory.getLogger(SecurityAuditService.class);
     private static final Logger securityLogger = LoggerFactory.getLogger("SECURITY");
+    
+    // Constants for repeated string literals
+    private static final String EVENT_TYPE = "event_type";
+    private static final String TIMESTAMP = "timestamp";
+    private static final String IP_ADDRESS = "ip_address";
+    private static final String USER_AGENT = "user_agent";
+    private static final String SUCCESS = "success";
+    private static final String SYSTEM = "SYSTEM";
+    private static final String UNKNOWN = "unknown";
+    private static final String REQUEST = "request";
 
     @Autowired
     private AuditLogRepository auditLogRepository;
@@ -70,8 +80,8 @@ public class SecurityAuditService {
      */
     public void logMfaEvent(String userId, String action, AuditSeverity severity, Map<String, Object> details) {
         Map<String, Object> mfaDetails = new HashMap<>(details != null ? details : new HashMap<>());
-        mfaDetails.put("event_type", "MFA");
-        mfaDetails.put("timestamp", LocalDateTime.now());
+        mfaDetails.put(EVENT_TYPE, "MFA");
+        mfaDetails.put(TIMESTAMP, LocalDateTime.now());
         
         logSecurityEvent(userId, action, "MFA", userId, severity, mfaDetails);
         
@@ -85,10 +95,10 @@ public class SecurityAuditService {
      */
     public void logSuspiciousActivity(String userId, String action, AuditSeverity severity, Map<String, Object> details) {
         Map<String, Object> suspiciousDetails = new HashMap<>(details != null ? details : new HashMap<>());
-        suspiciousDetails.put("event_type", "SUSPICIOUS_ACTIVITY");
-        suspiciousDetails.put("ip_address", getClientIpAddress());
-        suspiciousDetails.put("user_agent", getUserAgent());
-        suspiciousDetails.put("timestamp", LocalDateTime.now());
+        suspiciousDetails.put(EVENT_TYPE, "SUSPICIOUS_ACTIVITY");
+        suspiciousDetails.put(IP_ADDRESS, getClientIpAddress());
+        suspiciousDetails.put(USER_AGENT, getUserAgent());
+        suspiciousDetails.put(TIMESTAMP, LocalDateTime.now());
         
         logSecurityEvent(userId, action, "SECURITY", userId, severity, suspiciousDetails);
         
@@ -97,7 +107,7 @@ public class SecurityAuditService {
                 LocalDateTime.now(), userId, action, getClientIpAddress(), getUserAgent(), details);
         
         // Alert on suspicious activities
-        alertOnSuspiciousActivity(userId, action, details);
+        alertOnSuspiciousActivity(userId, action);
     }
 
     /**
@@ -105,11 +115,11 @@ public class SecurityAuditService {
      */
     public void logAuthenticationEvent(String userId, String action, AuditSeverity severity, boolean success, Map<String, Object> additionalDetails) {
         Map<String, Object> authDetails = new HashMap<>(additionalDetails != null ? additionalDetails : new HashMap<>());
-        authDetails.put("event_type", "AUTHENTICATION");
-        authDetails.put("success", success);
-        authDetails.put("ip_address", getClientIpAddress());
-        authDetails.put("user_agent", getUserAgent());
-        authDetails.put("timestamp", LocalDateTime.now());
+        authDetails.put(EVENT_TYPE, "AUTHENTICATION");
+        authDetails.put(SUCCESS, success);
+        authDetails.put(IP_ADDRESS, getClientIpAddress());
+        authDetails.put(USER_AGENT, getUserAgent());
+        authDetails.put(TIMESTAMP, LocalDateTime.now());
         
         String resource = success ? "AUTH_SUCCESS" : "AUTH_FAILURE";
         logSecurityEvent(userId, action, resource, userId, severity, authDetails);
@@ -125,11 +135,11 @@ public class SecurityAuditService {
      */
     public void logAuthorizationEvent(String userId, String action, String resource, String resourceId, boolean success, Map<String, Object> details) {
         Map<String, Object> authzDetails = new HashMap<>(details != null ? details : new HashMap<>());
-        authzDetails.put("event_type", "AUTHORIZATION");
-        authzDetails.put("success", success);
-        authzDetails.put("ip_address", getClientIpAddress());
-        authzDetails.put("user_agent", getUserAgent());
-        authzDetails.put("timestamp", LocalDateTime.now());
+        authzDetails.put(EVENT_TYPE, "AUTHORIZATION");
+        authzDetails.put(SUCCESS, success);
+        authzDetails.put(IP_ADDRESS, getClientIpAddress());
+        authzDetails.put(USER_AGENT, getUserAgent());
+        authzDetails.put(TIMESTAMP, LocalDateTime.now());
         
         AuditSeverity severity = success ? AuditSeverity.INFO : AuditSeverity.WARNING;
         logSecurityEvent(userId, action, resource, resourceId, severity, authzDetails);
@@ -145,10 +155,10 @@ public class SecurityAuditService {
      */
     public void logAccountSecurityEvent(String userId, String action, AuditSeverity severity, Map<String, Object> details) {
         Map<String, Object> accountDetails = new HashMap<>(details != null ? details : new HashMap<>());
-        accountDetails.put("event_type", "ACCOUNT_SECURITY");
-        accountDetails.put("ip_address", getClientIpAddress());
-        accountDetails.put("user_agent", getUserAgent());
-        accountDetails.put("timestamp", LocalDateTime.now());
+        accountDetails.put(EVENT_TYPE, "ACCOUNT_SECURITY");
+        accountDetails.put(IP_ADDRESS, getClientIpAddress());
+        accountDetails.put(USER_AGENT, getUserAgent());
+        accountDetails.put(TIMESTAMP, LocalDateTime.now());
         
         logSecurityEvent(userId, action, "ACCOUNT_SECURITY", userId, severity, accountDetails);
         
@@ -162,10 +172,10 @@ public class SecurityAuditService {
      */
     public void logDataAccessEvent(String userId, String action, String resource, String resourceId, AuditSeverity severity, Map<String, Object> details) {
         Map<String, Object> accessDetails = new HashMap<>(details != null ? details : new HashMap<>());
-        accessDetails.put("event_type", "DATA_ACCESS");
-        accessDetails.put("ip_address", getClientIpAddress());
-        accessDetails.put("user_agent", getUserAgent());
-        accessDetails.put("timestamp", LocalDateTime.now());
+        accessDetails.put(EVENT_TYPE, "DATA_ACCESS");
+        accessDetails.put(IP_ADDRESS, getClientIpAddress());
+        accessDetails.put(USER_AGENT, getUserAgent());
+        accessDetails.put(TIMESTAMP, LocalDateTime.now());
         
         logSecurityEvent(userId, action, resource, resourceId, severity, accessDetails);
     }
@@ -175,8 +185,8 @@ public class SecurityAuditService {
      */
     public void logSystemEvent(String action, AuditSeverity severity, Map<String, Object> details) {
         Map<String, Object> systemDetails = new HashMap<>(details != null ? details : new HashMap<>());
-        systemDetails.put("event_type", "SYSTEM");
-        systemDetails.put("timestamp", LocalDateTime.now());
+        systemDetails.put(EVENT_TYPE, SYSTEM);
+        systemDetails.put(TIMESTAMP, LocalDateTime.now());
         
         logSecurityEvent(null, action, "SYSTEM", "SYSTEM", severity, systemDetails);
         
@@ -192,7 +202,7 @@ public class SecurityAuditService {
             return auditLogRepository.findByUserIdOrderByCreatedAtDesc(userId)
                     .stream()
                     .limit(limit)
-                    .collect(java.util.stream.Collectors.toList());
+                    .toList();
         } catch (Exception e) {
             logger.error("Failed to get security events for user: {}", userId, e);
             return java.util.Collections.emptyList();
@@ -207,10 +217,10 @@ public class SecurityAuditService {
             return auditLogRepository.findBySeverityInOrderByCreatedAtDesc(
                             java.util.List.of(AuditSeverity.WARNING, AuditSeverity.ERROR, AuditSeverity.CRITICAL))
                     .stream()
-                    .filter(log -> log.getDetails().get("event_type") != null &&
-                            log.getDetails().get("event_type").toString().contains("SUSPICIOUS"))
+                    .filter(log -> log.getDetails().get(EVENT_TYPE) != null &&
+                            log.getDetails().get(EVENT_TYPE).toString().contains("SUSPICIOUS"))
                     .limit(limit)
-                    .collect(java.util.stream.Collectors.toList());
+                    .toList();
         } catch (Exception e) {
             logger.error("Failed to get suspicious activities", e);
             return java.util.Collections.emptyList();
@@ -220,7 +230,7 @@ public class SecurityAuditService {
     /**
      * Log successful authentication
      */
-    public void logSuccessfulAuthentication(HttpServletRequest request, String userId, String email) {
+    public void logSuccessfulAuthentication(String userId, String email) {
         logAuthenticationEvent(userId, "LOGIN_SUCCESS", AuditSeverity.INFO, true,
             java.util.Map.of("email", email, "method", "password"));
     }
@@ -228,8 +238,8 @@ public class SecurityAuditService {
     /**
      * Log authentication failure
      */
-    public void logAuthenticationFailure(HttpServletRequest request, String action, String reason) {
-        logAuthenticationEvent("unknown", action, AuditSeverity.WARNING, false,
+    public void logAuthenticationFailure(String action, String reason) {
+        logAuthenticationEvent(UNKNOWN, action, AuditSeverity.WARNING, false,
             java.util.Map.of("reason", reason));
     }
     
@@ -240,7 +250,7 @@ public class SecurityAuditService {
         logSecurityEvent(null, success ? "PASSWORD_RESET_SUCCESS" : "PASSWORD_RESET_REQUEST",
             "USER_SECURITY", email,
             success ? AuditSeverity.INFO : AuditSeverity.WARNING,
-            java.util.Map.of("email", email, "ipAddress", ipAddress, "success", success));
+            java.util.Map.of("email", email, "ipAddress", ipAddress, SUCCESS, success));
     }
 
     // Private helper methods
@@ -278,11 +288,10 @@ public class SecurityAuditService {
         // via email, Slack, PagerDuty, etc.
         securityLogger.error("CRITICAL SECURITY ALERT: {}", auditLog);
         
-        // Could integrate with external alerting systems here
-        // Example: AlertingService.sendAlert("CRITICAL_SECURITY_EVENT", auditLog);
+        
     }
 
-    private void alertOnSuspiciousActivity(String userId, String action, Map<String, Object> details) {
+    private void alertOnSuspiciousActivity(String userId, String action) {
         // Check if this is part of a pattern (multiple failed attempts, etc.)
         // In a real implementation, this might trigger account lockout or additional monitoring
         
@@ -290,6 +299,6 @@ public class SecurityAuditService {
                 userId, action, getClientIpAddress());
         
         // Could integrate with automated response systems here
-        // Example: ResponseService.handleSuspiciousActivity(userId, details);
+        // Example: ResponseService.handleSuspiciousActivity(userId);
     }
 }

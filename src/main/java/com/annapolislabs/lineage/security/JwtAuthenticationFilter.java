@@ -66,7 +66,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         } catch (Exception e) {
             logger.error("Cannot set user authentication: {}", e.getMessage());
-            securityAuditService.logAuthenticationFailure(request, "JWT_PROCESSING_ERROR", e.getMessage());
+            securityAuditService.logAuthenticationFailure("JWT_PROCESSING_ERROR", e.getMessage());
         }
 
         filterChain.doFilter(request, response);
@@ -109,16 +109,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 logger.debug("Successfully authenticated user: {}", email);
                 
                 // Log successful authentication
-                securityAuditService.logSuccessfulAuthentication(request, userId, email);
+                securityAuditService.logSuccessfulAuthentication(userId, email);
                 
             } else {
                 logger.warn("Token validation failed for user: {}", email);
-                securityAuditService.logAuthenticationFailure(request, "TOKEN_VALIDATION_FAILED", email);
+                securityAuditService.logAuthenticationFailure("TOKEN_VALIDATION_FAILED", email);
             }
             
         } catch (Exception e) {
             logger.error("Authentication error: {}", e.getMessage());
-            securityAuditService.logAuthenticationFailure(request, "AUTHENTICATION_ERROR", e.getMessage());
+            securityAuditService.logAuthenticationFailure("AUTHENTICATION_ERROR", e.getMessage());
             
             // Clear security context on error
             SecurityContextHolder.clearContext();

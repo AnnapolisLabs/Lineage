@@ -37,6 +37,13 @@ import java.util.UUID;
 public class SecurityController {
 
     private static final Logger logger = LoggerFactory.getLogger(SecurityController.class);
+    private static final String ENABLED = "enabled";
+    private static final String MESSAGE = "message";
+    private static final String METHOD = "method";
+    private static final String SUCCESS = "success";
+    private static final String TIMESTAMP = "timestamp";
+    private static final String INVALID_CODE = "INVALID_CODE";
+    private static final String REASON = "reason";
 
     @Autowired
     private MfaService mfaService;
@@ -67,9 +74,9 @@ public class SecurityController {
 
             if (userSecurity != null && userSecurity.isMfaEnabled()) {
                 return ResponseEntity.ok(Map.of(
-                        "enabled", true,
+                        ENABLED, true,
                         "setupComplete", true,
-                        "message", "MFA is already enabled for your account"
+                        MESSAGE, "MFA is already enabled for your account"
                 ));
             }
 
@@ -81,7 +88,7 @@ public class SecurityController {
                     Map.of("setupMethod", "TOTP"));
 
             return ResponseEntity.ok(Map.of(
-                    "enabled", false,
+                    ENABLED, false,
                     "setupComplete", false,
                     "secretKey", mfaSetup.getSecretKey(),
                     "qrCodeUrl", mfaSetup.getQrCodeUrl(),
@@ -119,19 +126,19 @@ public class SecurityController {
 
             // Log MFA enablement
             securityAuditService.logMfaEvent(userId, "MFA_ENABLED", AuditSeverity.INFO,
-                    Map.of("method", "TOTP", "enabledAt", LocalDateTime.now()));
+                    Map.of(METHOD, "TOTP", "enabledAt", LocalDateTime.now()));
 
             return ResponseEntity.ok(Map.of(
-                    "success", true,
-                    "enabled", true,
+                    SUCCESS, true,
+                    ENABLED, true,
                     "enabledAt", userSecurity.getMfaEnabledAt(),
-                    "message", "MFA has been successfully enabled for your account"
+                    MESSAGE, "MFA has been successfully enabled for your account"
             ));
 
         } catch (MfaVerificationException e) {
             logger.warn("MFA verification failed during enablement for user: {}", getCurrentUserId());
             securityAuditService.logMfaEvent(getCurrentUserId(), "MFA_ENABLE_FAILED", AuditSeverity.WARNING,
-                    Map.of("reason", "INVALID_CODE", "timestamp", LocalDateTime.now()));
+                    Map.of(REASON, INVALID_CODE, TIMESTAMP, LocalDateTime.now()));
             throw e;
         } catch (Exception e) {
             logger.error("Failed to enable MFA", e);
@@ -154,20 +161,20 @@ public class SecurityController {
             if (isValid) {
                 // Log successful MFA validation
                 securityAuditService.logMfaEvent(userId, "MFA_VALIDATION_SUCCESS", AuditSeverity.INFO,
-                        Map.of("method", "TOTP", "timestamp", LocalDateTime.now()));
+                        Map.of(METHOD, "TOTP", TIMESTAMP, LocalDateTime.now()));
 
                 return ResponseEntity.ok(Map.of(
                         "valid", true,
-                        "message", "MFA code validated successfully"
+                        MESSAGE, "MFA code validated successfully"
                 ));
             } else {
                 // Log failed MFA validation
                 securityAuditService.logMfaEvent(userId, "MFA_VALIDATION_FAILED", AuditSeverity.WARNING,
-                        Map.of("method", "TOTP", "reason", "INVALID_CODE", "timestamp", LocalDateTime.now()));
+                        Map.of(METHOD, "TOTP", REASON, INVALID_CODE, TIMESTAMP, LocalDateTime.now()));
 
                 return ResponseEntity.ok(Map.of(
                         "valid", false,
-                        "message", "Invalid MFA code"
+                        MESSAGE, "Invalid MFA code"
                 ));
             }
 
@@ -190,7 +197,7 @@ public class SecurityController {
             if (verificationCode == null || verificationCode.trim().isEmpty()) {
                 return ResponseEntity.badRequest().body(Map.of(
                         "error", "VERIFICATION_CODE_REQUIRED",
-                        "message", "MFA verification code is required to disable MFA"
+                        MESSAGE, "MFA verification code is required to disable MFA"
                 ));
             }
 
@@ -206,18 +213,18 @@ public class SecurityController {
 
             // Log MFA disablement
             securityAuditService.logMfaEvent(userId, "MFA_DISABLED", AuditSeverity.WARNING,
-                    Map.of("method", "TOTP", "disabledAt", LocalDateTime.now()));
+                    Map.of(METHOD, "TOTP", "disabledAt", LocalDateTime.now()));
 
             return ResponseEntity.ok(Map.of(
-                    "success", true,
-                    "enabled", false,
-                    "message", "MFA has been successfully disabled for your account"
+                    SUCCESS, true,
+                    ENABLED, false,
+                    MESSAGE, "MFA has been successfully disabled for your account"
             ));
 
         } catch (MfaVerificationException e) {
             logger.warn("MFA verification failed during disablement for user: {}", getCurrentUserId());
             securityAuditService.logMfaEvent(getCurrentUserId(), "MFA_DISABLE_FAILED", AuditSeverity.WARNING,
-                    Map.of("reason", "INVALID_CODE", "timestamp", LocalDateTime.now()));
+                    Map.of(REASON, INVALID_CODE, TIMESTAMP, LocalDateTime.now()));
             throw e;
         } catch (Exception e) {
             logger.error("Failed to disable MFA", e);
@@ -231,14 +238,12 @@ public class SecurityController {
     @GetMapping("/sessions")
     public ResponseEntity<?> getUserSessions(HttpServletRequest request) {
         try {
-            String userId = getCurrentUserId();
-
             // Get user sessions (simplified implementation)
             // In a real implementation, this would query the UserSessionRepository
 
             return ResponseEntity.ok(Map.of(
                     "sessions", List.of(),
-                    "message", "Session management features coming soon"
+                    MESSAGE, "Session management features coming soon"
             ));
 
         } catch (Exception e) {
@@ -264,8 +269,8 @@ public class SecurityController {
                     Map.of("sessionId", sessionId, "revokedAt", LocalDateTime.now()));
 
             return ResponseEntity.ok(Map.of(
-                    "success", true,
-                    "message", "Session has been successfully revoked"
+                    SUCCESS, true,
+                    MESSAGE, "Session has been successfully revoked"
             ));
 
         } catch (Exception e) {
@@ -288,7 +293,7 @@ public class SecurityController {
             if (currentPassword == null || newPassword == null) {
                 return ResponseEntity.badRequest().body(Map.of(
                         "error", "INVALID_REQUEST",
-                        "message", "Current password and new password are required"
+                        MESSAGE, "Current password and new password are required"
                 ));
             }
 
@@ -304,8 +309,8 @@ public class SecurityController {
                     Map.of("changedAt", LocalDateTime.now(), "ipAddress", getClientIpAddress(httpRequest)));
 
             return ResponseEntity.ok(Map.of(
-                    "success", true,
-                    "message", "Password changed successfully"
+                    SUCCESS, true,
+                    MESSAGE, "Password changed successfully"
             ));
 
         } catch (Exception e) {
@@ -335,12 +340,12 @@ public class SecurityController {
                 com.annapolislabs.lineage.entity.AuditLog lastChange = passwordChanges.get(0);
                 java.util.Map<String, Object> response = new java.util.HashMap<>();
                 response.put("lastChanged", lastChange.getCreatedAt());
-                response.put("message", "Last password change retrieved successfully");
+                response.put(MESSAGE, "Last password change retrieved successfully");
                 return ResponseEntity.ok(response);
             }
             java.util.Map<String, Object> response = new java.util.HashMap<>();
             response.put("lastChanged", null);
-            response.put("message", "No password changes found");
+            response.put(MESSAGE, "No password changes found");
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
@@ -402,19 +407,10 @@ public class SecurityController {
                 return user.getId().toString();
             } catch (Exception e) {
                 logger.error("Failed to get current user ID", e);
-                throw new RuntimeException("Unable to authenticate user", e);
+                throw new SecurityException("Unable to authenticate user", e);
             }
         }
-        throw new RuntimeException("No authenticated user found");
-    }
-
-    private String extractTokenFromRequest() {
-        // This would be extracted from the JWT filter in practice
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getCredentials() != null) {
-            return authentication.getCredentials().toString();
-        }
-        return null;
+        throw new SecurityException("No authenticated user found");
     }
 
     private String getClientIpAddress(HttpServletRequest request) {

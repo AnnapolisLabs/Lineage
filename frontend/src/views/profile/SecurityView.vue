@@ -290,6 +290,7 @@ async function handlePasswordChange() {
     }
   } catch (error) {
     // Error is handled by the store
+    console.error('Failed to change password:', error)
   }
 }
 
@@ -301,6 +302,7 @@ async function revokeSession(sessionId: string) {
       setTimeout(() => successMessage.value = '', 3000)
     } catch (error) {
       // Error is handled by the store
+      console.error('Failed to revoke session:', error)
     }
   }
 }

@@ -1,0 +1,1274 @@
+================================================================================
+FILE: frontend/src/components/profile/AvatarUpload.vue
+LINE: 189
+SEVERITY: MINOR
+TYPE: CODE_SMELL
+RULE: typescript:S7773
+
+MESSAGE:
+Prefer `Number.parseFloat` over `parseFloat`.
+
+DESCRIPTION:
+Prefer `Number.parseFloat` over `parseFloat`.
+================================================================================
+
+================================================================================
+FILE: frontend/src/components/profile/ProfileCard.vue
+LINE: 119
+SEVERITY: MINOR
+TYPE: CODE_SMELL
+RULE: typescript:S7781
+
+MESSAGE:
+Prefer `String#replaceAll()` over `String#replace()`.
+
+DESCRIPTION:
+Prefer `String#replaceAll()` over `String#replace()`.
+================================================================================
+
+================================================================================
+FILE: frontend/src/components/profile/ProfileForm.vue
+LINE: 62
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: Web:S6853
+
+MESSAGE:
+A form label must be associated with a control.
+
+DESCRIPTION:
+A form label must be associated with a control.
+================================================================================
+
+================================================================================
+FILE: frontend/src/components/profile/ProfileForm.vue
+LINE: 109
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: Web:S6853
+
+MESSAGE:
+A form label must be associated with a control.
+
+DESCRIPTION:
+A form label must be associated with a control.
+================================================================================
+
+================================================================================
+FILE: frontend/src/components/security/MfaSetup.vue
+LINE: 213
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: typescript:S7762
+
+MESSAGE:
+Prefer `childNode.remove()` over `parentNode.removeChild(childNode)`.
+
+DESCRIPTION:
+Prefer `childNode.remove()` over `parentNode.removeChild(childNode)`.
+================================================================================
+
+================================================================================
+FILE: frontend/src/views/admin/UserManagementView.vue
+LINE: 456
+SEVERITY: MINOR
+TYPE: CODE_SMELL
+RULE: typescript:S7781
+
+MESSAGE:
+Prefer `String#replaceAll()` over `String#replace()`.
+
+DESCRIPTION:
+Prefer `String#replaceAll()` over `String#replace()`.
+================================================================================
+
+================================================================================
+FILE: frontend/src/views/admin/UserManagementView.vue
+LINE: 469
+SEVERITY: INFO
+TYPE: CODE_SMELL
+RULE: typescript:S1135
+
+MESSAGE:
+Complete the task associated to this "TODO" comment.
+
+DESCRIPTION:
+Complete the task associated to this "TODO" comment.
+================================================================================
+
+================================================================================
+FILE: frontend/src/views/admin/UserManagementView.vue
+LINE: 496
+SEVERITY: MINOR
+TYPE: CODE_SMELL
+RULE: typescript:S2486
+
+MESSAGE:
+Handle this exception or don't catch it at all.
+
+DESCRIPTION:
+Handle this exception or don't catch it at all.
+================================================================================
+
+================================================================================
+FILE: frontend/src/views/admin/UserManagementView.vue
+LINE: 508
+SEVERITY: MINOR
+TYPE: CODE_SMELL
+RULE: typescript:S2486
+
+MESSAGE:
+Handle this exception or don't catch it at all.
+
+DESCRIPTION:
+Handle this exception or don't catch it at all.
+================================================================================
+
+================================================================================
+FILE: frontend/src/views/admin/UserManagementView.vue
+LINE: 517
+SEVERITY: MINOR
+TYPE: CODE_SMELL
+RULE: typescript:S2486
+
+MESSAGE:
+Handle this exception or don't catch it at all.
+
+DESCRIPTION:
+Handle this exception or don't catch it at all.
+================================================================================
+
+================================================================================
+FILE: frontend/src/views/admin/UserManagementView.vue
+LINE: 526
+SEVERITY: MINOR
+TYPE: CODE_SMELL
+RULE: typescript:S2486
+
+MESSAGE:
+Handle this exception or don't catch it at all.
+
+DESCRIPTION:
+Handle this exception or don't catch it at all.
+================================================================================
+
+================================================================================
+FILE: frontend/src/views/admin/UserManagementView.vue
+LINE: 535
+SEVERITY: MINOR
+TYPE: CODE_SMELL
+RULE: typescript:S2486
+
+MESSAGE:
+Handle this exception or don't catch it at all.
+
+DESCRIPTION:
+Handle this exception or don't catch it at all.
+================================================================================
+
+================================================================================
+FILE: frontend/src/views/profile/ProfileView.vue
+LINE: 155
+SEVERITY: MINOR
+TYPE: CODE_SMELL
+RULE: typescript:S1128
+
+MESSAGE:
+Remove this unused import of 'ChangePasswordRequest'.
+
+DESCRIPTION:
+Remove this unused import of 'ChangePasswordRequest'.
+================================================================================
+
+================================================================================
+FILE: frontend/src/views/profile/SecurityView.vue
+LINE: 291
+SEVERITY: MINOR
+TYPE: CODE_SMELL
+RULE: typescript:S2486
+
+MESSAGE:
+Handle this exception or don't catch it at all.
+
+DESCRIPTION:
+Handle this exception or don't catch it at all.
+================================================================================
+
+================================================================================
+FILE: frontend/src/views/profile/SecurityView.vue
+LINE: 302
+SEVERITY: MINOR
+TYPE: CODE_SMELL
+RULE: typescript:S2486
+
+MESSAGE:
+Handle this exception or don't catch it at all.
+
+DESCRIPTION:
+Handle this exception or don't catch it at all.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/controller/SecurityController.java
+LINE: 70
+SEVERITY: CRITICAL
+TYPE: CODE_SMELL
+RULE: java:S1192
+
+MESSAGE:
+Define a constant instead of duplicating this literal "enabled" 4 times.
+
+DESCRIPTION:
+Define a constant instead of duplicating this literal "enabled" 4 times.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/controller/SecurityController.java
+LINE: 72
+SEVERITY: CRITICAL
+TYPE: CODE_SMELL
+RULE: java:S1192
+
+MESSAGE:
+Define a constant instead of duplicating this literal "message" 12 times.
+
+DESCRIPTION:
+Define a constant instead of duplicating this literal "message" 12 times.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/controller/SecurityController.java
+LINE: 122
+SEVERITY: CRITICAL
+TYPE: CODE_SMELL
+RULE: java:S1192
+
+MESSAGE:
+Define a constant instead of duplicating this literal "method" 4 times.
+
+DESCRIPTION:
+Define a constant instead of duplicating this literal "method" 4 times.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/controller/SecurityController.java
+LINE: 125
+SEVERITY: CRITICAL
+TYPE: CODE_SMELL
+RULE: java:S1192
+
+MESSAGE:
+Define a constant instead of duplicating this literal "success" 4 times.
+
+DESCRIPTION:
+Define a constant instead of duplicating this literal "success" 4 times.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/controller/SecurityController.java
+LINE: 134
+SEVERITY: CRITICAL
+TYPE: CODE_SMELL
+RULE: java:S1192
+
+MESSAGE:
+Define a constant instead of duplicating this literal "timestamp" 4 times.
+
+DESCRIPTION:
+Define a constant instead of duplicating this literal "timestamp" 4 times.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/controller/SecurityController.java
+LINE: 134
+SEVERITY: CRITICAL
+TYPE: CODE_SMELL
+RULE: java:S1192
+
+MESSAGE:
+Define a constant instead of duplicating this literal "INVALID_CODE" 3 times.
+
+DESCRIPTION:
+Define a constant instead of duplicating this literal "INVALID_CODE" 3 times.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/controller/SecurityController.java
+LINE: 134
+SEVERITY: CRITICAL
+TYPE: CODE_SMELL
+RULE: java:S1192
+
+MESSAGE:
+Define a constant instead of duplicating this literal "reason" 3 times.
+
+DESCRIPTION:
+Define a constant instead of duplicating this literal "reason" 3 times.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/controller/SecurityController.java
+LINE: 234
+SEVERITY: MINOR
+TYPE: CODE_SMELL
+RULE: java:S1481
+
+MESSAGE:
+Remove this unused "userId" local variable.
+
+DESCRIPTION:
+Remove this unused "userId" local variable.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/controller/SecurityController.java
+LINE: 234
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: java:S1854
+
+MESSAGE:
+Remove this useless assignment to local variable "userId".
+
+DESCRIPTION:
+Remove this useless assignment to local variable "userId".
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/controller/SecurityController.java
+LINE: 405
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: java:S112
+
+MESSAGE:
+Replace generic exceptions with specific library exceptions or a custom exception.
+
+DESCRIPTION:
+Replace generic exceptions with specific library exceptions or a custom exception.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/controller/SecurityController.java
+LINE: 408
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: java:S112
+
+MESSAGE:
+Replace generic exceptions with specific library exceptions or a custom exception.
+
+DESCRIPTION:
+Replace generic exceptions with specific library exceptions or a custom exception.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/controller/SecurityController.java
+LINE: 411
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: java:S1144
+
+MESSAGE:
+Remove this unused private "extractTokenFromRequest" method.
+
+DESCRIPTION:
+Remove this unused private "extractTokenFromRequest" method.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/dto/request/ChangePasswordRequest.java
+LINE: 24
+SEVERITY: CRITICAL
+TYPE: CODE_SMELL
+RULE: java:S1186
+
+MESSAGE:
+Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.
+
+DESCRIPTION:
+Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/dto/request/UpdateUserRequest.java
+LINE: 29
+SEVERITY: CRITICAL
+TYPE: CODE_SMELL
+RULE: java:S1186
+
+MESSAGE:
+Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.
+
+DESCRIPTION:
+Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/dto/response/AuditLogResponse.java
+LINE: 24
+SEVERITY: CRITICAL
+TYPE: CODE_SMELL
+RULE: java:S1186
+
+MESSAGE:
+Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.
+
+DESCRIPTION:
+Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/dto/response/InvitationResponse.java
+LINE: 26
+SEVERITY: CRITICAL
+TYPE: CODE_SMELL
+RULE: java:S1186
+
+MESSAGE:
+Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.
+
+DESCRIPTION:
+Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/dto/response/UserProfileResponse.java
+LINE: 34
+SEVERITY: CRITICAL
+TYPE: CODE_SMELL
+RULE: java:S1186
+
+MESSAGE:
+Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.
+
+DESCRIPTION:
+Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/entity/AuditLog.java
+LINE: 96
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: java:S107
+
+MESSAGE:
+Constructor has 8 parameters, which is greater than 7 authorized.
+
+DESCRIPTION:
+Constructor has 8 parameters, which is greater than 7 authorized.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/entity/UserSession.java
+LINE: 133
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: java:S1854
+
+MESSAGE:
+Remove this useless assignment to local variable "currentRefreshExpiry".
+
+DESCRIPTION:
+Remove this useless assignment to local variable "currentRefreshExpiry".
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/entity/UserSession.java
+LINE: 133
+SEVERITY: MINOR
+TYPE: CODE_SMELL
+RULE: java:S1481
+
+MESSAGE:
+Remove this unused "currentRefreshExpiry" local variable.
+
+DESCRIPTION:
+Remove this unused "currentRefreshExpiry" local variable.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/entity/UserSession.java
+LINE: 135
+SEVERITY: MINOR
+TYPE: BUG
+RULE: java:S2184
+
+MESSAGE:
+Cast one of the operands of this subtraction operation to a "long".
+
+DESCRIPTION:
+Cast one of the operands of this subtraction operation to a "long".
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/security/JwtTokenProvider.java
+LINE: 45
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: java:S3358
+
+MESSAGE:
+Extract this nested ternary operation into an independent statement.
+
+DESCRIPTION:
+Extract this nested ternary operation into an independent statement.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/security/JwtTokenProvider.java
+LINE: 109
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: java:S1854
+
+MESSAGE:
+Remove this useless assignment to local variable "jti".
+
+DESCRIPTION:
+Remove this useless assignment to local variable "jti".
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/security/JwtTokenProvider.java
+LINE: 109
+SEVERITY: MINOR
+TYPE: CODE_SMELL
+RULE: java:S1481
+
+MESSAGE:
+Remove this unused "jti" local variable.
+
+DESCRIPTION:
+Remove this unused "jti" local variable.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java
+LINE: 73
+SEVERITY: CRITICAL
+TYPE: CODE_SMELL
+RULE: java:S1192
+
+MESSAGE:
+Define a constant instead of duplicating this literal "event_type" 9 times.
+
+DESCRIPTION:
+Define a constant instead of duplicating this literal "event_type" 9 times.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java
+LINE: 74
+SEVERITY: CRITICAL
+TYPE: CODE_SMELL
+RULE: java:S1192
+
+MESSAGE:
+Define a constant instead of duplicating this literal "timestamp" 7 times.
+
+DESCRIPTION:
+Define a constant instead of duplicating this literal "timestamp" 7 times.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java
+LINE: 89
+SEVERITY: CRITICAL
+TYPE: CODE_SMELL
+RULE: java:S1192
+
+MESSAGE:
+Define a constant instead of duplicating this literal "ip_address" 5 times.
+
+DESCRIPTION:
+Define a constant instead of duplicating this literal "ip_address" 5 times.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java
+LINE: 90
+SEVERITY: CRITICAL
+TYPE: CODE_SMELL
+RULE: java:S1192
+
+MESSAGE:
+Define a constant instead of duplicating this literal "user_agent" 5 times.
+
+DESCRIPTION:
+Define a constant instead of duplicating this literal "user_agent" 5 times.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java
+LINE: 109
+SEVERITY: CRITICAL
+TYPE: CODE_SMELL
+RULE: java:S1192
+
+MESSAGE:
+Define a constant instead of duplicating this literal "success" 3 times.
+
+DESCRIPTION:
+Define a constant instead of duplicating this literal "success" 3 times.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java
+LINE: 178
+SEVERITY: CRITICAL
+TYPE: CODE_SMELL
+RULE: java:S1192
+
+MESSAGE:
+Define a constant instead of duplicating this literal "SYSTEM" 3 times.
+
+DESCRIPTION:
+Define a constant instead of duplicating this literal "SYSTEM" 3 times.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java
+LINE: 195
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: java:S6204
+
+MESSAGE:
+Replace this usage of 'Stream.collect(Collectors.toList())' with 'Stream.toList()' and ensure that the list is unmodified.
+
+DESCRIPTION:
+Replace this usage of 'Stream.collect(Collectors.toList())' with 'Stream.toList()' and ensure that the list is unmodified.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java
+LINE: 213
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: java:S6204
+
+MESSAGE:
+Replace this usage of 'Stream.collect(Collectors.toList())' with 'Stream.toList()' and ensure that the list is unmodified.
+
+DESCRIPTION:
+Replace this usage of 'Stream.collect(Collectors.toList())' with 'Stream.toList()' and ensure that the list is unmodified.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java
+LINE: 223
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: java:S1172
+
+MESSAGE:
+Remove this unused method parameter "request".
+
+DESCRIPTION:
+Remove this unused method parameter "request".
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java
+LINE: 231
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: java:S1172
+
+MESSAGE:
+Remove this unused method parameter "request".
+
+DESCRIPTION:
+Remove this unused method parameter "request".
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java
+LINE: 232
+SEVERITY: CRITICAL
+TYPE: CODE_SMELL
+RULE: java:S1192
+
+MESSAGE:
+Define a constant instead of duplicating this literal "unknown" 5 times.
+
+DESCRIPTION:
+Define a constant instead of duplicating this literal "unknown" 5 times.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java
+LINE: 282
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: java:S125
+
+MESSAGE:
+This block of commented-out lines of code should be removed.
+
+DESCRIPTION:
+This block of commented-out lines of code should be removed.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java
+LINE: 285
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: java:S1172
+
+MESSAGE:
+Remove this unused method parameter "details".
+
+DESCRIPTION:
+Remove this unused method parameter "details".
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java
+LINE: 293
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: java:S125
+
+MESSAGE:
+This block of commented-out lines of code should be removed.
+
+DESCRIPTION:
+This block of commented-out lines of code should be removed.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/service/EmailServiceImpl.java
+LINE: 15
+SEVERITY: INFO
+TYPE: CODE_SMELL
+RULE: java:S1135
+
+MESSAGE:
+Complete the task associated to this TODO comment.
+
+DESCRIPTION:
+Complete the task associated to this TODO comment.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/service/EmailServiceImpl.java
+LINE: 21
+SEVERITY: INFO
+TYPE: CODE_SMELL
+RULE: java:S1135
+
+MESSAGE:
+Complete the task associated to this TODO comment.
+
+DESCRIPTION:
+Complete the task associated to this TODO comment.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/service/EmailServiceImpl.java
+LINE: 27
+SEVERITY: INFO
+TYPE: CODE_SMELL
+RULE: java:S1135
+
+MESSAGE:
+Complete the task associated to this TODO comment.
+
+DESCRIPTION:
+Complete the task associated to this TODO comment.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/service/EmailServiceImpl.java
+LINE: 33
+SEVERITY: INFO
+TYPE: CODE_SMELL
+RULE: java:S1135
+
+MESSAGE:
+Complete the task associated to this TODO comment.
+
+DESCRIPTION:
+Complete the task associated to this TODO comment.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/service/EmailServiceImpl.java
+LINE: 39
+SEVERITY: INFO
+TYPE: CODE_SMELL
+RULE: java:S1135
+
+MESSAGE:
+Complete the task associated to this TODO comment.
+
+DESCRIPTION:
+Complete the task associated to this TODO comment.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/service/MfaService.java
+LINE: 95
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: java:S112
+
+MESSAGE:
+Replace generic exceptions with specific library exceptions or a custom exception.
+
+DESCRIPTION:
+Replace generic exceptions with specific library exceptions or a custom exception.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/service/MfaService.java
+LINE: 105
+SEVERITY: CRITICAL
+TYPE: CODE_SMELL
+RULE: java:S1192
+
+MESSAGE:
+Define a constant instead of duplicating this literal "User security settings not found: " 6 times.
+
+DESCRIPTION:
+Define a constant instead of duplicating this literal "User security settings not found: " 6 times.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/service/MfaService.java
+LINE: 142
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: java:S112
+
+MESSAGE:
+Replace generic exceptions with specific library exceptions or a custom exception.
+
+DESCRIPTION:
+Replace generic exceptions with specific library exceptions or a custom exception.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/service/MfaService.java
+LINE: 160
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: java:S112
+
+MESSAGE:
+Replace generic exceptions with specific library exceptions or a custom exception.
+
+DESCRIPTION:
+Replace generic exceptions with specific library exceptions or a custom exception.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/service/MfaService.java
+LINE: 182
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: java:S112
+
+MESSAGE:
+Replace generic exceptions with specific library exceptions or a custom exception.
+
+DESCRIPTION:
+Replace generic exceptions with specific library exceptions or a custom exception.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/service/MfaService.java
+LINE: 198
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: java:S112
+
+MESSAGE:
+Replace generic exceptions with specific library exceptions or a custom exception.
+
+DESCRIPTION:
+Replace generic exceptions with specific library exceptions or a custom exception.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/service/MfaService.java
+LINE: 223
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: java:S112
+
+MESSAGE:
+Replace generic exceptions with specific library exceptions or a custom exception.
+
+DESCRIPTION:
+Replace generic exceptions with specific library exceptions or a custom exception.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/service/MfaService.java
+LINE: 290
+SEVERITY: CRITICAL
+TYPE: BUG
+RULE: java:S2119
+
+MESSAGE:
+Save and re-use this "Random".
+
+DESCRIPTION:
+Save and re-use this "Random".
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/service/MfaService.java
+LINE: 297
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: java:S6880
+
+MESSAGE:
+Replace the chain of if/else with a switch expression.
+
+DESCRIPTION:
+Replace the chain of if/else with a switch expression.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/service/UserService.java
+LINE: 58
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: java:S1172
+
+MESSAGE:
+Remove these unused method parameters "clientIp", "userAgent".
+
+DESCRIPTION:
+Remove these unused method parameters "clientIp", "userAgent".
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/config/SecurityConfig.java
+LINE: 42
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: java:S1068
+
+MESSAGE:
+Remove this unused "logger" private field.
+
+DESCRIPTION:
+Remove this unused "logger" private field.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/config/SecurityConfig.java
+LINE: 86
+SEVERITY: CRITICAL
+TYPE: CODE_SMELL
+RULE: java:S1192
+
+MESSAGE:
+Define a constant instead of duplicating this literal "ADMIN" 10 times.
+
+DESCRIPTION:
+Define a constant instead of duplicating this literal "ADMIN" 10 times.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/config/SecurityConfig.java
+LINE: 95
+SEVERITY: CRITICAL
+TYPE: CODE_SMELL
+RULE: java:S1192
+
+MESSAGE:
+Define a constant instead of duplicating this literal "PROJECT_MANAGER" 4 times.
+
+DESCRIPTION:
+Define a constant instead of duplicating this literal "PROJECT_MANAGER" 4 times.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/config/SecurityConfig.java
+LINE: 102
+SEVERITY: CRITICAL
+TYPE: CODE_SMELL
+RULE: java:S1192
+
+MESSAGE:
+Define a constant instead of duplicating this literal "/api/users/**" 4 times.
+
+DESCRIPTION:
+Define a constant instead of duplicating this literal "/api/users/**" 4 times.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/config/SecurityConfig.java
+LINE: 137
+SEVERITY: MINOR
+TYPE: CODE_SMELL
+RULE: java:S6203
+
+MESSAGE:
+Move this text block out of the lambda body and refactor it to a local variable or a static final field.
+
+DESCRIPTION:
+Move this text block out of the lambda body and refactor it to a local variable or a static final field.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/config/SecurityConfig.java
+LINE: 137
+SEVERITY: MINOR
+TYPE: CODE_SMELL
+RULE: java:S6203
+
+MESSAGE:
+Move this text block out of the lambda body and refactor it to a local variable or a static final field.
+
+DESCRIPTION:
+Move this text block out of the lambda body and refactor it to a local variable or a static final field.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/controller/AuthController.java
+LINE: 74
+SEVERITY: CRITICAL
+TYPE: CODE_SMELL
+RULE: java:S1192
+
+MESSAGE:
+Define a constant instead of duplicating this literal "email" 5 times.
+
+DESCRIPTION:
+Define a constant instead of duplicating this literal "email" 5 times.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/controller/AuthController.java
+LINE: 88
+SEVERITY: CRITICAL
+TYPE: CODE_SMELL
+RULE: java:S1192
+
+MESSAGE:
+Define a constant instead of duplicating this literal "unknown" 6 times.
+
+DESCRIPTION:
+Define a constant instead of duplicating this literal "unknown" 6 times.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/controller/AuthController.java
+LINE: 105
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: java:S1854
+
+MESSAGE:
+Remove this useless assignment to local variable "authentication".
+
+DESCRIPTION:
+Remove this useless assignment to local variable "authentication".
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/controller/AuthController.java
+LINE: 105
+SEVERITY: MINOR
+TYPE: CODE_SMELL
+RULE: java:S1481
+
+MESSAGE:
+Remove this unused "authentication" local variable.
+
+DESCRIPTION:
+Remove this unused "authentication" local variable.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/controller/AuthController.java
+LINE: 222
+SEVERITY: MINOR
+TYPE: CODE_SMELL
+RULE: java:S1481
+
+MESSAGE:
+Remove this unused "userId" local variable.
+
+DESCRIPTION:
+Remove this unused "userId" local variable.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/controller/AuthController.java
+LINE: 222
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: java:S1854
+
+MESSAGE:
+Remove this useless assignment to local variable "userId".
+
+DESCRIPTION:
+Remove this useless assignment to local variable "userId".
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/controller/AuthController.java
+LINE: 289
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: java:S125
+
+MESSAGE:
+This block of commented-out lines of code should be removed.
+
+DESCRIPTION:
+This block of commented-out lines of code should be removed.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/controller/AuthController.java
+LINE: 317
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: java:S125
+
+MESSAGE:
+This block of commented-out lines of code should be removed.
+
+DESCRIPTION:
+This block of commented-out lines of code should be removed.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/controller/AuthController.java
+LINE: 404
+SEVERITY: MINOR
+TYPE: CODE_SMELL
+RULE: java:S1481
+
+MESSAGE:
+Remove this unused "userId" local variable.
+
+DESCRIPTION:
+Remove this unused "userId" local variable.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/controller/AuthController.java
+LINE: 404
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: java:S1854
+
+MESSAGE:
+Remove this useless assignment to local variable "userId".
+
+DESCRIPTION:
+Remove this useless assignment to local variable "userId".
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/controller/AuthController.java
+LINE: 405
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: java:S125
+
+MESSAGE:
+This block of commented-out lines of code should be removed.
+
+DESCRIPTION:
+This block of commented-out lines of code should be removed.
+================================================================================
+
+================================================================================
+FILE: src/main/java/com/annapolislabs/lineage/security/JwtUtil.java
+LINE: 32
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: java:S3358
+
+MESSAGE:
+Extract this nested ternary operation into an independent statement.
+
+DESCRIPTION:
+Extract this nested ternary operation into an independent statement.
+================================================================================
+
+================================================================================
+FILE: frontend/src/services/api.ts
+LINE: 46
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: typescript:S3358
+
+MESSAGE:
+Extract this nested ternary operation into an independent statement.
+
+DESCRIPTION:
+Extract this nested ternary operation into an independent statement.
+================================================================================
+
+================================================================================
+FILE: frontend/src/services/api.ts
+LINE: 49
+SEVERITY: MINOR
+TYPE: CODE_SMELL
+RULE: typescript:S7764
+
+MESSAGE:
+Prefer `globalThis` over `window`.
+
+DESCRIPTION:
+Prefer `globalThis` over `window`.
+================================================================================
+
+================================================================================
+FILE: frontend/src/services/api.ts
+LINE: 55
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: typescript:S3358
+
+MESSAGE:
+Extract this nested ternary operation into an independent statement.
+
+DESCRIPTION:
+Extract this nested ternary operation into an independent statement.
+================================================================================
+
+================================================================================
+FILE: frontend/src/services/api.ts
+LINE: 61
+SEVERITY: MAJOR
+TYPE: CODE_SMELL
+RULE: typescript:S7762
+
+MESSAGE:
+Prefer `childNode.remove()` over `parentNode.removeChild(childNode)`.
+
+DESCRIPTION:
+Prefer `childNode.remove()` over `parentNode.removeChild(childNode)`.
+================================================================================
+
+================================================================================
+FILE: frontend/src/services/api.ts
+LINE: 62
+SEVERITY: MINOR
+TYPE: CODE_SMELL
+RULE: typescript:S7764
+
+MESSAGE:
+Prefer `globalThis` over `window`.
+
+DESCRIPTION:
+Prefer `globalThis` over `window`.
+================================================================================
+

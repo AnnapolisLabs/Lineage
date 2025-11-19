@@ -210,7 +210,7 @@ function downloadBackupCodes() {
   a.download = 'mfa-backup-codes.txt'
   document.body.appendChild(a)
   a.click()
-  document.body.removeChild(a)
+  a.remove()
   URL.revokeObjectURL(url)
 }
 </script>

@@ -55,7 +55,7 @@ public class UserService {
     /**
      * Register a new user with email verification
      */
-    public UserProfileResponse registerUser(RegisterUserRequest request, String clientIp, String userAgent) {
+    public UserProfileResponse registerUser(RegisterUserRequest request) {
         logger.info("Registering new user with email: {}", request.getEmail());
         
         // Check if user already exists

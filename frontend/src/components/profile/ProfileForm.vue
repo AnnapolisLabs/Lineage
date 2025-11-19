@@ -59,8 +59,8 @@
         <h3>Preferences</h3>
 
         <div class="form-group">
-          <label class="form-label">Theme</label>
-          <div class="radio-group">
+          <label for="theme" class="form-label">Theme</label>
+          <div class="radio-group" id="theme">
             <label class="radio-option">
               <input
                 v-model="formData.preferences.theme"
@@ -106,8 +106,8 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Notifications</label>
-          <div class="checkbox-group">
+          <label for="notifications" class="form-label">Notifications</label>
+          <div class="checkbox-group" id="notifications">
             <label class="checkbox-option">
               <input
                 v-model="formData.preferences.notifications.email"

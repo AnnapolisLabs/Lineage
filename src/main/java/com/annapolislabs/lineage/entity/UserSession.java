@@ -130,10 +130,8 @@ public class UserSession {
         this.expiresAt = newExpiresAt;
         if (refreshExpiresAt != null) {
             // Extend refresh token by same amount
-            LocalDateTime currentRefreshExpiry = this.refreshExpiresAt;
-            this.refreshExpiresAt = newExpiresAt.plusSeconds(
-                refreshExpiresAt.getSecond() - expiresAt.getSecond()
-            );
+            long extensionDuration = java.time.Duration.between(expiresAt, newExpiresAt).getSeconds();
+            this.refreshExpiresAt = refreshExpiresAt.plusSeconds(extensionDuration);
         }
     }
 

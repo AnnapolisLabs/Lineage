@@ -35,6 +35,8 @@ public class MfaService {
     private static final Logger logger = LoggerFactory.getLogger(MfaService.class);
     private static final int BACKUP_CODES_COUNT = 10;
     private static final int RECOVERY_CODE_LENGTH = 8;
+    private static final String USER_SECURITY_SETTINGS_NOT_FOUND = "User security settings not found: ";
+    private static final Random random = new Random();
 
     private final GoogleAuthenticator googleAuthenticator;
     private final UserSecurityRepository userSecurityRepository;
@@ -102,7 +104,7 @@ public class MfaService {
     public boolean verifyCode(UUID userId, String code) {
         try {
             UserSecurity userSecurity = userSecurityRepository.findByUserId(userId)
-                    .orElseThrow(() -> new RuntimeException("User security settings not found: " + userId));
+                    .orElseThrow(() -> new IllegalArgumentException(USER_SECURITY_SETTINGS_NOT_FOUND + userId));
 
             if (!userSecurity.isMfaEnabled()) {
                 logger.warn("MFA verification attempted but MFA not enabled for user: {}", userId);
@@ -144,7 +146,7 @@ public class MfaService {
 
             // Enable MFA
             UserSecurity userSecurity = userSecurityRepository.findByUserId(userId)
-                    .orElseThrow(() -> new RuntimeException("User security settings not found: " + userId));
+                    .orElseThrow(() -> new IllegalArgumentException(USER_SECURITY_SETTINGS_NOT_FOUND + userId));
 
             userSecurity.setMfaEnabled(true);
             userSecurity.setMfaEnabledAt(LocalDateTime.now());
@@ -167,7 +169,7 @@ public class MfaService {
     public void disableMfa(UUID userId) {
         try {
             UserSecurity userSecurity = userSecurityRepository.findByUserId(userId)
-                    .orElseThrow(() -> new RuntimeException("User security settings not found: " + userId));
+                    .orElseThrow(() -> new IllegalArgumentException(USER_SECURITY_SETTINGS_NOT_FOUND + userId));
 
             userSecurity.setMfaEnabled(false);
             userSecurity.setMfaEnabledAt(null);
@@ -179,7 +181,7 @@ public class MfaService {
 
         } catch (Exception e) {
             logger.error("Failed to disable MFA for user: {}", userId, e);
-            throw new RuntimeException("Failed to disable MFA", e);
+            throw new IllegalStateException("Failed to disable MFA", e);
         }
     }
 
@@ -189,13 +191,13 @@ public class MfaService {
     public List<String> getBackupCodes(UUID userId) {
         try {
             UserSecurity userSecurity = userSecurityRepository.findByUserId(userId)
-                    .orElseThrow(() -> new RuntimeException("User security settings not found: " + userId));
+                    .orElseThrow(() -> new IllegalArgumentException(USER_SECURITY_SETTINGS_NOT_FOUND + userId));
 
             return decryptBackupCodes(userSecurity.getMfaBackupCodes());
 
         } catch (Exception e) {
             logger.error("Failed to get backup codes for user: {}", userId, e);
-            throw new RuntimeException("Failed to get backup codes", e);
+            throw new IllegalStateException("Failed to get backup codes", e);
         }
     }
 
@@ -207,7 +209,7 @@ public class MfaService {
             List<String> newBackupCodes = generateBackupCodes();
 
             UserSecurity userSecurity = userSecurityRepository.findByUserId(userId)
-                    .orElseThrow(() -> new RuntimeException("User security settings not found: " + userId));
+                    .orElseThrow(() -> new IllegalArgumentException(USER_SECURITY_SETTINGS_NOT_FOUND + userId));
 
             userSecurity.setMfaBackupCodes(encryptBackupCodes(newBackupCodes));
             userSecurity.setUpdatedAt(LocalDateTime.now());
@@ -220,7 +222,7 @@ public class MfaService {
 
         } catch (Exception e) {
             logger.error("Failed to generate new backup codes for user: {}", userId, e);
-            throw new RuntimeException("Failed to generate backup codes", e);
+            throw new IllegalStateException("Failed to generate backup codes", e);
         }
     }
 
@@ -246,7 +248,7 @@ public class MfaService {
     public boolean useBackupCode(UUID userId, String backupCode) {
         try {
             UserSecurity userSecurity = userSecurityRepository.findByUserId(userId)
-                    .orElseThrow(() -> new RuntimeException("User security settings not found: " + userId));
+                    .orElseThrow(() -> new IllegalArgumentException(USER_SECURITY_SETTINGS_NOT_FOUND + userId));
 
             if (!userSecurity.isMfaEnabled()) {
                 return false;
@@ -287,19 +289,16 @@ public class MfaService {
 
     private List<String> generateBackupCodes() {
         List<String> codes = new ArrayList<>();
-        Random random = new Random();
         
         for (int i = 0; i < BACKUP_CODES_COUNT; i++) {
             // Generate 8-character alphanumeric codes
             StringBuilder code = new StringBuilder();
             for (int j = 0; j < RECOVERY_CODE_LENGTH; j++) {
                 int charType = random.nextInt(3);
-                if (charType == 0) {
-                    code.append((char) ('A' + random.nextInt(26)));
-                } else if (charType == 1) {
-                    code.append((char) ('a' + random.nextInt(26)));
-                } else {
-                    code.append((char) ('0' + random.nextInt(10)));
+                switch (charType) {
+                    case 0 -> code.append((char) ('A' + random.nextInt(26)));
+                    case 1 -> code.append((char) ('a' + random.nextInt(26)));
+                    case 2 -> code.append((char) ('0' + random.nextInt(10)));
                 }
             }
             codes.add(code.toString());

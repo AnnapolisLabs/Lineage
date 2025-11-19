@@ -1,0 +1,5612 @@
+[
+  {
+    "key": "0b708651-fbb5-4ca1-b260-45a0b96d9677",
+    "rule": "typescript:S7773",
+    "severity": "MINOR",
+    "component": "lineage-sonar:frontend/src/components/profile/AvatarUpload.vue",
+    "project": "lineage-sonar",
+    "line": 189,
+    "hash": "270a4c37168778c755d7bf33d0e2f59f",
+    "textRange": {
+      "startLine": 189,
+      "endLine": 189,
+      "startOffset": 9,
+      "endOffset": 19
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Prefer `Number.parseFloat` over `parseFloat`.",
+    "effort": "2min",
+    "debt": "2min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "convention",
+      "es2015"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CONVENTIONAL",
+    "cleanCodeAttributeCategory": "CONSISTENT",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "LOW"
+      },
+      {
+        "softwareQuality": "RELIABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "850f2816-245d-4d0a-af10-74f0be608541",
+    "rule": "typescript:S7781",
+    "severity": "MINOR",
+    "component": "lineage-sonar:frontend/src/components/profile/ProfileCard.vue",
+    "project": "lineage-sonar",
+    "line": 119,
+    "hash": "94191ded70b01402c4ea5c00d9aa79c0",
+    "textRange": {
+      "startLine": 119,
+      "endLine": 119,
+      "startOffset": 46,
+      "endOffset": 53
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Prefer `String#replaceAll()` over `String#replace()`.",
+    "effort": "5min",
+    "debt": "5min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "readability",
+      "es2021"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CLEAR",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "LOW"
+      },
+      {
+        "softwareQuality": "RELIABILITY",
+        "severity": "LOW"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "deedec5e-ce1c-4e10-ac07-9fe29ee58fbb",
+    "rule": "Web:S6853",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:frontend/src/components/profile/ProfileForm.vue",
+    "project": "lineage-sonar",
+    "line": 62,
+    "hash": "00c1515ef78eb65fce861718a057f739",
+    "textRange": {
+      "startLine": 62,
+      "endLine": 62,
+      "startOffset": 10,
+      "endOffset": 36
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "A form label must be associated with a control.",
+    "effort": "5min",
+    "debt": "5min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "accessibility"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "LOGICAL",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "RELIABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "b009dacb-07dd-47c3-b7d9-ffe588fa834e",
+    "rule": "Web:S6853",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:frontend/src/components/profile/ProfileForm.vue",
+    "project": "lineage-sonar",
+    "line": 109,
+    "hash": "3523154100dfb9110383a6942005c97d",
+    "textRange": {
+      "startLine": 109,
+      "endLine": 109,
+      "startOffset": 10,
+      "endOffset": 36
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "A form label must be associated with a control.",
+    "effort": "5min",
+    "debt": "5min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "accessibility"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "LOGICAL",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "RELIABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "6246ce89-fcc8-4a3e-ae8f-242023a4fdf9",
+    "rule": "typescript:S7762",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:frontend/src/components/security/MfaSetup.vue",
+    "project": "lineage-sonar",
+    "line": 213,
+    "hash": "805987ebf15d55580ccbc1de1a625189",
+    "textRange": {
+      "startLine": 213,
+      "endLine": 213,
+      "startOffset": 2,
+      "endOffset": 30
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Prefer `childNode.remove()` over `parentNode.removeChild(childNode)`.",
+    "effort": "2min",
+    "debt": "2min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "dom",
+      "modernize",
+      "javascript"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "EFFICIENT",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "21d5f886-08f7-472d-a34d-e0ed140e4883",
+    "rule": "typescript:S7781",
+    "severity": "MINOR",
+    "component": "lineage-sonar:frontend/src/views/admin/UserManagementView.vue",
+    "project": "lineage-sonar",
+    "line": 456,
+    "hash": "94191ded70b01402c4ea5c00d9aa79c0",
+    "textRange": {
+      "startLine": 456,
+      "endLine": 456,
+      "startOffset": 46,
+      "endOffset": 53
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Prefer `String#replaceAll()` over `String#replace()`.",
+    "effort": "5min",
+    "debt": "5min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "readability",
+      "es2021"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CLEAR",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "LOW"
+      },
+      {
+        "softwareQuality": "RELIABILITY",
+        "severity": "LOW"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "ed375060-b234-4b6d-af5a-26bd24a983f4",
+    "rule": "typescript:S1135",
+    "severity": "INFO",
+    "component": "lineage-sonar:frontend/src/views/admin/UserManagementView.vue",
+    "project": "lineage-sonar",
+    "line": 469,
+    "hash": "f75cc62a5ac084a3a9cfdb4d25ab1d7b",
+    "textRange": {
+      "startLine": 469,
+      "endLine": 469,
+      "startOffset": 5,
+      "endOffset": 9
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Complete the task associated to this \"TODO\" comment.",
+    "effort": "0min",
+    "debt": "0min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "cwe"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "COMPLETE",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "INFO"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "f2ee0508-d6df-4aad-9dfc-a65c85f8bd72",
+    "rule": "typescript:S2486",
+    "severity": "MINOR",
+    "component": "lineage-sonar:frontend/src/views/admin/UserManagementView.vue",
+    "project": "lineage-sonar",
+    "line": 496,
+    "hash": "161b8313784081f5965c2da97df48970",
+    "textRange": {
+      "startLine": 496,
+      "endLine": 498,
+      "startOffset": 4,
+      "endOffset": 3
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Handle this exception or don't catch it at all.",
+    "effort": "1h",
+    "debt": "1h",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "cwe",
+      "error-handling",
+      "suspicious"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CLEAR",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "LOW"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "bbe17eb2-cd0a-4838-bb0f-e5875fc55a42",
+    "rule": "typescript:S2486",
+    "severity": "MINOR",
+    "component": "lineage-sonar:frontend/src/views/admin/UserManagementView.vue",
+    "project": "lineage-sonar",
+    "line": 508,
+    "hash": "161b8313784081f5965c2da97df48970",
+    "textRange": {
+      "startLine": 508,
+      "endLine": 510,
+      "startOffset": 4,
+      "endOffset": 3
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Handle this exception or don't catch it at all.",
+    "effort": "1h",
+    "debt": "1h",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "cwe",
+      "error-handling",
+      "suspicious"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CLEAR",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "LOW"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "cdc1e5d0-0e08-4289-8438-abb3d0655023",
+    "rule": "typescript:S2486",
+    "severity": "MINOR",
+    "component": "lineage-sonar:frontend/src/views/admin/UserManagementView.vue",
+    "project": "lineage-sonar",
+    "line": 517,
+    "hash": "161b8313784081f5965c2da97df48970",
+    "textRange": {
+      "startLine": 517,
+      "endLine": 519,
+      "startOffset": 6,
+      "endOffset": 5
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Handle this exception or don't catch it at all.",
+    "effort": "1h",
+    "debt": "1h",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "cwe",
+      "error-handling",
+      "suspicious"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CLEAR",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "LOW"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "8bbf49fd-1545-44c8-b36d-e3aeedad9775",
+    "rule": "typescript:S2486",
+    "severity": "MINOR",
+    "component": "lineage-sonar:frontend/src/views/admin/UserManagementView.vue",
+    "project": "lineage-sonar",
+    "line": 526,
+    "hash": "161b8313784081f5965c2da97df48970",
+    "textRange": {
+      "startLine": 526,
+      "endLine": 528,
+      "startOffset": 4,
+      "endOffset": 3
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Handle this exception or don't catch it at all.",
+    "effort": "1h",
+    "debt": "1h",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "cwe",
+      "error-handling",
+      "suspicious"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CLEAR",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "LOW"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "3be57944-0a6c-4112-b0a0-49cc0e1c8552",
+    "rule": "typescript:S2486",
+    "severity": "MINOR",
+    "component": "lineage-sonar:frontend/src/views/admin/UserManagementView.vue",
+    "project": "lineage-sonar",
+    "line": 535,
+    "hash": "161b8313784081f5965c2da97df48970",
+    "textRange": {
+      "startLine": 535,
+      "endLine": 537,
+      "startOffset": 6,
+      "endOffset": 5
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Handle this exception or don't catch it at all.",
+    "effort": "1h",
+    "debt": "1h",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "cwe",
+      "error-handling",
+      "suspicious"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CLEAR",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "LOW"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "e938f14a-f729-4fc3-b974-24ed61c8d2d0",
+    "rule": "typescript:S1128",
+    "severity": "MINOR",
+    "component": "lineage-sonar:frontend/src/views/profile/ProfileView.vue",
+    "project": "lineage-sonar",
+    "line": 155,
+    "hash": "5efc42ea0a398986246cee631925a631",
+    "textRange": {
+      "startLine": 155,
+      "endLine": 155,
+      "startOffset": 36,
+      "endOffset": 57
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Remove this unused import of 'ChangePasswordRequest'.",
+    "effort": "1min",
+    "debt": "1min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "es2015",
+      "type-dependent",
+      "unused"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": true,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CLEAR",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "LOW"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "a1ee2080-f256-44f7-afa6-ca678cde1401",
+    "rule": "typescript:S2486",
+    "severity": "MINOR",
+    "component": "lineage-sonar:frontend/src/views/profile/SecurityView.vue",
+    "project": "lineage-sonar",
+    "line": 291,
+    "hash": "161b8313784081f5965c2da97df48970",
+    "textRange": {
+      "startLine": 291,
+      "endLine": 293,
+      "startOffset": 4,
+      "endOffset": 3
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Handle this exception or don't catch it at all.",
+    "effort": "1h",
+    "debt": "1h",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "cwe",
+      "error-handling",
+      "suspicious"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CLEAR",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "LOW"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "95a514ce-481b-4211-ae83-d07201531bca",
+    "rule": "typescript:S2486",
+    "severity": "MINOR",
+    "component": "lineage-sonar:frontend/src/views/profile/SecurityView.vue",
+    "project": "lineage-sonar",
+    "line": 302,
+    "hash": "161b8313784081f5965c2da97df48970",
+    "textRange": {
+      "startLine": 302,
+      "endLine": 304,
+      "startOffset": 6,
+      "endOffset": 5
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Handle this exception or don't catch it at all.",
+    "effort": "1h",
+    "debt": "1h",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "cwe",
+      "error-handling",
+      "suspicious"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CLEAR",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "LOW"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "61e07c0b-f464-4f97-a8a1-2dfb9d09b974",
+    "rule": "java:S1192",
+    "severity": "CRITICAL",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+    "project": "lineage-sonar",
+    "line": 70,
+    "hash": "bd94f504fddf86e539fbaa3d57a5b53b",
+    "textRange": {
+      "startLine": 70,
+      "endLine": 70,
+      "startOffset": 24,
+      "endOffset": 33
+    },
+    "flows": [
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+            "textRange": {
+              "startLine": 70,
+              "endLine": 70,
+              "startOffset": 24,
+              "endOffset": 33
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+            "textRange": {
+              "startLine": 84,
+              "endLine": 84,
+              "startOffset": 20,
+              "endOffset": 29
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+            "textRange": {
+              "startLine": 126,
+              "endLine": 126,
+              "startOffset": 20,
+              "endOffset": 29
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+            "textRange": {
+              "startLine": 213,
+              "endLine": 213,
+              "startOffset": 20,
+              "endOffset": 29
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      }
+    ],
+    "status": "OPEN",
+    "message": "Define a constant instead of duplicating this literal \"enabled\" 4 times.",
+    "effort": "10min",
+    "debt": "10min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "design"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "DISTINCT",
+    "cleanCodeAttributeCategory": "ADAPTABLE",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "HIGH"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "bd44916e-ba0b-4132-997b-ec140366caa6",
+    "rule": "java:S1192",
+    "severity": "CRITICAL",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+    "project": "lineage-sonar",
+    "line": 72,
+    "hash": "14a27f6ae7fdd3d555b3ccf6a9762231",
+    "textRange": {
+      "startLine": 72,
+      "endLine": 72,
+      "startOffset": 24,
+      "endOffset": 33
+    },
+    "flows": [
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+            "textRange": {
+              "startLine": 72,
+              "endLine": 72,
+              "startOffset": 24,
+              "endOffset": 33
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+            "textRange": {
+              "startLine": 128,
+              "endLine": 128,
+              "startOffset": 20,
+              "endOffset": 29
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+            "textRange": {
+              "startLine": 161,
+              "endLine": 161,
+              "startOffset": 24,
+              "endOffset": 33
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+            "textRange": {
+              "startLine": 170,
+              "endLine": 170,
+              "startOffset": 24,
+              "endOffset": 33
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+            "textRange": {
+              "startLine": 193,
+              "endLine": 193,
+              "startOffset": 24,
+              "endOffset": 33
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+            "textRange": {
+              "startLine": 214,
+              "endLine": 214,
+              "startOffset": 20,
+              "endOffset": 29
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+            "textRange": {
+              "startLine": 241,
+              "endLine": 241,
+              "startOffset": 20,
+              "endOffset": 29
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+            "textRange": {
+              "startLine": 268,
+              "endLine": 268,
+              "startOffset": 20,
+              "endOffset": 29
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+            "textRange": {
+              "startLine": 291,
+              "endLine": 291,
+              "startOffset": 24,
+              "endOffset": 33
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+            "textRange": {
+              "startLine": 308,
+              "endLine": 308,
+              "startOffset": 20,
+              "endOffset": 29
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+            "textRange": {
+              "startLine": 338,
+              "endLine": 338,
+              "startOffset": 29,
+              "endOffset": 38
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+            "textRange": {
+              "startLine": 343,
+              "endLine": 343,
+              "startOffset": 25,
+              "endOffset": 34
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      }
+    ],
+    "status": "OPEN",
+    "message": "Define a constant instead of duplicating this literal \"message\" 12 times.",
+    "effort": "26min",
+    "debt": "26min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "design"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "DISTINCT",
+    "cleanCodeAttributeCategory": "ADAPTABLE",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "HIGH"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "3a4ca035-d6de-4d88-b6c6-1682febedb43",
+    "rule": "java:S1192",
+    "severity": "CRITICAL",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+    "project": "lineage-sonar",
+    "line": 122,
+    "hash": "2ff341105aa46ac62fb02017c34515df",
+    "textRange": {
+      "startLine": 122,
+      "endLine": 122,
+      "startOffset": 27,
+      "endOffset": 35
+    },
+    "flows": [
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+            "textRange": {
+              "startLine": 122,
+              "endLine": 122,
+              "startOffset": 27,
+              "endOffset": 35
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+            "textRange": {
+              "startLine": 157,
+              "endLine": 157,
+              "startOffset": 31,
+              "endOffset": 39
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+            "textRange": {
+              "startLine": 166,
+              "endLine": 166,
+              "startOffset": 31,
+              "endOffset": 39
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+            "textRange": {
+              "startLine": 209,
+              "endLine": 209,
+              "startOffset": 27,
+              "endOffset": 35
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      }
+    ],
+    "status": "OPEN",
+    "message": "Define a constant instead of duplicating this literal \"method\" 4 times.",
+    "effort": "10min",
+    "debt": "10min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "design"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "DISTINCT",
+    "cleanCodeAttributeCategory": "ADAPTABLE",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "HIGH"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "318ef5b6-f0e7-4377-9bd4-331c38e30781",
+    "rule": "java:S1192",
+    "severity": "CRITICAL",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+    "project": "lineage-sonar",
+    "line": 125,
+    "hash": "340ee0c1cc2076c5350b8edb93795d8a",
+    "textRange": {
+      "startLine": 125,
+      "endLine": 125,
+      "startOffset": 20,
+      "endOffset": 29
+    },
+    "flows": [
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+            "textRange": {
+              "startLine": 125,
+              "endLine": 125,
+              "startOffset": 20,
+              "endOffset": 29
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+            "textRange": {
+              "startLine": 212,
+              "endLine": 212,
+              "startOffset": 20,
+              "endOffset": 29
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+            "textRange": {
+              "startLine": 267,
+              "endLine": 267,
+              "startOffset": 20,
+              "endOffset": 29
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+            "textRange": {
+              "startLine": 307,
+              "endLine": 307,
+              "startOffset": 20,
+              "endOffset": 29
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      }
+    ],
+    "status": "OPEN",
+    "message": "Define a constant instead of duplicating this literal \"success\" 4 times.",
+    "effort": "10min",
+    "debt": "10min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "design"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "DISTINCT",
+    "cleanCodeAttributeCategory": "ADAPTABLE",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "HIGH"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "420af1e0-8734-44f6-b61e-81c1427028de",
+    "rule": "java:S1192",
+    "severity": "CRITICAL",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+    "project": "lineage-sonar",
+    "line": 134,
+    "hash": "fb7b099e2be1aa89574d191ecc388ee4",
+    "textRange": {
+      "startLine": 134,
+      "endLine": 134,
+      "startOffset": 53,
+      "endOffset": 64
+    },
+    "flows": [
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+            "textRange": {
+              "startLine": 134,
+              "endLine": 134,
+              "startOffset": 53,
+              "endOffset": 64
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+            "textRange": {
+              "startLine": 157,
+              "endLine": 157,
+              "startOffset": 49,
+              "endOffset": 60
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+            "textRange": {
+              "startLine": 166,
+              "endLine": 166,
+              "startOffset": 75,
+              "endOffset": 86
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+            "textRange": {
+              "startLine": 220,
+              "endLine": 220,
+              "startOffset": 53,
+              "endOffset": 64
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      }
+    ],
+    "status": "OPEN",
+    "message": "Define a constant instead of duplicating this literal \"timestamp\" 4 times.",
+    "effort": "10min",
+    "debt": "10min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "design"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "DISTINCT",
+    "cleanCodeAttributeCategory": "ADAPTABLE",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "HIGH"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "43716bc0-f5df-4507-8d65-0311e58f0583",
+    "rule": "java:S1192",
+    "severity": "CRITICAL",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+    "project": "lineage-sonar",
+    "line": 134,
+    "hash": "fb7b099e2be1aa89574d191ecc388ee4",
+    "textRange": {
+      "startLine": 134,
+      "endLine": 134,
+      "startOffset": 37,
+      "endOffset": 51
+    },
+    "flows": [
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+            "textRange": {
+              "startLine": 134,
+              "endLine": 134,
+              "startOffset": 37,
+              "endOffset": 51
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+            "textRange": {
+              "startLine": 166,
+              "endLine": 166,
+              "startOffset": 59,
+              "endOffset": 73
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+            "textRange": {
+              "startLine": 220,
+              "endLine": 220,
+              "startOffset": 37,
+              "endOffset": 51
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      }
+    ],
+    "status": "OPEN",
+    "message": "Define a constant instead of duplicating this literal \"INVALID_CODE\" 3 times.",
+    "effort": "8min",
+    "debt": "8min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "design"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "DISTINCT",
+    "cleanCodeAttributeCategory": "ADAPTABLE",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "HIGH"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "cc4258ed-a597-45d7-8574-ba134c3c235c",
+    "rule": "java:S1192",
+    "severity": "CRITICAL",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+    "project": "lineage-sonar",
+    "line": 134,
+    "hash": "fb7b099e2be1aa89574d191ecc388ee4",
+    "textRange": {
+      "startLine": 134,
+      "endLine": 134,
+      "startOffset": 27,
+      "endOffset": 35
+    },
+    "flows": [
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+            "textRange": {
+              "startLine": 134,
+              "endLine": 134,
+              "startOffset": 27,
+              "endOffset": 35
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+            "textRange": {
+              "startLine": 166,
+              "endLine": 166,
+              "startOffset": 49,
+              "endOffset": 57
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+            "textRange": {
+              "startLine": 220,
+              "endLine": 220,
+              "startOffset": 27,
+              "endOffset": 35
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      }
+    ],
+    "status": "OPEN",
+    "message": "Define a constant instead of duplicating this literal \"reason\" 3 times.",
+    "effort": "8min",
+    "debt": "8min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "design"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "DISTINCT",
+    "cleanCodeAttributeCategory": "ADAPTABLE",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "HIGH"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "1dad102f-53e6-493c-a859-be56e83d1e9b",
+    "rule": "java:S1481",
+    "severity": "MINOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+    "project": "lineage-sonar",
+    "line": 234,
+    "hash": "948bfda74c38cb51e51245d5c704c639",
+    "textRange": {
+      "startLine": 234,
+      "endLine": 234,
+      "startOffset": 19,
+      "endOffset": 25
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Remove this unused \"userId\" local variable.",
+    "effort": "5min",
+    "debt": "5min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "unused",
+      "java22"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": true,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CLEAR",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "LOW"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "73acbfd7-242c-456b-b3d3-f159fe1e2523",
+    "rule": "java:S1854",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+    "project": "lineage-sonar",
+    "line": 234,
+    "hash": "948bfda74c38cb51e51245d5c704c639",
+    "textRange": {
+      "startLine": 234,
+      "endLine": 234,
+      "startOffset": 26,
+      "endOffset": 46
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Remove this useless assignment to local variable \"userId\".",
+    "effort": "1min",
+    "debt": "1min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "cwe",
+      "cert",
+      "unused"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "LOGICAL",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "0a7ac44f-69e7-46eb-94a1-33fa05477b9d",
+    "rule": "java:S112",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+    "project": "lineage-sonar",
+    "line": 405,
+    "hash": "7fd1a7ab8d8703c5f37ebc8146870aa2",
+    "textRange": {
+      "startLine": 405,
+      "endLine": 405,
+      "startOffset": 26,
+      "endOffset": 42
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Replace generic exceptions with specific library exceptions or a custom exception.",
+    "effort": "20min",
+    "debt": "20min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "cwe",
+      "error-handling",
+      "cert"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "COMPLETE",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "e55ca7c0-b570-48f6-99df-40251aca84e4",
+    "rule": "java:S112",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+    "project": "lineage-sonar",
+    "line": 408,
+    "hash": "0f1beee4ee953ac46df9d72036a3b5e3",
+    "textRange": {
+      "startLine": 408,
+      "endLine": 408,
+      "startOffset": 18,
+      "endOffset": 34
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Replace generic exceptions with specific library exceptions or a custom exception.",
+    "effort": "20min",
+    "debt": "20min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "cwe",
+      "error-handling",
+      "cert"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "COMPLETE",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "469caf3b-cf8d-4bd4-9f0f-62445030866b",
+    "rule": "java:S1144",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/SecurityController.java",
+    "project": "lineage-sonar",
+    "line": 411,
+    "hash": "b89ff6dcfc3680778d0b8fd2fc2d7925",
+    "textRange": {
+      "startLine": 411,
+      "endLine": 411,
+      "startOffset": 19,
+      "endOffset": 42
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Remove this unused private \"extractTokenFromRequest\" method.",
+    "effort": "2min",
+    "debt": "2min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "unused"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": true,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CLEAR",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "27a301cd-0c27-4e49-b0d7-b69745a75157",
+    "rule": "java:S1186",
+    "severity": "CRITICAL",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/dto/request/ChangePasswordRequest.java",
+    "project": "lineage-sonar",
+    "line": 24,
+    "hash": "804cefff9da6bf8ab36745c762249ee1",
+    "textRange": {
+      "startLine": 24,
+      "endLine": 24,
+      "startOffset": 11,
+      "endOffset": 32
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.",
+    "effort": "5min",
+    "debt": "5min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "suspicious"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": true,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "COMPLETE",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "HIGH"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "d569fc58-2914-4da8-849a-c38c86939e82",
+    "rule": "java:S1186",
+    "severity": "CRITICAL",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/dto/request/UpdateUserRequest.java",
+    "project": "lineage-sonar",
+    "line": 29,
+    "hash": "480b239cd5a05951df01c3bd04172af4",
+    "textRange": {
+      "startLine": 29,
+      "endLine": 29,
+      "startOffset": 11,
+      "endOffset": 28
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.",
+    "effort": "5min",
+    "debt": "5min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "suspicious"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": true,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "COMPLETE",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "HIGH"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "b8316c5a-d1a6-44f4-a734-38b8b88cbb86",
+    "rule": "java:S1186",
+    "severity": "CRITICAL",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/dto/response/AuditLogResponse.java",
+    "project": "lineage-sonar",
+    "line": 24,
+    "hash": "a838ec04d491151b0c4f8f015f6ee63a",
+    "textRange": {
+      "startLine": 24,
+      "endLine": 24,
+      "startOffset": 11,
+      "endOffset": 27
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.",
+    "effort": "5min",
+    "debt": "5min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "suspicious"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": true,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "COMPLETE",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "HIGH"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "af22c9eb-ae66-4f75-a976-623a94ac7a25",
+    "rule": "java:S1186",
+    "severity": "CRITICAL",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/dto/response/InvitationResponse.java",
+    "project": "lineage-sonar",
+    "line": 26,
+    "hash": "5002e74f691087fb549eb7300da27022",
+    "textRange": {
+      "startLine": 26,
+      "endLine": 26,
+      "startOffset": 11,
+      "endOffset": 29
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.",
+    "effort": "5min",
+    "debt": "5min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "suspicious"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": true,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "COMPLETE",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "HIGH"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "966a414b-adb9-446d-8491-0a08b5863f0c",
+    "rule": "java:S1186",
+    "severity": "CRITICAL",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/dto/response/UserProfileResponse.java",
+    "project": "lineage-sonar",
+    "line": 34,
+    "hash": "44a6f8533bc3713718c27ea1a4ceae49",
+    "textRange": {
+      "startLine": 34,
+      "endLine": 34,
+      "startOffset": 11,
+      "endOffset": 30
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.",
+    "effort": "5min",
+    "debt": "5min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "suspicious"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": true,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "COMPLETE",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "HIGH"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "6e90d5ca-590e-4043-afce-c9bbde05f6c0",
+    "rule": "java:S107",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/entity/AuditLog.java",
+    "project": "lineage-sonar",
+    "line": 96,
+    "hash": "ebb516ab69630580065ab9882612039e",
+    "textRange": {
+      "startLine": 96,
+      "endLine": 96,
+      "startOffset": 11,
+      "endOffset": 19
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Constructor has 8 parameters, which is greater than 7 authorized.",
+    "effort": "20min",
+    "debt": "20min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "brain-overload"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "FOCUSED",
+    "cleanCodeAttributeCategory": "ADAPTABLE",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "c9175292-4b2e-40da-ab81-4ae852c99e74",
+    "rule": "java:S1854",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/entity/UserSession.java",
+    "project": "lineage-sonar",
+    "line": 133,
+    "hash": "15a4766bb89b217b0aebdf864803f29d",
+    "textRange": {
+      "startLine": 133,
+      "endLine": 133,
+      "startOffset": 47,
+      "endOffset": 70
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Remove this useless assignment to local variable \"currentRefreshExpiry\".",
+    "effort": "1min",
+    "debt": "1min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "cwe",
+      "cert",
+      "unused"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "LOGICAL",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "e1727967-cfe1-420f-ba90-80fb3ec792e6",
+    "rule": "java:S1481",
+    "severity": "MINOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/entity/UserSession.java",
+    "project": "lineage-sonar",
+    "line": 133,
+    "hash": "15a4766bb89b217b0aebdf864803f29d",
+    "textRange": {
+      "startLine": 133,
+      "endLine": 133,
+      "startOffset": 26,
+      "endOffset": 46
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Remove this unused \"currentRefreshExpiry\" local variable.",
+    "effort": "5min",
+    "debt": "5min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "unused",
+      "java22"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": true,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CLEAR",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "LOW"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "74fb1899-1a9e-4161-a266-89d0565bb3a1",
+    "rule": "java:S2184",
+    "severity": "MINOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/entity/UserSession.java",
+    "project": "lineage-sonar",
+    "line": 135,
+    "hash": "c166b1413c485246e5ead49f3d1f985d",
+    "textRange": {
+      "startLine": 135,
+      "endLine": 135,
+      "startOffset": 45,
+      "endOffset": 46
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Cast one of the operands of this subtraction operation to a \"long\".",
+    "effort": "5min",
+    "debt": "5min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "cwe",
+      "overflow",
+      "cert"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "BUG",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CLEAR",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "RELIABILITY",
+        "severity": "LOW"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "c5f0000b-6103-4ee3-853d-ec554faf1ee0",
+    "rule": "java:S3358",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/JwtTokenProvider.java",
+    "project": "lineage-sonar",
+    "line": 45,
+    "hash": "4f45a8d07a7b5e69cbaff106b20e8e59",
+    "textRange": {
+      "startLine": 45,
+      "endLine": 46,
+      "startOffset": 21,
+      "endOffset": 82
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Extract this nested ternary operation into an independent statement.",
+    "effort": "5min",
+    "debt": "5min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "confusing"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CLEAR",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "196a655c-6afd-4e99-97ef-7f4273df3371",
+    "rule": "java:S1854",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/JwtTokenProvider.java",
+    "project": "lineage-sonar",
+    "line": 109,
+    "hash": "5ec1b70aef0e1f53b9b836e2eb4b2142",
+    "textRange": {
+      "startLine": 109,
+      "endLine": 109,
+      "startOffset": 23,
+      "endOffset": 52
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Remove this useless assignment to local variable \"jti\".",
+    "effort": "1min",
+    "debt": "1min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "cwe",
+      "cert",
+      "unused"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "LOGICAL",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "290b9eed-89e3-4899-85a6-e1f91203d62f",
+    "rule": "java:S1481",
+    "severity": "MINOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/JwtTokenProvider.java",
+    "project": "lineage-sonar",
+    "line": 109,
+    "hash": "5ec1b70aef0e1f53b9b836e2eb4b2142",
+    "textRange": {
+      "startLine": 109,
+      "endLine": 109,
+      "startOffset": 19,
+      "endOffset": 22
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Remove this unused \"jti\" local variable.",
+    "effort": "5min",
+    "debt": "5min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "unused",
+      "java22"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": true,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CLEAR",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "LOW"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "272d32c1-63a3-479a-a4d9-dc48fead0a9d",
+    "rule": "java:S1192",
+    "severity": "CRITICAL",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+    "project": "lineage-sonar",
+    "line": 73,
+    "hash": "a045b7846f4ca5c14bd4e626e5e69439",
+    "textRange": {
+      "startLine": 73,
+      "endLine": 73,
+      "startOffset": 23,
+      "endOffset": 35
+    },
+    "flows": [
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 73,
+              "endLine": 73,
+              "startOffset": 23,
+              "endOffset": 35
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 88,
+              "endLine": 88,
+              "startOffset": 30,
+              "endOffset": 42
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 108,
+              "endLine": 108,
+              "startOffset": 24,
+              "endOffset": 36
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 128,
+              "endLine": 128,
+              "startOffset": 25,
+              "endOffset": 37
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 148,
+              "endLine": 148,
+              "startOffset": 27,
+              "endOffset": 39
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 165,
+              "endLine": 165,
+              "startOffset": 26,
+              "endOffset": 38
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 178,
+              "endLine": 178,
+              "startOffset": 26,
+              "endOffset": 38
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 210,
+              "endLine": 210,
+              "startOffset": 56,
+              "endOffset": 68
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 211,
+              "endLine": 211,
+              "startOffset": 49,
+              "endOffset": 61
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      }
+    ],
+    "status": "OPEN",
+    "message": "Define a constant instead of duplicating this literal \"event_type\" 9 times.",
+    "effort": "20min",
+    "debt": "20min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "design"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "DISTINCT",
+    "cleanCodeAttributeCategory": "ADAPTABLE",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "HIGH"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "44531eb3-dfc0-498b-8c22-7df51191eb40",
+    "rule": "java:S1192",
+    "severity": "CRITICAL",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+    "project": "lineage-sonar",
+    "line": 74,
+    "hash": "f529f3577a608f108626b65b31f4d15a",
+    "textRange": {
+      "startLine": 74,
+      "endLine": 74,
+      "startOffset": 23,
+      "endOffset": 34
+    },
+    "flows": [
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 74,
+              "endLine": 74,
+              "startOffset": 23,
+              "endOffset": 34
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 91,
+              "endLine": 91,
+              "startOffset": 30,
+              "endOffset": 41
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 112,
+              "endLine": 112,
+              "startOffset": 24,
+              "endOffset": 35
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 132,
+              "endLine": 132,
+              "startOffset": 25,
+              "endOffset": 36
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 151,
+              "endLine": 151,
+              "startOffset": 27,
+              "endOffset": 38
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 168,
+              "endLine": 168,
+              "startOffset": 26,
+              "endOffset": 37
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 179,
+              "endLine": 179,
+              "startOffset": 26,
+              "endOffset": 37
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      }
+    ],
+    "status": "OPEN",
+    "message": "Define a constant instead of duplicating this literal \"timestamp\" 7 times.",
+    "effort": "16min",
+    "debt": "16min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "design"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "DISTINCT",
+    "cleanCodeAttributeCategory": "ADAPTABLE",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "HIGH"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "383d191a-d8d8-4043-99c3-36838f5be4cd",
+    "rule": "java:S1192",
+    "severity": "CRITICAL",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+    "project": "lineage-sonar",
+    "line": 89,
+    "hash": "c8eea644f8beefe12459256c038a9c7c",
+    "textRange": {
+      "startLine": 89,
+      "endLine": 89,
+      "startOffset": 30,
+      "endOffset": 42
+    },
+    "flows": [
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 89,
+              "endLine": 89,
+              "startOffset": 30,
+              "endOffset": 42
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 110,
+              "endLine": 110,
+              "startOffset": 24,
+              "endOffset": 36
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 130,
+              "endLine": 130,
+              "startOffset": 25,
+              "endOffset": 37
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 149,
+              "endLine": 149,
+              "startOffset": 27,
+              "endOffset": 39
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 166,
+              "endLine": 166,
+              "startOffset": 26,
+              "endOffset": 38
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      }
+    ],
+    "status": "OPEN",
+    "message": "Define a constant instead of duplicating this literal \"ip_address\" 5 times.",
+    "effort": "12min",
+    "debt": "12min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "design"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "DISTINCT",
+    "cleanCodeAttributeCategory": "ADAPTABLE",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "HIGH"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "0a9ad078-099e-4bd6-9dba-8ccc41c364fd",
+    "rule": "java:S1192",
+    "severity": "CRITICAL",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+    "project": "lineage-sonar",
+    "line": 90,
+    "hash": "8f865b6de3827ebf27444f5a98b6a243",
+    "textRange": {
+      "startLine": 90,
+      "endLine": 90,
+      "startOffset": 30,
+      "endOffset": 42
+    },
+    "flows": [
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 90,
+              "endLine": 90,
+              "startOffset": 30,
+              "endOffset": 42
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 111,
+              "endLine": 111,
+              "startOffset": 24,
+              "endOffset": 36
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 131,
+              "endLine": 131,
+              "startOffset": 25,
+              "endOffset": 37
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 150,
+              "endLine": 150,
+              "startOffset": 27,
+              "endOffset": 39
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 167,
+              "endLine": 167,
+              "startOffset": 26,
+              "endOffset": 38
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      }
+    ],
+    "status": "OPEN",
+    "message": "Define a constant instead of duplicating this literal \"user_agent\" 5 times.",
+    "effort": "12min",
+    "debt": "12min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "design"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "DISTINCT",
+    "cleanCodeAttributeCategory": "ADAPTABLE",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "HIGH"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "386277e6-1818-4434-b9da-a8fd243127ea",
+    "rule": "java:S1192",
+    "severity": "CRITICAL",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+    "project": "lineage-sonar",
+    "line": 109,
+    "hash": "2a9fb8ed0a9755e91de3922f855cbd15",
+    "textRange": {
+      "startLine": 109,
+      "endLine": 109,
+      "startOffset": 24,
+      "endOffset": 33
+    },
+    "flows": [
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 109,
+              "endLine": 109,
+              "startOffset": 24,
+              "endOffset": 33
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 129,
+              "endLine": 129,
+              "startOffset": 25,
+              "endOffset": 34
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 243,
+              "endLine": 243,
+              "startOffset": 69,
+              "endOffset": 78
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      }
+    ],
+    "status": "OPEN",
+    "message": "Define a constant instead of duplicating this literal \"success\" 3 times.",
+    "effort": "8min",
+    "debt": "8min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "design"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "DISTINCT",
+    "cleanCodeAttributeCategory": "ADAPTABLE",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "HIGH"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "2f844dce-5013-4048-8b1b-7fc78d6bc33c",
+    "rule": "java:S1192",
+    "severity": "CRITICAL",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+    "project": "lineage-sonar",
+    "line": 178,
+    "hash": "d5109dd65f4b811e0a372d0cbaf09fdd",
+    "textRange": {
+      "startLine": 178,
+      "endLine": 178,
+      "startOffset": 40,
+      "endOffset": 48
+    },
+    "flows": [
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 178,
+              "endLine": 178,
+              "startOffset": 40,
+              "endOffset": 48
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 181,
+              "endLine": 181,
+              "startOffset": 39,
+              "endOffset": 47
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 181,
+              "endLine": 181,
+              "startOffset": 49,
+              "endOffset": 57
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      }
+    ],
+    "status": "OPEN",
+    "message": "Define a constant instead of duplicating this literal \"SYSTEM\" 3 times.",
+    "effort": "8min",
+    "debt": "8min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "design"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "DISTINCT",
+    "cleanCodeAttributeCategory": "ADAPTABLE",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "HIGH"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "2def5deb-cb32-4c56-ad32-a6ad6218c909",
+    "rule": "java:S6204",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+    "project": "lineage-sonar",
+    "line": 195,
+    "hash": "eef9c1d4ad93ec11e0c82fc43cb49a01",
+    "textRange": {
+      "startLine": 195,
+      "endLine": 195,
+      "startOffset": 29,
+      "endOffset": 65
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Replace this usage of 'Stream.collect(Collectors.toList())' with 'Stream.toList()' and ensure that the list is unmodified.",
+    "effort": "5min",
+    "debt": "5min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "java16"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CLEAR",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "40803738-1ea2-4b18-b87c-4d36a00a6dcd",
+    "rule": "java:S6204",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+    "project": "lineage-sonar",
+    "line": 213,
+    "hash": "eef9c1d4ad93ec11e0c82fc43cb49a01",
+    "textRange": {
+      "startLine": 213,
+      "endLine": 213,
+      "startOffset": 29,
+      "endOffset": 65
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Replace this usage of 'Stream.collect(Collectors.toList())' with 'Stream.toList()' and ensure that the list is unmodified.",
+    "effort": "5min",
+    "debt": "5min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "java16"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CLEAR",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "549a386f-4488-4f56-b773-d5420d7f5fe1",
+    "rule": "java:S1172",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+    "project": "lineage-sonar",
+    "line": 223,
+    "hash": "f89025bfd566cb55ce9f6355f0c57cb2",
+    "textRange": {
+      "startLine": 223,
+      "endLine": 223,
+      "startOffset": 63,
+      "endOffset": 70
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Remove this unused method parameter \"request\".",
+    "effort": "5min",
+    "debt": "5min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "cert",
+      "unused"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": true,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CLEAR",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "8809f210-2f25-40c6-a36b-a0d2929ac6b7",
+    "rule": "java:S1172",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+    "project": "lineage-sonar",
+    "line": 231,
+    "hash": "566939f00e601c7234772b404a463978",
+    "textRange": {
+      "startLine": 231,
+      "endLine": 231,
+      "startOffset": 60,
+      "endOffset": 67
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Remove this unused method parameter \"request\".",
+    "effort": "5min",
+    "debt": "5min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "cert",
+      "unused"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": true,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CLEAR",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "73260832-4436-4df9-8cc1-6035ca0ddc68",
+    "rule": "java:S1192",
+    "severity": "CRITICAL",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+    "project": "lineage-sonar",
+    "line": 232,
+    "hash": "a1af5aa810dfbe7c45582bb1a34341dd",
+    "textRange": {
+      "startLine": 232,
+      "endLine": 232,
+      "startOffset": 31,
+      "endOffset": 40
+    },
+    "flows": [
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 232,
+              "endLine": 232,
+              "startOffset": 31,
+              "endOffset": 40
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 251,
+              "endLine": 251,
+              "startOffset": 70,
+              "endOffset": 79
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 256,
+              "endLine": 256,
+              "startOffset": 58,
+              "endOffset": 67
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 263,
+              "endLine": 263,
+              "startOffset": 19,
+              "endOffset": 28
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+            "textRange": {
+              "startLine": 272,
+              "endLine": 272,
+              "startOffset": 19,
+              "endOffset": 28
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      }
+    ],
+    "status": "OPEN",
+    "message": "Define a constant instead of duplicating this literal \"unknown\" 5 times.",
+    "effort": "12min",
+    "debt": "12min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "design"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "DISTINCT",
+    "cleanCodeAttributeCategory": "ADAPTABLE",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "HIGH"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "2efa66ee-5a95-47fe-a309-17b8e37f62d1",
+    "rule": "java:S125",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+    "project": "lineage-sonar",
+    "line": 282,
+    "hash": "7239c7e184ba1b25c3d37438034d1f87",
+    "textRange": {
+      "startLine": 282,
+      "endLine": 282,
+      "startOffset": 11,
+      "endOffset": 83
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "This block of commented-out lines of code should be removed.",
+    "effort": "5min",
+    "debt": "5min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "unused"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CLEAR",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "3dfa31cf-ad81-46dd-b165-9c615a3f233d",
+    "rule": "java:S1172",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+    "project": "lineage-sonar",
+    "line": 285,
+    "hash": "e0551a40526a273497bddb99f937fe7c",
+    "textRange": {
+      "startLine": 285,
+      "endLine": 285,
+      "startOffset": 93,
+      "endOffset": 100
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Remove this unused method parameter \"details\".",
+    "effort": "5min",
+    "debt": "5min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "cert",
+      "unused"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": true,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CLEAR",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "932e5367-5011-49f2-91d2-b5e77032e2a3",
+    "rule": "java:S125",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/SecurityAuditService.java",
+    "project": "lineage-sonar",
+    "line": 293,
+    "hash": "798959d1821751702e33ee542c27e645",
+    "textRange": {
+      "startLine": 293,
+      "endLine": 293,
+      "startOffset": 11,
+      "endOffset": 78
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "This block of commented-out lines of code should be removed.",
+    "effort": "5min",
+    "debt": "5min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "unused"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CLEAR",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "4f20c83d-79d9-4626-8b84-86c9db629b69",
+    "rule": "java:S1135",
+    "severity": "INFO",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/service/EmailServiceImpl.java",
+    "project": "lineage-sonar",
+    "line": 15,
+    "hash": "087cd16b3d266153c6d1f0795bd1f6eb",
+    "textRange": {
+      "startLine": 15,
+      "endLine": 15,
+      "startOffset": 0,
+      "endOffset": 53
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Complete the task associated to this TODO comment.",
+    "effort": "0min",
+    "debt": "0min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "cwe"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "COMPLETE",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "INFO"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "bd96c367-e412-4f85-974a-91a8510bf8ab",
+    "rule": "java:S1135",
+    "severity": "INFO",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/service/EmailServiceImpl.java",
+    "project": "lineage-sonar",
+    "line": 21,
+    "hash": "087cd16b3d266153c6d1f0795bd1f6eb",
+    "textRange": {
+      "startLine": 21,
+      "endLine": 21,
+      "startOffset": 0,
+      "endOffset": 53
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Complete the task associated to this TODO comment.",
+    "effort": "0min",
+    "debt": "0min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "cwe"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "COMPLETE",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "INFO"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "9445a637-a375-49a0-9dd0-a8c3c31c3c67",
+    "rule": "java:S1135",
+    "severity": "INFO",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/service/EmailServiceImpl.java",
+    "project": "lineage-sonar",
+    "line": 27,
+    "hash": "087cd16b3d266153c6d1f0795bd1f6eb",
+    "textRange": {
+      "startLine": 27,
+      "endLine": 27,
+      "startOffset": 0,
+      "endOffset": 53
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Complete the task associated to this TODO comment.",
+    "effort": "0min",
+    "debt": "0min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "cwe"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "COMPLETE",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "INFO"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "a306bbdb-65be-4539-a86c-cfec615ff7c6",
+    "rule": "java:S1135",
+    "severity": "INFO",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/service/EmailServiceImpl.java",
+    "project": "lineage-sonar",
+    "line": 33,
+    "hash": "087cd16b3d266153c6d1f0795bd1f6eb",
+    "textRange": {
+      "startLine": 33,
+      "endLine": 33,
+      "startOffset": 0,
+      "endOffset": 53
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Complete the task associated to this TODO comment.",
+    "effort": "0min",
+    "debt": "0min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "cwe"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "COMPLETE",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "INFO"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "18846fa2-867d-4e32-ba35-07c8b36b4e77",
+    "rule": "java:S1135",
+    "severity": "INFO",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/service/EmailServiceImpl.java",
+    "project": "lineage-sonar",
+    "line": 39,
+    "hash": "087cd16b3d266153c6d1f0795bd1f6eb",
+    "textRange": {
+      "startLine": 39,
+      "endLine": 39,
+      "startOffset": 0,
+      "endOffset": 53
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Complete the task associated to this TODO comment.",
+    "effort": "0min",
+    "debt": "0min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "cwe"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "COMPLETE",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "INFO"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "44a4708e-ebd9-45fb-9871-14b300dd9f0b",
+    "rule": "java:S112",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/service/MfaService.java",
+    "project": "lineage-sonar",
+    "line": 95,
+    "hash": "a19c1a44e271fb3168569980efc5a6ac",
+    "textRange": {
+      "startLine": 95,
+      "endLine": 95,
+      "startOffset": 22,
+      "endOffset": 38
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Replace generic exceptions with specific library exceptions or a custom exception.",
+    "effort": "20min",
+    "debt": "20min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "cwe",
+      "error-handling",
+      "cert"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "COMPLETE",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "fb7d3b27-ecc3-4a39-b52b-f83462bcc171",
+    "rule": "java:S1192",
+    "severity": "CRITICAL",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/service/MfaService.java",
+    "project": "lineage-sonar",
+    "line": 105,
+    "hash": "c4e32da60e448a1dd9daded41e6c292c",
+    "textRange": {
+      "startLine": 105,
+      "endLine": 105,
+      "startOffset": 60,
+      "endOffset": 96
+    },
+    "flows": [
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/service/MfaService.java",
+            "textRange": {
+              "startLine": 105,
+              "endLine": 105,
+              "startOffset": 60,
+              "endOffset": 96
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/service/MfaService.java",
+            "textRange": {
+              "startLine": 147,
+              "endLine": 147,
+              "startOffset": 60,
+              "endOffset": 96
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/service/MfaService.java",
+            "textRange": {
+              "startLine": 170,
+              "endLine": 170,
+              "startOffset": 60,
+              "endOffset": 96
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/service/MfaService.java",
+            "textRange": {
+              "startLine": 192,
+              "endLine": 192,
+              "startOffset": 60,
+              "endOffset": 96
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/service/MfaService.java",
+            "textRange": {
+              "startLine": 210,
+              "endLine": 210,
+              "startOffset": 60,
+              "endOffset": 96
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/service/MfaService.java",
+            "textRange": {
+              "startLine": 249,
+              "endLine": 249,
+              "startOffset": 60,
+              "endOffset": 96
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      }
+    ],
+    "status": "OPEN",
+    "message": "Define a constant instead of duplicating this literal \"User security settings not found: \" 6 times.",
+    "effort": "14min",
+    "debt": "14min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "design"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "DISTINCT",
+    "cleanCodeAttributeCategory": "ADAPTABLE",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "HIGH"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "6a0d4a11-e871-4ec3-a8cf-e37857b25fba",
+    "rule": "java:S112",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/service/MfaService.java",
+    "project": "lineage-sonar",
+    "line": 142,
+    "hash": "7b0d815ef1b66f8cb103b6db8e109c58",
+    "textRange": {
+      "startLine": 142,
+      "endLine": 142,
+      "startOffset": 26,
+      "endOffset": 42
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Replace generic exceptions with specific library exceptions or a custom exception.",
+    "effort": "20min",
+    "debt": "20min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "cwe",
+      "error-handling",
+      "cert"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "COMPLETE",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "83a2979b-b07b-4179-b72a-802e4870ba92",
+    "rule": "java:S112",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/service/MfaService.java",
+    "project": "lineage-sonar",
+    "line": 160,
+    "hash": "dc96d6116074b3bcf70e4a7016f6282e",
+    "textRange": {
+      "startLine": 160,
+      "endLine": 160,
+      "startOffset": 22,
+      "endOffset": 38
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Replace generic exceptions with specific library exceptions or a custom exception.",
+    "effort": "20min",
+    "debt": "20min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "cwe",
+      "error-handling",
+      "cert"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "COMPLETE",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "047f86ec-44d1-4d03-aa8e-dceda980459d",
+    "rule": "java:S112",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/service/MfaService.java",
+    "project": "lineage-sonar",
+    "line": 182,
+    "hash": "8c3adf799c9397c3d008b37bdfe8f28b",
+    "textRange": {
+      "startLine": 182,
+      "endLine": 182,
+      "startOffset": 22,
+      "endOffset": 38
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Replace generic exceptions with specific library exceptions or a custom exception.",
+    "effort": "20min",
+    "debt": "20min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "cwe",
+      "error-handling",
+      "cert"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "COMPLETE",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "89a22148-c195-4e42-876f-a10f47248f56",
+    "rule": "java:S112",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/service/MfaService.java",
+    "project": "lineage-sonar",
+    "line": 198,
+    "hash": "6d395ec7b3857fca66cdc1f01f450195",
+    "textRange": {
+      "startLine": 198,
+      "endLine": 198,
+      "startOffset": 22,
+      "endOffset": 38
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Replace generic exceptions with specific library exceptions or a custom exception.",
+    "effort": "20min",
+    "debt": "20min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "cwe",
+      "error-handling",
+      "cert"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "COMPLETE",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "6bdc8e82-5b0e-465f-9dc6-b4d264e96871",
+    "rule": "java:S112",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/service/MfaService.java",
+    "project": "lineage-sonar",
+    "line": 223,
+    "hash": "8b0c723e9343e38f2d80446c4df021f4",
+    "textRange": {
+      "startLine": 223,
+      "endLine": 223,
+      "startOffset": 22,
+      "endOffset": 38
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Replace generic exceptions with specific library exceptions or a custom exception.",
+    "effort": "20min",
+    "debt": "20min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "cwe",
+      "error-handling",
+      "cert"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "COMPLETE",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "5635ff33-e49e-467e-97db-1dce4b2743b0",
+    "rule": "java:S2119",
+    "severity": "CRITICAL",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/service/MfaService.java",
+    "project": "lineage-sonar",
+    "line": 290,
+    "hash": "7a9e6ba0d8f1aa375d2562e991e4ba99",
+    "textRange": {
+      "startLine": 290,
+      "endLine": 290,
+      "startOffset": 28,
+      "endOffset": 34
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Save and re-use this \"Random\".",
+    "effort": "5min",
+    "debt": "5min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "BUG",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "COMPLETE",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "RELIABILITY",
+        "severity": "HIGH"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "2bef235d-e5d9-475e-9c6f-72870e881be8",
+    "rule": "java:S6880",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/service/MfaService.java",
+    "project": "lineage-sonar",
+    "line": 297,
+    "hash": "95038de8ab4ac7393933e481c6b07ba7",
+    "textRange": {
+      "startLine": 297,
+      "endLine": 297,
+      "startOffset": 16,
+      "endOffset": 18
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Replace the chain of if/else with a switch expression.",
+    "effort": "10min",
+    "debt": "10min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "java21"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": true,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CLEAR",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "cc4c12d2-f8d5-4709-a785-a37d2520d462",
+    "rule": "java:S1172",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/service/UserService.java",
+    "project": "lineage-sonar",
+    "line": 58,
+    "hash": "d6580e203a0652261e07140132a7aff7",
+    "textRange": {
+      "startLine": 58,
+      "endLine": 58,
+      "startOffset": 80,
+      "endOffset": 88
+    },
+    "flows": [
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/service/UserService.java",
+            "textRange": {
+              "startLine": 58,
+              "endLine": 58,
+              "startOffset": 97,
+              "endOffset": 106
+            },
+            "msg": "Parameter \"userAgent\"",
+            "msgFormattings": []
+          }
+        ]
+      }
+    ],
+    "status": "OPEN",
+    "message": "Remove these unused method parameters \"clientIp\", \"userAgent\".",
+    "effort": "5min",
+    "debt": "5min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "cert",
+      "unused"
+    ],
+    "creationDate": "2025-11-18T18:01:08+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": true,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CLEAR",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "200e24c1-54a5-4e42-93d4-936f64996f6c",
+    "rule": "java:S1068",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/config/SecurityConfig.java",
+    "project": "lineage-sonar",
+    "line": 42,
+    "hash": "32e2a09e6b7007d7b07ba0e3a7ff524c",
+    "textRange": {
+      "startLine": 42,
+      "endLine": 42,
+      "startOffset": 32,
+      "endOffset": 38
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Remove this unused \"logger\" private field.",
+    "effort": "5min",
+    "debt": "5min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "unused"
+    ],
+    "creationDate": "2025-11-18T18:00:17+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": true,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CLEAR",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "e23ee746-aa99-4d80-8db4-9107153d3546",
+    "rule": "java:S1192",
+    "severity": "CRITICAL",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/config/SecurityConfig.java",
+    "project": "lineage-sonar",
+    "line": 86,
+    "hash": "d129947c8b331f698c5d219a0138310c",
+    "textRange": {
+      "startLine": 86,
+      "endLine": 86,
+      "startOffset": 63,
+      "endOffset": 70
+    },
+    "flows": [
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/config/SecurityConfig.java",
+            "textRange": {
+              "startLine": 86,
+              "endLine": 86,
+              "startOffset": 63,
+              "endOffset": 70
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/config/SecurityConfig.java",
+            "textRange": {
+              "startLine": 93,
+              "endLine": 93,
+              "startOffset": 62,
+              "endOffset": 69
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/config/SecurityConfig.java",
+            "textRange": {
+              "startLine": 94,
+              "endLine": 94,
+              "startOffset": 81,
+              "endOffset": 88
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/config/SecurityConfig.java",
+            "textRange": {
+              "startLine": 95,
+              "endLine": 95,
+              "startOffset": 85,
+              "endOffset": 92
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/config/SecurityConfig.java",
+            "textRange": {
+              "startLine": 96,
+              "endLine": 96,
+              "startOffset": 84,
+              "endOffset": 91
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/config/SecurityConfig.java",
+            "textRange": {
+              "startLine": 97,
+              "endLine": 97,
+              "startOffset": 87,
+              "endOffset": 94
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/config/SecurityConfig.java",
+            "textRange": {
+              "startLine": 102,
+              "endLine": 102,
+              "startOffset": 81,
+              "endOffset": 88
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/config/SecurityConfig.java",
+            "textRange": {
+              "startLine": 103,
+              "endLine": 103,
+              "startOffset": 82,
+              "endOffset": 89
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/config/SecurityConfig.java",
+            "textRange": {
+              "startLine": 104,
+              "endLine": 104,
+              "startOffset": 81,
+              "endOffset": 88
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/config/SecurityConfig.java",
+            "textRange": {
+              "startLine": 105,
+              "endLine": 105,
+              "startOffset": 81,
+              "endOffset": 88
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      }
+    ],
+    "status": "OPEN",
+    "message": "Define a constant instead of duplicating this literal \"ADMIN\" 10 times.",
+    "effort": "22min",
+    "debt": "22min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "design"
+    ],
+    "creationDate": "2025-11-18T18:00:17+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "DISTINCT",
+    "cleanCodeAttributeCategory": "ADAPTABLE",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "HIGH"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "7183d023-2405-4c39-8888-fdca2a7ba847",
+    "rule": "java:S1192",
+    "severity": "CRITICAL",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/config/SecurityConfig.java",
+    "project": "lineage-sonar",
+    "line": 95,
+    "hash": "5c0c3d58030ae5e0fb11671ab1dbe19c",
+    "textRange": {
+      "startLine": 95,
+      "endLine": 95,
+      "startOffset": 94,
+      "endOffset": 111
+    },
+    "flows": [
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/config/SecurityConfig.java",
+            "textRange": {
+              "startLine": 95,
+              "endLine": 95,
+              "startOffset": 94,
+              "endOffset": 111
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/config/SecurityConfig.java",
+            "textRange": {
+              "startLine": 102,
+              "endLine": 102,
+              "startOffset": 90,
+              "endOffset": 107
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/config/SecurityConfig.java",
+            "textRange": {
+              "startLine": 103,
+              "endLine": 103,
+              "startOffset": 91,
+              "endOffset": 108
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/config/SecurityConfig.java",
+            "textRange": {
+              "startLine": 104,
+              "endLine": 104,
+              "startOffset": 90,
+              "endOffset": 107
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      }
+    ],
+    "status": "OPEN",
+    "message": "Define a constant instead of duplicating this literal \"PROJECT_MANAGER\" 4 times.",
+    "effort": "10min",
+    "debt": "10min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "design"
+    ],
+    "creationDate": "2025-11-18T18:00:17+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "DISTINCT",
+    "cleanCodeAttributeCategory": "ADAPTABLE",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "HIGH"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "bd4ac2da-d526-4853-abaa-7e4d6f6ef952",
+    "rule": "java:S1192",
+    "severity": "CRITICAL",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/config/SecurityConfig.java",
+    "project": "lineage-sonar",
+    "line": 102,
+    "hash": "e37efc684a4d6091c8b07a92a13ec107",
+    "textRange": {
+      "startLine": 102,
+      "endLine": 102,
+      "startOffset": 53,
+      "endOffset": 68
+    },
+    "flows": [
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/config/SecurityConfig.java",
+            "textRange": {
+              "startLine": 102,
+              "endLine": 102,
+              "startOffset": 53,
+              "endOffset": 68
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/config/SecurityConfig.java",
+            "textRange": {
+              "startLine": 103,
+              "endLine": 103,
+              "startOffset": 54,
+              "endOffset": 69
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/config/SecurityConfig.java",
+            "textRange": {
+              "startLine": 104,
+              "endLine": 104,
+              "startOffset": 53,
+              "endOffset": 68
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/config/SecurityConfig.java",
+            "textRange": {
+              "startLine": 105,
+              "endLine": 105,
+              "startOffset": 56,
+              "endOffset": 71
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      }
+    ],
+    "status": "OPEN",
+    "message": "Define a constant instead of duplicating this literal \"/api/users/**\" 4 times.",
+    "effort": "10min",
+    "debt": "10min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "design"
+    ],
+    "creationDate": "2025-11-18T18:00:17+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "DISTINCT",
+    "cleanCodeAttributeCategory": "ADAPTABLE",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "HIGH"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "5a56d86a-2524-4c9b-9f60-ae043ce5b1e7",
+    "rule": "java:S6203",
+    "severity": "MINOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/config/SecurityConfig.java",
+    "project": "lineage-sonar",
+    "line": 137,
+    "hash": "fd823fe080061bd7746c1206aafb7258",
+    "textRange": {
+      "startLine": 137,
+      "endLine": 146,
+      "startOffset": 51,
+      "endOffset": 31
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Move this text block out of the lambda body and refactor it to a local variable or a static final field.",
+    "effort": "5min",
+    "debt": "5min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [],
+    "creationDate": "2025-11-18T18:00:17+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "FOCUSED",
+    "cleanCodeAttributeCategory": "ADAPTABLE",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "LOW"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "8ad49cd3-db1a-4bb7-88a7-5542f6cf7c6d",
+    "rule": "java:S6203",
+    "severity": "MINOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/config/SecurityConfig.java",
+    "project": "lineage-sonar",
+    "line": 137,
+    "hash": "fd823fe080061bd7746c1206aafb7258",
+    "textRange": {
+      "startLine": 137,
+      "endLine": 146,
+      "startOffset": 51,
+      "endOffset": 31
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Move this text block out of the lambda body and refactor it to a local variable or a static final field.",
+    "effort": "5min",
+    "debt": "5min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [],
+    "creationDate": "2025-11-18T18:00:17+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "FOCUSED",
+    "cleanCodeAttributeCategory": "ADAPTABLE",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "LOW"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "25e167e1-81e5-45c4-854d-fa6a4074644f",
+    "rule": "java:S1192",
+    "severity": "CRITICAL",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/AuthController.java",
+    "project": "lineage-sonar",
+    "line": 74,
+    "hash": "5835d6276cb3f2d70f76eecc469990db",
+    "textRange": {
+      "startLine": 74,
+      "endLine": 74,
+      "startOffset": 33,
+      "endOffset": 40
+    },
+    "flows": [
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/AuthController.java",
+            "textRange": {
+              "startLine": 74,
+              "endLine": 74,
+              "startOffset": 33,
+              "endOffset": 40
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/AuthController.java",
+            "textRange": {
+              "startLine": 90,
+              "endLine": 90,
+              "startOffset": 33,
+              "endOffset": 40
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/AuthController.java",
+            "textRange": {
+              "startLine": 138,
+              "endLine": 138,
+              "startOffset": 33,
+              "endOffset": 40
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/AuthController.java",
+            "textRange": {
+              "startLine": 158,
+              "endLine": 158,
+              "startOffset": 33,
+              "endOffset": 40
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/AuthController.java",
+            "textRange": {
+              "startLine": 176,
+              "endLine": 176,
+              "startOffset": 37,
+              "endOffset": 44
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      }
+    ],
+    "status": "OPEN",
+    "message": "Define a constant instead of duplicating this literal \"email\" 5 times.",
+    "effort": "12min",
+    "debt": "12min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "design"
+    ],
+    "creationDate": "2025-11-18T18:00:17+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "DISTINCT",
+    "cleanCodeAttributeCategory": "ADAPTABLE",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "HIGH"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "21867f92-0310-49bf-8a79-9b4211251e22",
+    "rule": "java:S1192",
+    "severity": "CRITICAL",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/AuthController.java",
+    "project": "lineage-sonar",
+    "line": 88,
+    "hash": "806bb5d760be168031dc25f61fa5db98",
+    "textRange": {
+      "startLine": 88,
+      "endLine": 88,
+      "startOffset": 56,
+      "endOffset": 65
+    },
+    "flows": [
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/AuthController.java",
+            "textRange": {
+              "startLine": 88,
+              "endLine": 88,
+              "startOffset": 56,
+              "endOffset": 65
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/AuthController.java",
+            "textRange": {
+              "startLine": 156,
+              "endLine": 156,
+              "startOffset": 56,
+              "endOffset": 65
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/AuthController.java",
+            "textRange": {
+              "startLine": 292,
+              "endLine": 292,
+              "startOffset": 57,
+              "endOffset": 66
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/AuthController.java",
+            "textRange": {
+              "startLine": 306,
+              "endLine": 306,
+              "startOffset": 57,
+              "endOffset": 66
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/AuthController.java",
+            "textRange": {
+              "startLine": 457,
+              "endLine": 457,
+              "startOffset": 66,
+              "endOffset": 75
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      },
+      {
+        "locations": [
+          {
+            "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/AuthController.java",
+            "textRange": {
+              "startLine": 462,
+              "endLine": 462,
+              "startOffset": 54,
+              "endOffset": 63
+            },
+            "msg": "Duplication",
+            "msgFormattings": []
+          }
+        ]
+      }
+    ],
+    "status": "OPEN",
+    "message": "Define a constant instead of duplicating this literal \"unknown\" 6 times.",
+    "effort": "14min",
+    "debt": "14min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "design"
+    ],
+    "creationDate": "2025-11-18T18:00:17+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "DISTINCT",
+    "cleanCodeAttributeCategory": "ADAPTABLE",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "HIGH"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "4d690b31-f841-4e2b-8de3-0d63ffbcefbe",
+    "rule": "java:S1854",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/AuthController.java",
+    "project": "lineage-sonar",
+    "line": 105,
+    "hash": "663bfdeab55915345f0bc7ed1202e46d",
+    "textRange": {
+      "startLine": 105,
+      "endLine": 107,
+      "startOffset": 42,
+      "endOffset": 13
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Remove this useless assignment to local variable \"authentication\".",
+    "effort": "1min",
+    "debt": "1min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "cwe",
+      "cert",
+      "unused"
+    ],
+    "creationDate": "2025-11-18T18:00:17+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "LOGICAL",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "a8916420-7231-4e7c-9582-f3193f3af4b9",
+    "rule": "java:S1481",
+    "severity": "MINOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/AuthController.java",
+    "project": "lineage-sonar",
+    "line": 105,
+    "hash": "663bfdeab55915345f0bc7ed1202e46d",
+    "textRange": {
+      "startLine": 105,
+      "endLine": 105,
+      "startOffset": 27,
+      "endOffset": 41
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Remove this unused \"authentication\" local variable.",
+    "effort": "5min",
+    "debt": "5min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "unused",
+      "java22"
+    ],
+    "creationDate": "2025-11-18T18:00:17+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": true,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CLEAR",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "LOW"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "07f44e93-6653-4413-b576-945ee3f6423d",
+    "rule": "java:S1481",
+    "severity": "MINOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/AuthController.java",
+    "project": "lineage-sonar",
+    "line": 222,
+    "hash": "3cd27738d6433c75bc43df7fe31c2e66",
+    "textRange": {
+      "startLine": 222,
+      "endLine": 222,
+      "startOffset": 19,
+      "endOffset": 25
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Remove this unused \"userId\" local variable.",
+    "effort": "5min",
+    "debt": "5min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "unused",
+      "java22"
+    ],
+    "creationDate": "2025-11-18T18:00:17+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": true,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CLEAR",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "LOW"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "eaf5a44f-b562-401c-9fc0-c82c05cc9731",
+    "rule": "java:S1854",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/AuthController.java",
+    "project": "lineage-sonar",
+    "line": 222,
+    "hash": "3cd27738d6433c75bc43df7fe31c2e66",
+    "textRange": {
+      "startLine": 222,
+      "endLine": 222,
+      "startOffset": 26,
+      "endOffset": 77
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Remove this useless assignment to local variable \"userId\".",
+    "effort": "1min",
+    "debt": "1min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "cwe",
+      "cert",
+      "unused"
+    ],
+    "creationDate": "2025-11-18T18:00:17+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "LOGICAL",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "0b7fabf6-2222-4df4-9866-8265aa6f55f8",
+    "rule": "java:S125",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/AuthController.java",
+    "project": "lineage-sonar",
+    "line": 289,
+    "hash": "e55c5a584208f4416fc5af227a2a8c05",
+    "textRange": {
+      "startLine": 289,
+      "endLine": 289,
+      "startOffset": 15,
+      "endOffset": 87
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "This block of commented-out lines of code should be removed.",
+    "effort": "5min",
+    "debt": "5min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "unused"
+    ],
+    "creationDate": "2025-11-18T18:00:17+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CLEAR",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "1cc13bc4-d2c0-4aae-9db1-00a66fc02491",
+    "rule": "java:S125",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/AuthController.java",
+    "project": "lineage-sonar",
+    "line": 317,
+    "hash": "5a50b8bc3477e1acb9102e8b839e5f20",
+    "textRange": {
+      "startLine": 317,
+      "endLine": 317,
+      "startOffset": 15,
+      "endOffset": 59
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "This block of commented-out lines of code should be removed.",
+    "effort": "5min",
+    "debt": "5min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "unused"
+    ],
+    "creationDate": "2025-11-18T18:00:17+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CLEAR",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "6676ec64-5170-4cfe-b418-94a350a21d7b",
+    "rule": "java:S1481",
+    "severity": "MINOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/AuthController.java",
+    "project": "lineage-sonar",
+    "line": 404,
+    "hash": "948bfda74c38cb51e51245d5c704c639",
+    "textRange": {
+      "startLine": 404,
+      "endLine": 404,
+      "startOffset": 19,
+      "endOffset": 25
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Remove this unused \"userId\" local variable.",
+    "effort": "5min",
+    "debt": "5min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "unused",
+      "java22"
+    ],
+    "creationDate": "2025-11-18T18:00:17+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": true,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CLEAR",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "LOW"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "da87287a-b334-442e-b4fd-f59cce89e8f9",
+    "rule": "java:S1854",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/AuthController.java",
+    "project": "lineage-sonar",
+    "line": 404,
+    "hash": "948bfda74c38cb51e51245d5c704c639",
+    "textRange": {
+      "startLine": 404,
+      "endLine": 404,
+      "startOffset": 26,
+      "endOffset": 46
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Remove this useless assignment to local variable \"userId\".",
+    "effort": "1min",
+    "debt": "1min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "cwe",
+      "cert",
+      "unused"
+    ],
+    "creationDate": "2025-11-18T18:00:17+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "LOGICAL",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "ad90fc42-a5df-4749-9cb6-688527551cf2",
+    "rule": "java:S125",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/controller/AuthController.java",
+    "project": "lineage-sonar",
+    "line": 405,
+    "hash": "19cea98c6bdb2c1e2e5ebbdf2355ec9d",
+    "textRange": {
+      "startLine": 405,
+      "endLine": 405,
+      "startOffset": 15,
+      "endOffset": 109
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "This block of commented-out lines of code should be removed.",
+    "effort": "5min",
+    "debt": "5min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "unused"
+    ],
+    "creationDate": "2025-11-18T18:00:17+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CLEAR",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "3de90840-ef69-4ee4-9e1e-ce0459fe3602",
+    "rule": "java:S3358",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:src/main/java/com/annapolislabs/lineage/security/JwtUtil.java",
+    "project": "lineage-sonar",
+    "line": 32,
+    "hash": "4f45a8d07a7b5e69cbaff106b20e8e59",
+    "textRange": {
+      "startLine": 32,
+      "endLine": 33,
+      "startOffset": 21,
+      "endOffset": 82
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Extract this nested ternary operation into an independent statement.",
+    "effort": "5min",
+    "debt": "5min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "confusing"
+    ],
+    "creationDate": "2025-11-18T18:00:17+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CLEAR",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "fdce410a-d43d-4400-b066-7eb06ebedd7a",
+    "rule": "typescript:S3358",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:frontend/src/services/api.ts",
+    "project": "lineage-sonar",
+    "line": 46,
+    "hash": "ec0062c2062354560f3eafa8fb610504",
+    "textRange": {
+      "startLine": 46,
+      "endLine": 47,
+      "startOffset": 16,
+      "endOffset": 32
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Extract this nested ternary operation into an independent statement.",
+    "effort": "5min",
+    "debt": "5min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "confusing"
+    ],
+    "creationDate": "2025-11-16T03:03:35+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CLEAR",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "da98c147-389f-4799-b6a4-391bb96c261f",
+    "rule": "typescript:S7764",
+    "severity": "MINOR",
+    "component": "lineage-sonar:frontend/src/services/api.ts",
+    "project": "lineage-sonar",
+    "line": 49,
+    "hash": "52bd54cec3632648f6a6bda5f2b779d0",
+    "textRange": {
+      "startLine": 49,
+      "endLine": 49,
+      "startOffset": 20,
+      "endOffset": 26
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Prefer `globalThis` over `window`.",
+    "effort": "2min",
+    "debt": "2min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "portability",
+      "es2020"
+    ],
+    "creationDate": "2025-11-16T03:03:35+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CONVENTIONAL",
+    "cleanCodeAttributeCategory": "CONSISTENT",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "LOW"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "22dc690c-b729-43ec-99f3-1f29aa1a7371",
+    "rule": "typescript:S3358",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:frontend/src/services/api.ts",
+    "project": "lineage-sonar",
+    "line": 55,
+    "hash": "6bc588a7bb4ef7da9e35d254011c5f3d",
+    "textRange": {
+      "startLine": 55,
+      "endLine": 56,
+      "startOffset": 12,
+      "endOffset": 33
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Extract this nested ternary operation into an independent statement.",
+    "effort": "5min",
+    "debt": "5min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "confusing"
+    ],
+    "creationDate": "2025-11-16T03:03:35+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CLEAR",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "a1b1154c-bd22-4503-bb5a-1066ec838c0d",
+    "rule": "typescript:S7762",
+    "severity": "MAJOR",
+    "component": "lineage-sonar:frontend/src/services/api.ts",
+    "project": "lineage-sonar",
+    "line": 61,
+    "hash": "7ebf698762634090644ad6a1ded90ac0",
+    "textRange": {
+      "startLine": 61,
+      "endLine": 61,
+      "startOffset": 8,
+      "endOffset": 39
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Prefer `childNode.remove()` over `parentNode.removeChild(childNode)`.",
+    "effort": "2min",
+    "debt": "2min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "dom",
+      "modernize",
+      "javascript"
+    ],
+    "creationDate": "2025-11-16T03:03:35+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "EFFICIENT",
+    "cleanCodeAttributeCategory": "INTENTIONAL",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "MEDIUM"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  },
+  {
+    "key": "678c54eb-1bdd-4910-bde7-224d59915da0",
+    "rule": "typescript:S7764",
+    "severity": "MINOR",
+    "component": "lineage-sonar:frontend/src/services/api.ts",
+    "project": "lineage-sonar",
+    "line": 62,
+    "hash": "ab3e09f272e9784f2a71994fa4b9754f",
+    "textRange": {
+      "startLine": 62,
+      "endLine": 62,
+      "startOffset": 8,
+      "endOffset": 14
+    },
+    "flows": [],
+    "status": "OPEN",
+    "message": "Prefer `globalThis` over `window`.",
+    "effort": "2min",
+    "debt": "2min",
+    "author": "mason.fraser@ftco.ca",
+    "tags": [
+      "portability",
+      "es2020"
+    ],
+    "creationDate": "2025-11-16T03:03:35+0000",
+    "updateDate": "2025-11-18T23:52:07+0000",
+    "type": "CODE_SMELL",
+    "scope": "MAIN",
+    "quickFixAvailable": false,
+    "messageFormattings": [],
+    "codeVariants": [],
+    "cleanCodeAttribute": "CONVENTIONAL",
+    "cleanCodeAttributeCategory": "CONSISTENT",
+    "impacts": [
+      {
+        "softwareQuality": "MAINTAINABILITY",
+        "severity": "LOW"
+      }
+    ],
+    "issueStatus": "OPEN",
+    "prioritizedRule": false,
+    "fromSonarQubeUpdate": false,
+    "internalTags": []
+  }
+]

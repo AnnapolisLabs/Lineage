@@ -34,6 +34,8 @@ import java.util.UUID;
 public class AuthController {
     
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+    private static final String EMAIL = "email";
+    private static final String UNKNOWN = "unknown";
     
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -63,7 +65,7 @@ public class AuthController {
             logger.info("Registration attempt for email: {}", request.getEmail());
             
             // Register user
-            UserProfileResponse user = userService.registerUser(request, getClientIpAddress(httpRequest), httpRequest.getHeader("User-Agent"));
+            UserProfileResponse user = userService.registerUser(request);
             
             // Generate verification email (simplified for now)
             emailService.sendEmailVerificationEmail(request.getEmail(), "verification-token");
@@ -71,7 +73,7 @@ public class AuthController {
             // Log successful registration
             securityAuditService.logAuthenticationEvent(user.getId().toString(), "REGISTRATION_SUCCESS",
                 com.annapolislabs.lineage.entity.AuditSeverity.INFO, true,
-                java.util.Map.of("email", user.getEmail(), "registration_method", "standard"));
+                java.util.Map.of(EMAIL, user.getEmail(), "registration_method", "standard"));
             
             return ResponseEntity.ok(new AuthResponse(
                 true,
@@ -85,9 +87,9 @@ public class AuthController {
             
         } catch (Exception e) {
             logger.error("Registration failed for email: {}", request.getEmail(), e);
-            securityAuditService.logAuthenticationEvent("unknown", "REGISTRATION_FAILED",
+            securityAuditService.logAuthenticationEvent(UNKNOWN, "REGISTRATION_FAILED",
                 com.annapolislabs.lineage.entity.AuditSeverity.WARNING, false,
-                java.util.Map.of("email", request.getEmail(), "error", e.getMessage()));
+                java.util.Map.of(EMAIL, request.getEmail(), "error", e.getMessage()));
             throw e;
         }
     }
@@ -102,7 +104,7 @@ public class AuthController {
             logger.info("Login attempt for email: {}", request.getEmail());
             
             // Authenticate user
-            Authentication authentication = authenticationManager.authenticate(
+            authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
             );
             
@@ -135,7 +137,7 @@ public class AuthController {
             // Log successful login
             securityAuditService.logAuthenticationEvent(user.getId().toString(), "LOGIN_SUCCESS",
                 com.annapolislabs.lineage.entity.AuditSeverity.INFO, true,
-                java.util.Map.of("email", user.getEmail(), "login_method", "password"));
+                java.util.Map.of(EMAIL, user.getEmail(), "login_method", "password"));
             
             return ResponseEntity.ok(new AuthResponse(
                 true,
@@ -153,9 +155,9 @@ public class AuthController {
             throw new BadCredentialsException("Invalid email or password");
         } catch (AuthenticationException e) {
             logger.error("Authentication failed for email: {}", request.getEmail(), e);
-            securityAuditService.logAuthenticationEvent("unknown", "LOGIN_FAILED",
+            securityAuditService.logAuthenticationEvent(UNKNOWN, "LOGIN_FAILED",
                 com.annapolislabs.lineage.entity.AuditSeverity.WARNING, false,
-                java.util.Map.of("email", request.getEmail(), "error", e.getMessage()));
+                java.util.Map.of(EMAIL, request.getEmail(), "error", e.getMessage()));
             throw e;
         }
     }
@@ -173,7 +175,7 @@ public class AuthController {
                 String userId = getCurrentUserId();
                 securityAuditService.logAuthenticationEvent(userId, "LOGOUT_SUCCESS",
                     com.annapolislabs.lineage.entity.AuditSeverity.INFO, true,
-                    java.util.Map.of("email", authentication.getName()));
+                    java.util.Map.of(EMAIL, authentication.getName()));
             }
             
             // Clear security context
@@ -229,7 +231,7 @@ public class AuthController {
             UserProfileResponse userProfile = userService.getUserProfile(user.getId());
             
             // Log token refresh
-            securityAuditService.logSuccessfulAuthentication(httpRequest, user.getId().toString(), user.getEmail());
+            securityAuditService.logSuccessfulAuthentication(user.getId().toString(), user.getEmail());
             
             return ResponseEntity.ok(new AuthResponse(
                 true,
@@ -243,7 +245,7 @@ public class AuthController {
             
         } catch (Exception e) {
             logger.error("Token refresh failed", e);
-            securityAuditService.logAuthenticationFailure(httpRequest, "TOKEN_REFRESH_FAILED", e.getMessage());
+            securityAuditService.logAuthenticationFailure("TOKEN_REFRESH_FAILED", e.getMessage());
             throw e;
         }
     }
@@ -289,7 +291,7 @@ public class AuthController {
             // userService.resetPassword(request.getToken(), request.getNewPassword());
             
             // Log successful password reset
-            securityAuditService.logPasswordResetRequest("unknown", getClientIpAddress(httpRequest), true);
+            securityAuditService.logPasswordResetRequest(UNKNOWN, getClientIpAddress(httpRequest), true);
             
             return ResponseEntity.ok(new AuthResponse(
                 true,
@@ -303,7 +305,7 @@ public class AuthController {
             
         } catch (Exception e) {
             logger.error("Password reset failed", e);
-            securityAuditService.logPasswordResetRequest("unknown", getClientIpAddress(httpRequest), false);
+            securityAuditService.logPasswordResetRequest(UNKNOWN, getClientIpAddress(httpRequest), false);
             throw e;
         }
     }
@@ -401,8 +403,7 @@ public class AuthController {
     public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest request, 
                                           HttpServletRequest httpRequest) {
         try {
-            String userId = getCurrentUserId();
-            // userService.changePassword(UUID.fromString(userId), request, getClientIpAddress(httpRequest));
+            // userService.changePassword(UUID.fromString(getCurrentUserId()), request, getClientIpAddress(httpRequest));
             
             return ResponseEntity.ok(new AuthResponse(
                 true,

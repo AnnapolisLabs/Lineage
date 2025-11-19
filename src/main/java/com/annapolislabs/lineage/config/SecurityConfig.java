@@ -39,8 +39,10 @@ import java.util.List;
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
-    private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
-
+    private static final String ADMIN = "ADMIN";
+    private static final String PROJECT_MANAGER = "PROJECT_MANAGER";
+    private static final String USERS_API_PATH = "/api/users/**";
+    
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final UserDetailsService userDetailsService;
@@ -83,26 +85,26 @@ public class SecurityConfig {
                     .requestMatchers("/api/invitations/**").permitAll()
                     .requestMatchers("/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                     .requestMatchers("/error").permitAll()
-                    .requestMatchers("/h2-console/**").hasRole("ADMIN")
+                    .requestMatchers("/h2-console/**").hasRole(ADMIN)
                     .requestMatchers("/actuator/health", "/actuator/info").permitAll()
                     
                     // Static resources
                     .requestMatchers("/", "/index.html", "/assets/**", "/vite.svg", "/favicon.ico").permitAll()
                     
                     // Admin endpoints
-                    .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.GET, "/api/admin/users").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.POST, "/api/admin/users").hasAnyRole("ADMIN", "PROJECT_MANAGER")
-                    .requestMatchers(HttpMethod.PUT, "/api/admin/users/**").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.DELETE, "/api/admin/users/**").hasRole("ADMIN")
+                    .requestMatchers("/api/admin/**").hasRole(ADMIN)
+                    .requestMatchers(HttpMethod.GET, "/api/admin/users").hasRole(ADMIN)
+                    .requestMatchers(HttpMethod.POST, "/api/admin/users").hasAnyRole(ADMIN, PROJECT_MANAGER)
+                    .requestMatchers(HttpMethod.PUT, "/api/admin/users/**").hasRole(ADMIN)
+                    .requestMatchers(HttpMethod.DELETE, "/api/admin/users/**").hasRole(ADMIN)
                     
                     // User management endpoints
                     .requestMatchers(HttpMethod.GET, "/api/users/profile").authenticated()
                     .requestMatchers(HttpMethod.PUT, "/api/users/profile").authenticated()
-                    .requestMatchers(HttpMethod.GET, "/api/users/**").hasAnyRole("ADMIN", "PROJECT_MANAGER")
-                    .requestMatchers(HttpMethod.POST, "/api/users/**").hasAnyRole("ADMIN", "PROJECT_MANAGER")
-                    .requestMatchers(HttpMethod.PUT, "/api/users/**").hasAnyRole("ADMIN", "PROJECT_MANAGER")
-                    .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.GET, USERS_API_PATH).hasAnyRole(ADMIN, PROJECT_MANAGER)
+                    .requestMatchers(HttpMethod.POST, USERS_API_PATH).hasAnyRole(ADMIN, PROJECT_MANAGER)
+                    .requestMatchers(HttpMethod.PUT, USERS_API_PATH).hasAnyRole(ADMIN, PROJECT_MANAGER)
+                    .requestMatchers(HttpMethod.DELETE, USERS_API_PATH).hasRole(ADMIN)
                     
                     // Security endpoints
                     .requestMatchers("/api/security/**").authenticated()
@@ -132,9 +134,7 @@ public class SecurityConfig {
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                     .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                     .accessDeniedHandler((request, response, accessDeniedException) -> {
-                        response.setStatus(403);
-                        response.setContentType("application/json");
-                        response.getWriter().write("""
+                        String errorResponse = """
                             {
                                 "error": {
                                     "code": "ACCESS_DENIED",
@@ -143,7 +143,10 @@ public class SecurityConfig {
                                     "timestamp": "%s"
                                 }
                             }
-                            """.formatted(request.getRequestURI(), java.time.Instant.now().toString()));
+                            """.formatted(request.getRequestURI(), java.time.Instant.now().toString());
+                        response.setStatus(403);
+                        response.setContentType("application/json");
+                        response.getWriter().write(errorResponse);
                     })
                 )
                 
@@ -158,16 +161,9 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        
-        // Set allowed origins
-        configuration.setAllowedOriginPatterns(Arrays.asList(allowedOrigins));
-        
-        // Set allowed methods
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        
-        // Set allowed headers
-        configuration.setAllowedHeaders(Arrays.asList(
+        List<String> allowedOriginsList = Arrays.asList(allowedOrigins);
+        List<String> allowedMethodsList = Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH");
+        List<String> allowedHeadersList = Arrays.asList(
             "Authorization",
             "Content-Type",
             "X-CSRF-Token",
@@ -176,10 +172,22 @@ public class SecurityConfig {
             "Origin",
             "Access-Control-Request-Method",
             "Access-Control-Request-Headers"
-        ));
+        );
+        List<String> exposedHeadersList = Arrays.asList("Authorization");
+        
+        CorsConfiguration configuration = new CorsConfiguration();
+        
+        // Set allowed origins
+        configuration.setAllowedOriginPatterns(allowedOriginsList);
+        
+        // Set allowed methods
+        configuration.setAllowedMethods(allowedMethodsList);
+        
+        // Set allowed headers
+        configuration.setAllowedHeaders(allowedHeadersList);
         
         // Set exposed headers
-        configuration.setExposedHeaders(Arrays.asList("Authorization"));
+        configuration.setExposedHeaders(exposedHeadersList);
         
         // Allow credentials
         configuration.setAllowCredentials(true);

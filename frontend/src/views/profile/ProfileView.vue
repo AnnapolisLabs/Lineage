@@ -152,7 +152,7 @@ import { useProfileStore } from '@/stores/profile'
 import ProfileCard from '@/components/profile/ProfileCard.vue'
 import ProfileForm from '@/components/profile/ProfileForm.vue'
 import AvatarUpload from '@/components/profile/AvatarUpload.vue'
-import type { ProfileUpdateRequest, ChangePasswordRequest } from '@/services/profileService'
+import type { ProfileUpdateRequest } from '@/services/profileService'
 
 const profileStore = useProfileStore()
 

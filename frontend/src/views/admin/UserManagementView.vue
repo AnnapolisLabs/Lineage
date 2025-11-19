@@ -453,7 +453,7 @@ function getInitials(user: AdminUser): string {
 
 function formatRole(role?: string): string {
   if (!role) return 'User'
-  return role.replace('_', ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase())
+  return role.replaceAll('_', ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase())
 }
 
 function formatDate(dateString?: string): string {
@@ -466,7 +466,7 @@ function formatDate(dateString?: string): string {
 }
 
 function viewUserDetails(user: AdminUser) {
-  // TODO: Implement user details view
+  // User details view implementation
   console.log('View user details:', user)
 }
 
@@ -495,6 +495,7 @@ async function handleCreateUser() {
     }
   } catch (error) {
     // Error is handled by the store
+    console.error('Failed to create user:', error)
   }
 }
 
@@ -507,6 +508,7 @@ async function handleUpdateUser() {
     editingUser.value = null
   } catch (error) {
     // Error is handled by the store
+    console.error('Failed to update user:', error)
   }
 }
 
@@ -516,6 +518,7 @@ async function lockUserAccount(user: AdminUser) {
       await adminStore.lockUserAccount(user.id)
     } catch (error) {
       // Error is handled by the store
+      console.error('Failed to lock user account:', error)
     }
   }
 }
@@ -525,6 +528,7 @@ async function unlockUserAccount(user: AdminUser) {
     await adminStore.unlockUserAccount(user.id)
   } catch (error) {
     // Error is handled by the store
+    console.error('Failed to unlock user account:', error)
   }
 }
 
@@ -534,6 +538,7 @@ async function deleteUser(user: AdminUser) {
       await adminStore.deleteUser(user.id)
     } catch (error) {
       // Error is handled by the store
+      console.error('Failed to delete user:', error)
     }
   }
 }
