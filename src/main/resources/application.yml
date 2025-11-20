@@ -4,7 +4,7 @@ spring:
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/lineage}
     username: ${SPRING_DATASOURCE_USERNAME:lineage}
-    password: ${SPRING_DATASOURCE_PASSWORD:devpassword}
+    password: ${SPRING_DATASOURCE_PASSWORD:lineagedevpass}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:

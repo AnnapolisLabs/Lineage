@@ -26,6 +26,10 @@ public class UpdateUserRequest {
     private Map<String, Object> preferences;
     
     // Constructors
+    /**
+     * Default constructor required for JSON deserialization.
+     * Field values are set via setters after construction.
+     */
     public UpdateUserRequest() {}
     
     // Getters and Setters

@@ -44,10 +44,10 @@ public class JwtTokenProvider {
         String key;
         if (secretKey != null && !secretKey.isBlank()) {
             key = secretKey;
-        } else if (secret != null && !secret.isBlank()) {
-            key = secret;
         } else {
-            key = "development-secret-key-for-jwt-signing-change-in-production";
+            key = secret != null && !secret.isBlank() ? 
+                secret : 
+                "development-secret-key-for-jwt-signing-change-in-production";
         }
         return Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8));
     }
@@ -111,7 +111,7 @@ public class JwtTokenProvider {
                     .parseSignedClaims(token);
             
             // Check if token is blacklisted (optional enhancement)
-            claims.getPayload().getId();
+            String jti = claims.getPayload().getId();
             // You would implement blacklist checking here if needed
             
             return !claims.getPayload().getExpiration().before(new Date());

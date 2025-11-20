@@ -21,6 +21,10 @@ public class AuditLogResponse {
     private LocalDateTime createdAt;
     
     // Constructors
+    /**
+     * Default constructor required for JSON deserialization.
+     * Field values are set via setters after construction.
+     */
     public AuditLogResponse() {}
     
     // Getters and Setters

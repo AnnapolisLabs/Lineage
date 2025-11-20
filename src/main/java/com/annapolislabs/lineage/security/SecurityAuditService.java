@@ -287,8 +287,6 @@ public class SecurityAuditService {
         // In a real implementation, this would send alerts to administrators
         // via email, Slack, PagerDuty, etc.
         securityLogger.error("CRITICAL SECURITY ALERT: {}", auditLog);
-        
-        
     }
 
     private void alertOnSuspiciousActivity(String userId, String action) {

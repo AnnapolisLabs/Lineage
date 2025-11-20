@@ -127,12 +127,13 @@ public class UserSession {
     }
 
     public void extendSession(LocalDateTime newExpiresAt) {
-        this.expiresAt = newExpiresAt;
         if (refreshExpiresAt != null) {
-            // Extend refresh token by same amount
+            // Calculate extension duration before updating expiresAt
             long extensionDuration = java.time.Duration.between(expiresAt, newExpiresAt).getSeconds();
+            // Extend refresh token by same amount
             this.refreshExpiresAt = refreshExpiresAt.plusSeconds(extensionDuration);
         }
+        this.expiresAt = newExpiresAt;
     }
 
     public void setId(UUID id) {

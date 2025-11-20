@@ -36,7 +36,7 @@ public class MfaService {
     private static final int BACKUP_CODES_COUNT = 10;
     private static final int RECOVERY_CODE_LENGTH = 8;
     private static final String USER_SECURITY_SETTINGS_NOT_FOUND = "User security settings not found: ";
-    private static final Random random = new Random();
+    private static final Random RANDOM = new Random();
 
     private final GoogleAuthenticator googleAuthenticator;
     private final UserSecurityRepository userSecurityRepository;
@@ -94,7 +94,7 @@ public class MfaService {
 
         } catch (Exception e) {
             logger.error("Failed to generate MFA setup for user: {}", userId, e);
-            throw new RuntimeException("Failed to generate MFA setup", e);
+            throw new com.annapolislabs.lineage.exception.auth.MfaVerificationException("Failed to generate MFA setup", e);
         }
     }
 
@@ -159,7 +159,7 @@ public class MfaService {
 
         } catch (Exception e) {
             logger.error("Failed to enable MFA for user: {}", userId, e);
-            throw new RuntimeException("Failed to enable MFA", e);
+            throw new com.annapolislabs.lineage.exception.auth.MfaVerificationException("Failed to enable MFA", e);
         }
     }
 
@@ -181,7 +181,7 @@ public class MfaService {
 
         } catch (Exception e) {
             logger.error("Failed to disable MFA for user: {}", userId, e);
-            throw new IllegalStateException("Failed to disable MFA", e);
+            throw new com.annapolislabs.lineage.exception.auth.MfaVerificationException("Failed to disable MFA", e);
         }
     }
 
@@ -197,7 +197,7 @@ public class MfaService {
 
         } catch (Exception e) {
             logger.error("Failed to get backup codes for user: {}", userId, e);
-            throw new IllegalStateException("Failed to get backup codes", e);
+            throw new com.annapolislabs.lineage.exception.auth.MfaVerificationException("Failed to get backup codes", e);
         }
     }
 
@@ -222,7 +222,7 @@ public class MfaService {
 
         } catch (Exception e) {
             logger.error("Failed to generate new backup codes for user: {}", userId, e);
-            throw new IllegalStateException("Failed to generate backup codes", e);
+            throw new com.annapolislabs.lineage.exception.auth.MfaVerificationException("Failed to generate backup codes", e);
         }
     }
 
@@ -294,12 +294,12 @@ public class MfaService {
             // Generate 8-character alphanumeric codes
             StringBuilder code = new StringBuilder();
             for (int j = 0; j < RECOVERY_CODE_LENGTH; j++) {
-                int charType = random.nextInt(3);
-                switch (charType) {
-                    case 0 -> code.append((char) ('A' + random.nextInt(26)));
-                    case 1 -> code.append((char) ('a' + random.nextInt(26)));
-                    case 2 -> code.append((char) ('0' + random.nextInt(10)));
-                }
+                code.append(switch (RANDOM.nextInt(3)) {
+                    case 0 -> (char) ('A' + RANDOM.nextInt(26));
+                    case 1 -> (char) ('a' + RANDOM.nextInt(26));
+                    case 2 -> (char) ('0' + RANDOM.nextInt(10));
+                    default -> 'A';
+                });
             }
             codes.add(code.toString());
         }

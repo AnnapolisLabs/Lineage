@@ -28,9 +28,14 @@ public class JwtUtil {
 
     private SecretKey getSigningKey() {
         // Use the same fallback secret as JwtTokenProvider to ensure consistency
-        String key = secretKey != null && !secretKey.isBlank() ? secretKey : 
-                    (secret != null && !secret.isBlank() ? secret : 
-                     "development-secret-key-for-jwt-signing-change-in-production");
+        String key;
+        if (secretKey != null && !secretKey.isBlank()) {
+            key = secretKey;
+        } else if (secret != null && !secret.isBlank()) {
+            key = secret;
+        } else {
+            key = "development-secret-key-for-jwt-signing-change-in-production";
+        }
         return Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8));
     }
 

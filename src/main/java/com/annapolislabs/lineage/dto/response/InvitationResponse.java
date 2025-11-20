@@ -23,6 +23,10 @@ public class InvitationResponse {
     private LocalDateTime createdAt;
     
     // Constructors
+    /**
+     * Default constructor required for JSON deserialization.
+     * Field values are set via setters after construction.
+     */
     public InvitationResponse() {}
     
     // Getters and Setters

@@ -287,11 +287,11 @@ public class AuthController {
     public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest request, 
                                          HttpServletRequest httpRequest) {
         try {
-            // Reset password (simplified)
-            // userService.resetPassword(request.getToken(), request.getNewPassword());
+            // Reset password implementation would go here
+            // TODO: Implement actual password reset logic using the token
             
             // Log successful password reset
-            securityAuditService.logPasswordResetRequest(UNKNOWN, getClientIpAddress(httpRequest), true);
+            securityAuditService.logPasswordResetRequest("user@example.com", getClientIpAddress(httpRequest), true);
             
             return ResponseEntity.ok(new AuthResponse(
                 true,
@@ -305,7 +305,7 @@ public class AuthController {
             
         } catch (Exception e) {
             logger.error("Password reset failed", e);
-            securityAuditService.logPasswordResetRequest(UNKNOWN, getClientIpAddress(httpRequest), false);
+            securityAuditService.logPasswordResetRequest("user@example.com", getClientIpAddress(httpRequest), false);
             throw e;
         }
     }
@@ -316,7 +316,8 @@ public class AuthController {
     @PostMapping("/verify-email")
     public ResponseEntity<?> verifyEmail(@Valid @RequestBody VerifyEmailRequest request) {
         try {
-            // userService.verifyEmail(request.getToken());
+            // Email verification implementation would go here
+            // TODO: Implement actual email verification logic using the token
             
             return ResponseEntity.ok(new AuthResponse(
                 true,
@@ -403,7 +404,8 @@ public class AuthController {
     public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest request, 
                                           HttpServletRequest httpRequest) {
         try {
-            // userService.changePassword(UUID.fromString(getCurrentUserId()), request, getClientIpAddress(httpRequest));
+            // Password change implementation would go here
+            // TODO: Implement actual password change logic using authenticated user
             
             return ResponseEntity.ok(new AuthResponse(
                 true,

@@ -19,8 +19,12 @@ public class ChangePasswordRequest {
     
     @NotBlank(message = "Confirm password is required")
     private String confirmPassword;
-    
     // Constructors
+    /**
+     * Default constructor required for JSON deserialization.
+     * Field values are set via setters after construction.
+     */
     public ChangePasswordRequest() {}
+
 
 }
