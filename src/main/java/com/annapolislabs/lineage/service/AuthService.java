@@ -122,7 +122,7 @@ public class AuthService {
                     userProfile
             );
 
-        } catch (BadCredentialsException _) {
+        } catch (BadCredentialsException ex) {
             handleFailedLogin(email, ipAddress);
             // Normalize the error message so we don't leak whether the email exists
             throw new BadCredentialsException("Invalid email or password");

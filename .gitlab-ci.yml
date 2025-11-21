@@ -9,10 +9,12 @@ variables:
   REGISTRY_URL: registry.ftco.ca
   IMAGE_NAME: ${REGISTRY_URL}/${CI_PROJECT_PATH}
   DOCKER_TLS_CERTDIR: ""
+  # Central Gradle + JDK image to keep backend pipeline aligned with the project runtime
+  GRADLE_IMAGE: gradle:8.10.0-jdk21-jammy
 
 build:backend:
   stage: build
-  image: gradle:8.10.0-jdk21-jammy
+  image: ${GRADLE_IMAGE}
   script:
     - gradle build -x test --no-daemon
   artifacts:
@@ -45,7 +47,7 @@ build:frontend:
 
 test:backend:
   stage: test
-  image: gradle:8.10.0-jdk21-jammy
+  image: ${GRADLE_IMAGE}
   script:
     - gradle test jacocoTestReport --no-daemon
   artifacts:
