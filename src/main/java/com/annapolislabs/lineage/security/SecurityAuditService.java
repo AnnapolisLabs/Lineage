@@ -1,11 +1,13 @@
 package com.annapolislabs.lineage.security;
 
+
 import com.annapolislabs.lineage.entity.AuditLog;
 import com.annapolislabs.lineage.entity.AuditSeverity;
 import com.annapolislabs.lineage.repository.AuditLogRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -40,7 +42,7 @@ public class SecurityAuditService {
     private AuditLogRepository auditLogRepository;
 
     @Autowired
-    private HttpServletRequest httpRequest;
+    private ObjectFactory<HttpServletRequest> httpRequestFactory;
 
     /**
      * Log a general security event
@@ -257,29 +259,42 @@ public class SecurityAuditService {
 
     private String getClientIpAddress() {
         try {
+            HttpServletRequest httpRequest = httpRequestFactory.getObject();
+
             String xForwardedFor = httpRequest.getHeader("X-Forwarded-For");
-            if (xForwardedFor != null && !xForwardedFor.isEmpty() && !"unknown".equalsIgnoreCase(xForwardedFor)) {
+            if (xForwardedFor != null && !xForwardedFor.isEmpty() && !UNKNOWN.equalsIgnoreCase(xForwardedFor)) {
                 return xForwardedFor.split(",")[0].trim();
             }
-            
+
             String xRealIp = httpRequest.getHeader("X-Real-IP");
-            if (xRealIp != null && !xRealIp.isEmpty() && !"unknown".equalsIgnoreCase(xRealIp)) {
+            if (xRealIp != null && !xRealIp.isEmpty() && !UNKNOWN.equalsIgnoreCase(xRealIp)) {
                 return xRealIp;
             }
-            
-            return httpRequest.getRemoteAddr();
+
+            String remoteAddr = httpRequest.getRemoteAddr();
+            return remoteAddr != null ? remoteAddr : UNKNOWN;
+        } catch (IllegalStateException ex) {
+            // No thread-bound request (e.g., application startup, background task)
+            logger.debug("SecurityAuditService: No HttpServletRequest bound to current thread; using system placeholder IP.");
+            return "system";
         } catch (Exception e) {
             logger.warn("Failed to get client IP address", e);
-            return "unknown";
+            return UNKNOWN;
         }
     }
 
     private String getUserAgent() {
         try {
-            return httpRequest.getHeader("User-Agent");
+            HttpServletRequest httpRequest = httpRequestFactory.getObject();
+            String userAgent = httpRequest.getHeader("User-Agent");
+            return userAgent != null ? userAgent : UNKNOWN;
+        } catch (IllegalStateException ex) {
+            // No thread-bound request (e.g., application startup, background task)
+            logger.debug("SecurityAuditService: No HttpServletRequest bound to current thread; using system initializer user agent.");
+            return "system-initializer";
         } catch (Exception e) {
             logger.warn("Failed to get user agent", e);
-            return "unknown";
+            return UNKNOWN;
         }
     }
 

@@ -4,10 +4,10 @@ import com.annapolislabs.lineage.dto.request.*;
 import com.annapolislabs.lineage.dto.response.AuthResponse;
 import com.annapolislabs.lineage.dto.response.UserProfileResponse;
 import com.annapolislabs.lineage.entity.User;
-import com.annapolislabs.lineage.entity.UserStatus;
 import com.annapolislabs.lineage.exception.auth.*;
 import com.annapolislabs.lineage.security.JwtTokenProvider;
 import com.annapolislabs.lineage.security.SecurityAuditService;
+import com.annapolislabs.lineage.service.AuthService;
 import com.annapolislabs.lineage.service.EmailService;
 import com.annapolislabs.lineage.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,14 +16,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 /**
  * Authentication Controller handling user registration, login, logout, and password management
@@ -38,9 +33,6 @@ public class AuthController {
     private static final String UNKNOWN = "unknown";
     
     @Autowired
-    private AuthenticationManager authenticationManager;
-    
-    @Autowired
     private JwtTokenProvider jwtTokenProvider;
     
     @Autowired
@@ -50,10 +42,10 @@ public class AuthController {
     private EmailService emailService;
     
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private SecurityAuditService securityAuditService;
     
     @Autowired
-    private SecurityAuditService securityAuditService;
+    private AuthService authService;
     
     /**
      * User registration with email verification
@@ -95,71 +87,13 @@ public class AuthController {
     }
     
     /**
-     * User login with JWT token generation
+     * User login with JWT token generation.
+     * Thin controller that delegates authentication to AuthService.
      */
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request, 
-                                 HttpServletRequest httpRequest) {
-        try {
-            logger.info("Login attempt for email: {}", request.getEmail());
-            
-            // Authenticate user
-            authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-            );
-            
-            User user = userService.getUserByEmail(request.getEmail());
-            
-            // Check if user account is locked
-            if (user.isAccountLocked()) {
-                throw new AccountLockedException(
-                    "Account is locked due to multiple failed login attempts. Please try again later.",
-                    30 // 30 minutes
-                );
-            }
-            
-            // Check if email is verified
-            if (!user.isEmailVerified() && user.getStatus() == UserStatus.PENDING_VERIFICATION) {
-                throw new com.annapolislabs.lineage.exception.auth.EmailNotVerifiedException("Please verify your email address before logging in.");
-            }
-            
-            // Generate tokens
-            JwtTokenProvider.TokenPair tokenPair = jwtTokenProvider.generateTokenPair(user);
-            
-            // Update last login information
-            user.setLastLoginAt(java.time.LocalDateTime.now());
-            user.setLastLoginIp(getClientIpAddress(httpRequest));
-            userService.resetFailedLoginAttempts(user);
-            
-            // Get user profile
-            UserProfileResponse userProfile = userService.getUserProfile(user.getId());
-            
-            // Log successful login
-            securityAuditService.logAuthenticationEvent(user.getId().toString(), "LOGIN_SUCCESS",
-                com.annapolislabs.lineage.entity.AuditSeverity.INFO, true,
-                java.util.Map.of(EMAIL, user.getEmail(), "login_method", "password"));
-            
-            return ResponseEntity.ok(new AuthResponse(
-                true,
-                "Login successful",
-                user.getId(),
-                user.getEmail(),
-                tokenPair.getAccessToken(),
-                tokenPair.getRefreshToken(),
-                userProfile
-            ));
-            
-        } catch (BadCredentialsException e) {
-            // Handle failed login attempt
-            handleFailedLogin(request.getEmail(), httpRequest);
-            throw new BadCredentialsException("Invalid email or password");
-        } catch (AuthenticationException e) {
-            logger.error("Authentication failed for email: {}", request.getEmail(), e);
-            securityAuditService.logAuthenticationEvent(UNKNOWN, "LOGIN_FAILED",
-                com.annapolislabs.lineage.entity.AuditSeverity.WARNING, false,
-                java.util.Map.of(EMAIL, request.getEmail(), "error", e.getMessage()));
-            throw e;
-        }
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
+        AuthResponse response = authService.login(request);
+        return ResponseEntity.ok(response);
     }
     
     /**
@@ -420,17 +354,6 @@ public class AuthController {
         } catch (Exception e) {
             logger.error("Password change failed", e);
             throw e;
-        }
-    }
-    
-    private void handleFailedLogin(String email, HttpServletRequest request) {
-        try {
-            User user = userService.getUserByEmail(email);
-            if (user != null) {
-                userService.incrementFailedLoginAttempts(user, getClientIpAddress(request));
-            }
-        } catch (Exception e) {
-            logger.error("Failed to update login attempts", e);
         }
     }
     

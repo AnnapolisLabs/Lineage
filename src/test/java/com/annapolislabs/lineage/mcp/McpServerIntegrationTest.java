@@ -58,16 +58,15 @@ class McpServerIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        // Create test user (uses environment-specific admin email from DataLoader)
+        // Create test user (uses same default admin email behavior as DataLoader)
         String adminEmail = System.getenv("LINEAGE_ADMIN_EMAIL") != null ?
-            System.getenv("LINEAGE_ADMIN_EMAIL") : "admin@test.local";
+            System.getenv("LINEAGE_ADMIN_EMAIL") : "admin@lineage.local";
         
-        // Try to find existing user, or skip test if DataLoader didn't create admin user
+        // Try to find existing user, or fail if initial admin was not created
         testUser = userRepository.findByEmail(adminEmail).orElse(null);
         
         if (testUser == null) {
-            // DataLoader may have skipped creation if credentials not configured
-            throw new RuntimeException("Test user not found - ensure DataLoader ran and admin credentials are configured");
+            throw new RuntimeException("Test user not found - ensure application startup created the initial admin user");
         }
         
         jwtToken = jwtUtil.generateToken(testUser.getEmail());

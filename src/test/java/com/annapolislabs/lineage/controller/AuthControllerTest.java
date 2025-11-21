@@ -76,7 +76,7 @@ class AuthControllerTest {
         when(httpRequest.getRemoteAddr()).thenReturn("127.0.0.1");
 
         // Act
-        ResponseEntity<?> response = authController.login(request, httpRequest);
+        ResponseEntity<?> response = authController.login(request);
 
         // Assert
         assertNotNull(response);

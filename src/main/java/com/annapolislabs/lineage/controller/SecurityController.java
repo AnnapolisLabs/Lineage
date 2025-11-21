@@ -4,6 +4,7 @@ import com.annapolislabs.lineage.dto.request.SetupMfaRequest;
 import com.annapolislabs.lineage.dto.request.ValidateMfaRequest;
 import com.annapolislabs.lineage.dto.response.MfaSetupResponse;
 import com.annapolislabs.lineage.dto.response.UserProfileResponse;
+import com.annapolislabs.lineage.entity.AuditLog;
 import com.annapolislabs.lineage.entity.AuditSeverity;
 import com.annapolislabs.lineage.entity.User;
 import com.annapolislabs.lineage.entity.UserSecurity;
@@ -337,16 +338,16 @@ public class SecurityController {
             String userId = getCurrentUserId();
 
             // Get the most recent password change event
-            List<com.annapolislabs.lineage.entity.AuditLog> allUserLogs = auditLogRepository
+            List<AuditLog> allUserLogs = auditLogRepository
                 .findByUserIdOrderByCreatedAtDesc(UUID.fromString(userId));
 
             // Filter for password changes
-            List<com.annapolislabs.lineage.entity.AuditLog> passwordChanges = allUserLogs.stream()
+            List<AuditLog> passwordChanges = allUserLogs.stream()
                 .filter(log -> "PASSWORD_CHANGED".equals(log.getAction()))
                 .toList();
 
             if (!passwordChanges.isEmpty()) {
-                com.annapolislabs.lineage.entity.AuditLog lastChange = passwordChanges.get(0);
+                AuditLog lastChange = passwordChanges.get(0);
                 java.util.Map<String, Object> response = new java.util.HashMap<>();
                 response.put("lastChanged", lastChange.getCreatedAt());
                 response.put(MESSAGE, "Last password change retrieved successfully");
@@ -374,14 +375,14 @@ public class SecurityController {
             String userId = getCurrentUserId();
 
             // Get security events for user
-            List<com.annapolislabs.lineage.entity.AuditLog> events = auditLogRepository
+            List<AuditLog> events = auditLogRepository
                 .findByUserIdOrderByCreatedAtDesc(UUID.fromString(userId));
 
             // Apply pagination
             int total = events.size();
             int fromIndex = Math.min(page * size, total);
             int toIndex = Math.min(fromIndex + size, total);
-            List<com.annapolislabs.lineage.entity.AuditLog> paginatedEvents = events.subList(fromIndex, toIndex);
+            List<AuditLog> paginatedEvents = events.subList(fromIndex, toIndex);
 
             return ResponseEntity.ok(Map.of(
                     "events", paginatedEvents.stream().map(event -> Map.of(

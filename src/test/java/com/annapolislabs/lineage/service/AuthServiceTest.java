@@ -2,10 +2,13 @@ package com.annapolislabs.lineage.service;
 
 import com.annapolislabs.lineage.dto.request.LoginRequest;
 import com.annapolislabs.lineage.dto.response.AuthResponse;
+import com.annapolislabs.lineage.dto.response.UserProfileResponse;
 import com.annapolislabs.lineage.entity.User;
 import com.annapolislabs.lineage.entity.UserRole;
+import com.annapolislabs.lineage.entity.UserStatus;
 import com.annapolislabs.lineage.repository.UserRepository;
-import com.annapolislabs.lineage.security.JwtUtil;
+import com.annapolislabs.lineage.security.JwtTokenProvider;
+import com.annapolislabs.lineage.security.SecurityAuditService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,13 +20,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,10 +40,13 @@ class AuthServiceTest {
     private UserRepository userRepository;
 
     @Mock
-    private JwtUtil jwtUtil;
+    private JwtTokenProvider jwtTokenProvider;
 
     @Mock
-    private PasswordEncoder passwordEncoder;
+    private UserService userService;
+
+    @Mock
+    private SecurityAuditService securityAuditService;
 
     @Mock
     private Authentication authentication;
@@ -52,13 +59,23 @@ class AuthServiceTest {
 
     private User testUser;
     private LoginRequest loginRequest;
+    private UserProfileResponse userProfile;
 
     @BeforeEach
     void setUp() {
         testUser = new User("test@example.com", "password", "Test User", UserRole.VIEWER);
         testUser.setId(UUID.randomUUID());
+        testUser.setStatus(UserStatus.ACTIVE);
+        testUser.setEmailVerified(true);
+        testUser.setLastLoginAt(LocalDateTime.now());
 
         loginRequest = new LoginRequest("test@example.com", "password");
+
+        userProfile = new UserProfileResponse();
+        userProfile.setId(testUser.getId());
+        userProfile.setEmail(testUser.getEmail());
+        userProfile.setName(testUser.getName());
+        userProfile.setGlobalRole(testUser.getGlobalRole());
 
         SecurityContextHolder.setContext(securityContext);
     }
@@ -66,28 +83,35 @@ class AuthServiceTest {
     @Test
     void login_Success() {
         // Arrange
-        String expectedToken = "jwt-token-12345";
+        JwtTokenProvider.TokenPair tokenPair =
+                new JwtTokenProvider.TokenPair("access-token-12345", "refresh-token-67890");
 
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenReturn(authentication);
-        when(jwtUtil.generateToken(loginRequest.getEmail())).thenReturn(expectedToken);
-        when(userRepository.findByEmail(loginRequest.getEmail())).thenReturn(Optional.of(testUser));
+        when(userService.getUserByEmail(anyString())).thenReturn(testUser);
+        when(jwtTokenProvider.generateTokenPair(testUser)).thenReturn(tokenPair);
+        when(userService.getUserProfile(testUser.getId())).thenReturn(userProfile);
 
         // Act
         AuthResponse response = authService.login(loginRequest);
 
         // Assert
         assertNotNull(response);
-        assertEquals(expectedToken, response.getToken());
+        assertTrue(response.isSuccess());
+        assertEquals("Login successful", response.getMessage());
+        assertEquals(testUser.getId(), response.getUserId());
+        assertEquals(testUser.getEmail(), response.getEmail());
+        assertEquals("access-token-12345", response.getToken());
+        assertEquals("refresh-token-67890", response.getRefreshToken());
         assertNotNull(response.getUser());
         assertEquals(testUser.getEmail(), response.getUser().getEmail());
-        assertEquals(testUser.getName(), response.getUser().getName());
-        assertEquals(testUser.getGlobalRole().name(), response.getUser().getGlobalRole().name());
 
         verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
         verify(securityContext).setAuthentication(authentication);
-        verify(jwtUtil).generateToken(loginRequest.getEmail());
-        verify(userRepository).findByEmail(loginRequest.getEmail());
+        verify(userService).getUserByEmail(anyString());
+        verify(jwtTokenProvider).generateTokenPair(testUser);
+        verify(userService).resetFailedLoginAttempts(testUser);
+        verify(userService).getUserProfile(testUser.getId());
     }
 
     @Test
@@ -95,14 +119,14 @@ class AuthServiceTest {
         // Arrange
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenReturn(authentication);
-        when(jwtUtil.generateToken(loginRequest.getEmail())).thenReturn("token");
-        when(userRepository.findByEmail(loginRequest.getEmail())).thenReturn(Optional.empty());
+        when(userService.getUserByEmail(anyString()))
+                .thenThrow(new UserService.UserNotFoundException("User not found"));
 
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> authService.login(loginRequest));
+        assertThrows(UserService.UserNotFoundException.class, () -> authService.login(loginRequest));
 
         verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
-        verify(userRepository).findByEmail(loginRequest.getEmail());
+        verify(userService).getUserByEmail(anyString());
     }
 
     @Test
@@ -150,13 +174,24 @@ class AuthServiceTest {
         // Arrange
         User adminUser = new User("admin@example.com", "password", "Admin User", UserRole.ADMIN);
         adminUser.setId(UUID.randomUUID());
+        adminUser.setStatus(UserStatus.ACTIVE);
+        adminUser.setEmailVerified(true);
+
         LoginRequest adminLogin = new LoginRequest("admin@example.com", "password");
-        String expectedToken = "admin-jwt-token";
+        JwtTokenProvider.TokenPair tokenPair =
+                new JwtTokenProvider.TokenPair("admin-access-token", "admin-refresh-token");
+
+        UserProfileResponse adminProfile = new UserProfileResponse();
+        adminProfile.setId(adminUser.getId());
+        adminProfile.setEmail(adminUser.getEmail());
+        adminProfile.setName(adminUser.getName());
+        adminProfile.setGlobalRole(adminUser.getGlobalRole());
 
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenReturn(authentication);
-        when(jwtUtil.generateToken(adminLogin.getEmail())).thenReturn(expectedToken);
-        when(userRepository.findByEmail(adminLogin.getEmail())).thenReturn(Optional.of(adminUser));
+        when(userService.getUserByEmail(anyString())).thenReturn(adminUser);
+        when(jwtTokenProvider.generateTokenPair(adminUser)).thenReturn(tokenPair);
+        when(userService.getUserProfile(adminUser.getId())).thenReturn(adminProfile);
 
         // Act
         AuthResponse response = authService.login(adminLogin);
@@ -165,6 +200,7 @@ class AuthServiceTest {
         assertNotNull(response);
         assertNotNull(response.getUser());
         assertEquals("ADMIN", response.getUser().getGlobalRole().name());
-        assertEquals(expectedToken, response.getToken());
+        assertEquals("admin-access-token", response.getToken());
+        assertEquals("admin-refresh-token", response.getRefreshToken());
     }
 }

@@ -1,3 +1,9 @@
+buildscript {
+    dependencies {
+        classpath "org.flywaydb:flyway-database-postgresql:11.7.2"
+    }
+}
+
 plugins {
     id 'java'
     id 'org.springframework.boot' version '3.5.7'
@@ -10,7 +16,8 @@ plugins {
 flyway {
     url = 'jdbc:postgresql://localhost:5432/lineage'
     user = 'lineage'
-    password = 'lineage_dev_pass'
+    password = 'devpassword'
+    cleanDisabled = false
 }
 
 sonar {
@@ -25,13 +32,6 @@ sonar {
 group = 'com.annapolislabs'
 version = '0.0.1-SNAPSHOT'
 description = 'Lineage - Open Source Requirements Management Tool'
-
-// Set Java 21 compatibility for Gradle 9
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-}
 
 repositories {
     mavenCentral()
