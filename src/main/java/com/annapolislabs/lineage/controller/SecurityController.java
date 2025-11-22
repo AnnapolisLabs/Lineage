@@ -1,5 +1,6 @@
 package com.annapolislabs.lineage.controller;
 
+import com.annapolislabs.lineage.dto.request.ChangePasswordRequest;
 import com.annapolislabs.lineage.dto.request.SetupMfaRequest;
 import com.annapolislabs.lineage.dto.request.ValidateMfaRequest;
 import com.annapolislabs.lineage.dto.response.MfaSetupResponse;
@@ -308,8 +309,8 @@ public class SecurityController {
             }
 
             // Change password
-            com.annapolislabs.lineage.dto.request.ChangePasswordRequest changePasswordRequest =
-                new com.annapolislabs.lineage.dto.request.ChangePasswordRequest();
+            ChangePasswordRequest changePasswordRequest =
+                new ChangePasswordRequest();
             changePasswordRequest.setCurrentPassword(currentPassword);
             changePasswordRequest.setNewPassword(newPassword);
             userService.changePassword(UUID.fromString(userId), changePasswordRequest, getClientIpAddress(httpRequest));
@@ -335,11 +336,11 @@ public class SecurityController {
     @GetMapping("/password/last-changed")
     public ResponseEntity<?> getLastPasswordChange(HttpServletRequest request) {
         try {
-            String userId = getCurrentUserId();
-
+            String email = request.getRemoteUser();
+            User currentUser = userService.getUserByEmail(email);
             // Get the most recent password change event
             List<AuditLog> allUserLogs = auditLogRepository
-                .findByUserIdOrderByCreatedAtDesc(UUID.fromString(userId));
+                .findByUserIdOrderByCreatedAtDesc(currentUser.getId());
 
             // Filter for password changes
             List<AuditLog> passwordChanges = allUserLogs.stream()
@@ -347,7 +348,7 @@ public class SecurityController {
                 .toList();
 
             if (!passwordChanges.isEmpty()) {
-                AuditLog lastChange = passwordChanges.get(0);
+                AuditLog lastChange = passwordChanges.getFirst();
                 java.util.Map<String, Object> response = new java.util.HashMap<>();
                 response.put("lastChanged", lastChange.getCreatedAt());
                 response.put(MESSAGE, "Last password change retrieved successfully");

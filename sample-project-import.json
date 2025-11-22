@@ -1,0 +1,54 @@
+{
+  "project": {
+    "name": "Sample E-Commerce Platform",
+    "description": "A modern e-commerce platform with advanced features including user management, product catalog, shopping cart, and payment processing.",
+    "key": "ECOM",
+    "levelPrefixes": {
+      "1": "BUS",
+      "2": "SYS", 
+      "3": "SUB"
+    }
+  },
+  "requirements": [
+    {
+      "reqId": "BUS-001",
+      "title": "User Registration and Authentication",
+      "description": "Users should be able to create accounts, log in, and manage their profiles with secure authentication mechanisms.",
+      "status": "DRAFT",
+      "priority": "HIGH",
+      "parentId": null
+    },
+    {
+      "reqId": "BUS-002", 
+      "title": "Product Catalog Management",
+      "description": "System should allow administrators to manage product information including categories, descriptions, images, and pricing.",
+      "status": "DRAFT",
+      "priority": "HIGH",
+      "parentId": null
+    },
+    {
+      "reqId": "SYS-001",
+      "title": "Shopping Cart Functionality", 
+      "description": "Users can add products to cart, modify quantities, and proceed to checkout.",
+      "status": "DRAFT",
+      "priority": "MEDIUM",
+      "parentId": "BUS-002"
+    },
+    {
+      "reqId": "SYS-002",
+      "title": "Payment Processing Integration",
+      "description": "Secure payment processing with support for multiple payment methods including credit cards and digital wallets.",
+      "status": "DRAFT", 
+      "priority": "HIGH",
+      "parentId": "SYS-001"
+    },
+    {
+      "reqId": "SUB-001",
+      "title": "Order Confirmation Email",
+      "description": "Send automated email confirmations with order details and tracking information.",
+      "status": "DRAFT",
+      "priority": "LOW",
+      "parentId": "SYS-002"
+    }
+  ]
+}

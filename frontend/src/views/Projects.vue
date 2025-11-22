@@ -83,12 +83,23 @@
     <main class="w-full px-4 sm:px-6 lg:px-8 py-8">
       <div class="mb-8 flex justify-between items-center">
         <h2 class="text-3xl font-bold text-white">Projects</h2>
-        <button
-          @click="showCreateModal = true"
-          class="px-8 py-3 bg-annapolis-teal hover:bg-annapolis-teal/90 text-white font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
-        >
-          + New Project
-        </button>
+        <div class="flex gap-4">
+          <button
+            @click="showImportModal = true"
+            class="px-6 py-3 bg-annapolis-navy hover:bg-annapolis-navy/80 text-white font-semibold rounded-lg border border-annapolis-teal/30 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center"
+          >
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+            </svg>
+            Import Project
+          </button>
+          <button
+            @click="showCreateModal = true"
+            class="px-8 py-3 bg-annapolis-teal hover:bg-annapolis-teal/90 text-white font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
+          >
+            + New Project
+          </button>
+        </div>
       </div>
 
       <!-- Loading State -->
@@ -160,6 +171,107 @@
         </div>
       </div>
     </main>
+
+    <!-- Import Project Modal -->
+    <div
+      v-if="showImportModal"
+      class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50"
+      @click.self="showImportModal = false"
+    >
+      <div class="bg-annapolis-charcoal rounded-lg px-8 py-6 w-full max-w-md shadow-2xl border border-annapolis-teal/30">
+        <h3 class="text-xl font-semibold mb-6 text-white">Import Project</h3>
+        <div
+          class="border-2 border-dashed border-annapolis-teal/30 rounded-lg p-8 text-center transition-colors"
+          :class="{ 'border-annapolis-teal bg-annapolis-teal/10': isDragging }"
+          @dragenter.prevent="isDragging = true"
+          @dragleave.prevent="isDragging = false"
+          @dragover.prevent
+          @drop.prevent="handleDrop"
+        >
+          <input
+            type="file"
+            ref="fileInput"
+            class="hidden"
+            accept=".json"
+            @change="handleFileSelect"
+          />
+          <div v-if="!selectedFile">
+            <svg class="mx-auto h-12 w-12 text-annapolis-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+            </svg>
+            <p class="text-annapolis-gray-300 mb-2">Drag and drop your JSON file here</p>
+            <p class="text-sm text-annapolis-gray-400 mb-4">or</p>
+            <button
+              @click="fileInput?.click()"
+              class="px-4 py-2 bg-annapolis-navy hover:bg-annapolis-navy/80 text-white text-sm font-medium rounded-lg border border-annapolis-teal/30 transition-colors"
+            >
+              Browse Files
+            </button>
+          </div>
+          <div v-else class="text-left">
+            <div class="flex items-center justify-between bg-annapolis-navy/50 p-3 rounded-lg border border-annapolis-teal/30">
+              <div class="flex items-center overflow-hidden">
+                <svg class="w-5 h-5 text-annapolis-teal mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span class="text-sm text-white truncate">{{ selectedFile.name }}</span>
+              </div>
+              <button
+                @click="selectedFile = null"
+                class="ml-2 text-annapolis-gray-400 hover:text-red-400 transition-colors"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- File Format Help -->
+        <div class="mt-6 p-4 bg-annapolis-navy/30 rounded-lg border border-annapolis-teal/20">
+          <div class="flex items-start gap-3">
+            <svg class="w-5 h-5 text-annapolis-teal flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div>
+              <h4 class="text-sm font-medium text-white mb-2">File Format Requirements</h4>
+              <p class="text-xs text-annapolis-gray-300 mb-3">
+                Your JSON file must contain both <code class="px-2 py-1 bg-annapolis-charcoal rounded text-annapolis-teal">project</code> 
+                and <code class="px-2 py-1 bg-annapolis-charcoal rounded text-annapolis-teal">requirements</code> sections.
+              </p>
+              <button
+                @click="downloadTemplate"
+                class="inline-flex items-center px-3 py-2 text-xs font-medium text-annapolis-teal hover:text-annapolis-teal-light border border-annapolis-teal/30 rounded-lg hover:bg-annapolis-teal/10 transition-colors"
+              >
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Download Sample Template
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-8 flex justify-end gap-3">
+          <button
+            type="button"
+            @click="showImportModal = false"
+            class="px-4 py-2 text-sm font-medium text-annapolis-gray-300 hover:text-white border border-annapolis-teal/20 rounded-lg hover:bg-annapolis-teal/10 transition-all duration-300"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            @click="handleImportProject"
+            :disabled="!selectedFile || projectStore.loading"
+            class="px-8 py-2 bg-annapolis-teal hover:bg-annapolis-teal/90 text-white font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+          >
+            Import
+          </button>
+        </div>
+      </div>
+    </div>
 
     <!-- Create Project Modal -->
     <div
@@ -298,6 +410,11 @@ const authStore = useAuthStore()
 const projectStore = useProjectStore()
 
 const showCreateModal = ref(false)
+const showImportModal = ref(false)
+const isDragging = ref(false)
+const selectedFile = ref<File | null>(null)
+const fileInput = ref<HTMLInputElement | null>(null)
+
 const newProject = ref({
   name: '',
   projectKey: '',
@@ -342,6 +459,85 @@ async function handleCreateProject() {
     newProject.value = { name: '', projectKey: '', description: '' }
     router.push(`/projects/${project.id}`)
   }
+}
+
+function handleFileSelect(event: Event) {
+  const input = event.target as HTMLInputElement
+  if (input.files && input.files.length > 0) {
+    const file = input.files[0]
+    if (file) {
+      selectedFile.value = file
+    }
+  }
+}
+
+function handleDrop(event: DragEvent) {
+  isDragging.value = false
+  if (event.dataTransfer?.files && event.dataTransfer.files.length > 0) {
+    const file = event.dataTransfer.files[0]
+    if (file && file.name.endsWith('.json')) {
+      selectedFile.value = file
+    }
+  }
+}
+
+async function handleImportProject() {
+  if (!selectedFile.value) return
+
+  try {
+    const project = await projectStore.importProject(selectedFile.value)
+    if (project) {
+      showImportModal.value = false
+      selectedFile.value = null
+      router.push(`/projects/${project.id}`)
+    }
+  } catch (error: any) {
+    console.error('Import error:', error)
+    // The error is already handled in the projectStore with better messages
+  }
+}
+
+function downloadTemplate() {
+  const template = {
+    "project": {
+      "name": "Sample Project Name",
+      "description": "Project description here",
+      "key": "SAMPLE",
+      "levelPrefixes": {
+        "1": "BUS",
+        "2": "SYS",
+        "3": "SUB"
+      }
+    },
+    "requirements": [
+      {
+        "reqId": "BUS-001",
+        "title": "Business Requirement 1",
+        "description": "Description of the business requirement",
+        "status": "DRAFT",
+        "priority": "HIGH",
+        "parentId": null
+      },
+      {
+        "reqId": "SYS-001", 
+        "title": "System Requirement 1",
+        "description": "Description of the system requirement",
+        "status": "DRAFT",
+        "priority": "MEDIUM",
+        "parentId": "BUS-001"
+      }
+    ]
+  }
+  
+  const blob = new Blob([JSON.stringify(template, null, 2)], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = 'project-import-template.json'
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
 }
 
 function openDeleteModal(project: Project) {

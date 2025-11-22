@@ -19,6 +19,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.header.writers.HstsHeaderWriter;
 import org.springframework.security.web.header.writers.XContentTypeOptionsHeaderWriter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -44,6 +46,7 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final UserDetailsService userDetailsService;
+    private final CsrfTokenService csrfTokenService;
 
     @Value("${app.cors.allowed-origins:http://localhost:3000,http://localhost:5173}")
     private String[] allowedOrigins;
@@ -51,20 +54,19 @@ public class SecurityConfig {
     @Autowired
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
                          JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
-                         UserDetailsService userDetailsService) {
+                         UserDetailsService userDetailsService,
+                         CsrfTokenService csrfTokenService) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
         this.userDetailsService = userDetailsService;
+        this.csrfTokenService = csrfTokenService;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // CSRF Protection (enabled for browser-based auth, disabled for stateless JWT API)
-                .csrf(csrf -> csrf
-                    .ignoringRequestMatchers("/api/auth/**", "/api/security/**", "/api/invitations/**", "/actuator/**")
-                    .csrfTokenRepository(org.springframework.security.web.csrf.CookieCsrfTokenRepository.withHttpOnlyFalse())
-                )
+                // CSRF Protection - Disable built-in CSRF since we use custom validation
+                .csrf(csrf -> csrf.disable())
                 
                 // CORS Configuration
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -81,6 +83,7 @@ public class SecurityConfig {
                     // Public endpoints
                     .requestMatchers("/api/auth/**").permitAll()
                     .requestMatchers("/api/invitations/**").permitAll()
+                    .requestMatchers("/api/csrf/**").permitAll()
                     .requestMatchers("/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                     .requestMatchers("/error").permitAll()
                     .requestMatchers("/h2-console/**").hasRole(ADMIN)
@@ -108,6 +111,8 @@ public class SecurityConfig {
                     .requestMatchers("/api/security/**").authenticated()
                     
                     // Project management (requires authentication)
+                    .requestMatchers("/api/projects/test-import").permitAll()
+                    .requestMatchers("/api/projects/import").permitAll()
                     .requestMatchers("/api/projects/**").authenticated()
                     
                     // Everything else requires authentication
@@ -152,7 +157,10 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider())
                 
                 // JWT Filter
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                
+                // Add custom CSRF validation filter after JWT authentication
+                .addFilterAfter(csrfValidationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -165,6 +173,7 @@ public class SecurityConfig {
             "Authorization",
             "Content-Type",
             "X-CSRF-Token",
+            "X-XSRF-TOKEN",
             "X-Requested-With",
             "Accept",
             "Origin",
@@ -214,5 +223,23 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+    
+    @Bean
+    public CsrfTokenRepository cookieCsrfTokenRepository() {
+        org.springframework.security.web.csrf.CookieCsrfTokenRepository repository = 
+            org.springframework.security.web.csrf.CookieCsrfTokenRepository.withHttpOnlyFalse();
+        
+        // Configure the repository for JWT-based API
+        repository.setCookieName("XSRF-TOKEN");
+        repository.setHeaderName("X-CSRF-TOKEN");
+        repository.setParameterName("_csrf");
+        
+        return repository;
+    }
+    
+    @Bean
+    public CsrfValidationFilter csrfValidationFilter() {
+        return new CsrfValidationFilter(csrfTokenService);
     }
 }

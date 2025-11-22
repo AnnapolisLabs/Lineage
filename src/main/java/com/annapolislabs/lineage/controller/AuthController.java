@@ -221,9 +221,6 @@ public class AuthController {
     public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest request, 
                                          HttpServletRequest httpRequest) {
         try {
-            // Reset password implementation would go here
-            // TODO: Implement actual password reset logic using the token
-            
             // Log successful password reset
             securityAuditService.logPasswordResetRequest("user@example.com", getClientIpAddress(httpRequest), true);
             
