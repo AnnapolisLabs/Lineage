@@ -14,6 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
+/**
+ * Service responsible for managing graph-like relationships between requirements,
+ * applying validation rules, enforcing authorization, and producing history entries
+ * based on the link JavaDoc audit guidance.
+ */
 @Service
 public class RequirementLinkService {
 
@@ -23,6 +28,16 @@ public class RequirementLinkService {
     private final RequirementHistoryRepository historyRepository;
     private final AuthService authService;
 
+    /**
+     * Creates the service with all required collaborators for enforcing link rules,
+     * authorizing callers, and persisting audit history.
+     *
+     * @param linkRepository repository used to persist and query requirement links
+     * @param requirementRepository repository used to resolve requirement metadata
+     * @param projectMemberRepository repository used to validate caller membership/role
+     * @param historyRepository repository used to store link change history
+     * @param authService service providing the authenticated {@link User}
+     */
     @Autowired
     public RequirementLinkService(RequirementLinkRepository linkRepository,
                                  RequirementRepository requirementRepository,
@@ -36,6 +51,19 @@ public class RequirementLinkService {
         this.authService = authService;
     }
 
+    /**
+     * Creates a directional relationship between two requirements while verifying
+     * membership, role privileges, level compatibility, and duplicate prevention.
+     * The operation runs in a transactional context to persist both the link and
+     * symmetric history entries atomically.
+     *
+     * @param fromRequirementId identifier of the requirement that will be treated as the source
+     * @param request payload describing the destination requirement and optional metadata
+     * @return serialized representation of the newly created link for immediate client use
+     * @throws AccessDeniedException if the current user is not a project member with editor rights
+     * @throws InvalidLinkException if requirements share the same level or the link already exists
+     * @throws RuntimeException if either participating requirement is missing (should be refined)
+     */
     @Transactional
     public Map<String, Object> createLink(UUID fromRequirementId, CreateLinkRequest request) {
         User currentUser = authService.getCurrentUser();
@@ -86,6 +114,17 @@ public class RequirementLinkService {
         return linkToMap(link);
     }
 
+    /**
+     * Retrieves all directional links for the supplied requirement, enforcing that
+     * the caller is part of the owning project before projecting each link with a
+     * computed "incoming"/"outgoing" direction as defined in the documentation audit.
+     * The method is read-only and does not mutate persistence state.
+     *
+     * @param requirementId identifier of the requirement whose links should be listed
+     * @return list of maps describing link metadata (id, direction, counterpart requirement, createdAt)
+     * @throws ResourceNotFoundException if the requirement cannot be located for the provided id
+     * @throws InvalidLinkException if the current user is not authorized to view the project
+     */
     @Transactional(readOnly = true)
     public List<Map<String, Object>> getAllLinksForRequirement(UUID requirementId) {
         Requirement requirement = requirementRepository.findById(requirementId)
@@ -131,6 +170,17 @@ public class RequirementLinkService {
         return result;
     }
 
+    /**
+     * Removes a previously created requirement link after verifying that the
+     * caller has editor privileges within the same project and that dual
+     * history entries are captured before deletion. The removal does not modify
+     * either requirement beyond the audit history entry.
+     *
+     * @param linkId identifier of the persisted {@link RequirementLink} to remove
+     * @throws ResourceNotFoundException if no link exists for the provided identifier
+     * @throws AccessDeniedException if the caller is not associated with the project
+     * @throws InvalidLinkException if the caller lacks sufficient role privileges
+     */
     @Transactional
     public void deleteLink(UUID linkId) {
         RequirementLink link = linkRepository.findById(linkId)
@@ -153,6 +203,14 @@ public class RequirementLinkService {
         linkRepository.delete(link);
     }
 
+    /**
+     * Projects a {@link RequirementLink} into the lightweight map shape consumed by
+     * controllers, ensuring both ends of the relationship and metadata timestamps
+     * are captured without exposing internal entities.
+     *
+     * @param link link entity that was just persisted or retrieved from the repository
+     * @return map structure containing ids, serialized requirement summaries, and audit fields
+     */
     private Map<String, Object> linkToMap(RequirementLink link) {
         Map<String, Object> map = new HashMap<>();
         map.put("id", link.getId());
@@ -162,6 +220,16 @@ public class RequirementLinkService {
         return map;
     }
 
+    /**
+     * Creates symmetric history entries for both participating requirements so that
+     * downstream audits can see which requirement initiated or received a link
+     * addition/removal along with display metadata for UI presentation.
+     *
+     * @param fromReq requirement treated as the link source
+     * @param toReq requirement treated as the destination
+     * @param user authenticated user who performed the change, stored for audit trails
+     * @param changeType differentiates whether the entry records a link addition or removal
+     */
     private void createLinkHistoryEntry(Requirement fromReq, Requirement toReq, User user, ChangeType changeType) {
         Map<String, Object> linkData = new HashMap<>();
         linkData.put("fromReqId", fromReq.getReqId());

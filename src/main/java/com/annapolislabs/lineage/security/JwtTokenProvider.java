@@ -20,7 +20,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * JWT Token Provider for generating and validating JWT tokens with RS256 signature
+ * Central token utility that issues and validates HMAC-signed JWT access and refresh tokens, embedding identity
+ * metadata used by filters and services to enforce authorization.
  */
 @Component
 public class JwtTokenProvider {
@@ -58,21 +59,30 @@ public class JwtTokenProvider {
     }
     
     /**
-     * Generate access token for user
+     * Builds a short-lived access token embedding the caller's identity and authorities for API authorization.
+     *
+     * @param user authenticated actor whose claims drive the token contents.
+     * @return signed JWT flagged as an {@link TokenType#ACCESS} token.
      */
     public String generateAccessToken(User user) {
         return generateToken(user, TokenType.ACCESS);
     }
     
     /**
-     * Generate refresh token for user
+     * Issues a refresh token so clients can rehydrate access tokens without re-authenticating credentials.
+     *
+     * @param user authenticated actor whose identifier seeds the refresh token.
+     * @return signed JWT flagged as {@link TokenType#REFRESH}.
      */
     public String generateRefreshToken(User user) {
         return generateToken(user, TokenType.REFRESH);
     }
     
     /**
-     * Generate both access and refresh tokens
+     * Creates both access and refresh tokens so responses can return a complete authentication bundle.
+     *
+     * @param user authenticated actor used to derive claims for both tokens.
+     * @return paired token container with coordinated expiry windows.
      */
     public TokenPair generateTokenPair(User user) {
         String accessToken = generateAccessToken(user);
@@ -101,7 +111,10 @@ public class JwtTokenProvider {
     }
     
     /**
-     * Validate JWT token
+     * Validates the signature and expiry of a JWT, optionally acting as the enforcement point for blacklist checks.
+     *
+     * @param token signed JWT presented by the client.
+     * @return {@code true} when the token parses cleanly and has not expired.
      */
     public boolean validateToken(String token) {
         try {
@@ -122,7 +135,10 @@ public class JwtTokenProvider {
     }
     
     /**
-     * Extract claims from token
+     * Parses and returns the claims payload, throwing a domain-specific exception when validation fails.
+     *
+     * @param token signed JWT expected to be valid.
+     * @return decoded {@link Claims} payload for downstream use.
      */
     public Claims extractClaims(String token) {
         try {
@@ -138,7 +154,10 @@ public class JwtTokenProvider {
     }
     
     /**
-     * Extract user ID from token
+     * Reads the internal UUID stored inside the {@code user_id} claim for audit logging.
+     *
+     * @param token signed JWT string.
+     * @return canonical user identifier extracted from claims.
      */
     public String getUserIdFromToken(String token) {
         Claims claims = extractClaims(token);
@@ -146,7 +165,10 @@ public class JwtTokenProvider {
     }
     
     /**
-     * Extract email from token
+     * Returns the subject/email bound to the JWT for building {@link org.springframework.security.core.Authentication}.
+     *
+     * @param token signed JWT string.
+     * @return subject value stored in the token.
      */
     public String getEmailFromToken(String token) {
         Claims claims = extractClaims(token);
@@ -154,7 +176,10 @@ public class JwtTokenProvider {
     }
     
     /**
-     * Extract role from token
+     * Resolves the global user role persisted at issuance time so services can gate features consistently.
+     *
+     * @param token signed JWT string.
+     * @return {@link UserRole} enumerated from the {@code role} claim.
      */
     public UserRole getRoleFromToken(String token) {
         Claims claims = extractClaims(token);
@@ -163,7 +188,10 @@ public class JwtTokenProvider {
     }
     
     /**
-     * Get token expiry date
+     * Converts the expiration claim into a {@link LocalDateTime} for schedulers and audits.
+     *
+     * @param token signed JWT string.
+     * @return token expiration expressed in the system zone.
      */
     public LocalDateTime getExpiryDateFromToken(String token) {
         Claims claims = extractClaims(token);
@@ -172,7 +200,10 @@ public class JwtTokenProvider {
     }
     
     /**
-     * Check if token is expired
+     * Indicates whether the JWT is already expired, defaulting to {@code true} when parsing fails.
+     *
+     * @param token signed JWT string.
+     * @return {@code true} once the expiration instant is in the past.
      */
     public boolean isTokenExpired(String token) {
         try {
@@ -184,7 +215,10 @@ public class JwtTokenProvider {
     }
     
     /**
-     * Get token type from token
+     * Reads the custom {@code type} claim to distinguish access tokens from refresh tokens.
+     *
+     * @param token signed JWT string.
+     * @return {@link TokenType} enum derived from the claim.
      */
     public TokenType getTokenType(String token) {
         Claims claims = extractClaims(token);

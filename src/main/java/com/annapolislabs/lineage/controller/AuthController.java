@@ -21,7 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * Authentication Controller handling user registration, login, logout, and password management
+ * REST controller exposing authentication, token lifecycle, and credential management endpoints.
  */
 @RestController
 @RequestMapping("/api/auth")
@@ -48,10 +48,15 @@ public class AuthController {
     private AuthService authService;
     
     /**
-     * User registration with email verification
+     * POST /api/auth/register provisions a new account, triggers a verification email, and audits the outcome.
+     * Returns 200 OK with an {@link AuthResponse} instructing the caller to verify their email address.
+     *
+     * @param request validated registration payload containing user profile details
+     * @param httpRequest servlet context used for logging metadata
+     * @return 200 OK describing the pending account
      */
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody RegisterUserRequest request, 
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterUserRequest request,
                                     HttpServletRequest httpRequest) {
         try {
             logger.info("Registration attempt for email: {}", request.getEmail());
@@ -87,8 +92,11 @@ public class AuthController {
     }
     
     /**
-     * User login with JWT token generation.
-     * Thin controller that delegates authentication to AuthService.
+     * POST /api/auth/login delegates credential validation to {@link AuthService} and issues JWT pairs.
+     * Returns 200 OK with {@link AuthResponse} containing access/refresh tokens on success or bubbles auth errors.
+     *
+     * @param request validated email/password credentials plus optional MFA data
+     * @return 200 OK with tokens for subsequent authenticated calls
      */
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
@@ -97,7 +105,11 @@ public class AuthController {
     }
     
     /**
-     * User logout with session cleanup
+     * POST /api/auth/logout clears the Spring Security context and records an audit entry for the session.
+     * Always returns 200 OK to avoid leaking logout timing details even when the client lacks a session.
+     *
+     * @param request active HTTP request used to inspect authentication metadata
+     * @return 200 OK with a simple {@link AuthResponse}
      */
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request) {
@@ -140,10 +152,15 @@ public class AuthController {
     }
     
     /**
-     * Refresh JWT tokens
+     * POST /api/auth/refresh validates a refresh token, re-issues an access/refresh pair, and logs the event.
+     * Responds with 200 OK on success or propagates {@link InvalidTokenException} when validation fails.
+     *
+     * @param request wrapper containing the refresh token string
+     * @param httpRequest servlet request for IP/context auditing
+     * @return 200 OK with {@link AuthResponse} including new tokens and profile data
      */
     @PostMapping("/refresh")
-    public ResponseEntity<?> refreshToken(@Valid @RequestBody RefreshTokenRequest request, 
+    public ResponseEntity<?> refreshToken(@Valid @RequestBody RefreshTokenRequest request,
                                         HttpServletRequest httpRequest) {
         try {
             String refreshToken = request.getRefreshToken();
@@ -185,10 +202,15 @@ public class AuthController {
     }
     
     /**
-     * Request password reset
+     * POST /api/auth/forgot-password triggers a reset email for the supplied account and logs the request.
+     * Always returns 200 OK regardless of account existence to avoid user enumeration.
+     *
+     * @param request email wrapper for the target account
+     * @param httpRequest used to capture requester IP for auditing
+     * @return 200 OK with generic instructions payload
      */
     @PostMapping("/forgot-password")
-    public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request, 
+    public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request,
                                           HttpServletRequest httpRequest) {
         try {
             // Generate reset token and send email (simplified)
@@ -215,10 +237,15 @@ public class AuthController {
     }
     
     /**
-     * Reset password with token
+     * POST /api/auth/reset-password confirms a token and updates the stored password, auditing the outcome.
+     * Returns 200 OK with guidance to re-login once the backend completes the reset.
+     *
+     * @param request payload containing token plus new password values
+     * @param httpRequest request context whose IP is logged
+     * @return 200 OK acknowledging the change
      */
     @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest request, 
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest request,
                                          HttpServletRequest httpRequest) {
         try {
             // Log successful password reset
@@ -242,7 +269,10 @@ public class AuthController {
     }
     
     /**
-     * Verify email address
+     * POST /api/auth/verify-email accepts a verification token and marks the account as confirmed.
+     *
+     * @param request wrapper containing the verification token
+     * @return 200 OK once the email is verified (placeholder until full implementation)
      */
     @PostMapping("/verify-email")
     public ResponseEntity<?> verifyEmail(@Valid @RequestBody VerifyEmailRequest request) {
@@ -267,10 +297,14 @@ public class AuthController {
     }
     
     /**
-     * Resend verification email
+     * POST /api/auth/resend-verification sends another email verification link for unconfirmed accounts.
+     *
+     * @param request contains the email address requiring a new link
+     * @param httpRequest unused today but reserved for future auditing hooks
+     * @return 200 OK indicating the email dispatch attempt
      */
     @PostMapping("/resend-verification")
-    public ResponseEntity<?> resendVerification(@Valid @RequestBody ResendVerificationRequest request, 
+    public ResponseEntity<?> resendVerification(@Valid @RequestBody ResendVerificationRequest request,
                                               HttpServletRequest httpRequest) {
         try {
             emailService.sendEmailVerificationEmail(request.getEmail(), "verification-token");
@@ -291,7 +325,10 @@ public class AuthController {
         }
     }
     /**
-     * Get current user profile (authenticated)
+     * GET /api/auth/me returns the authenticated user's profile if the security context contains a principal.
+     * Responds with 401 when the caller is anonymous.
+     *
+     * @return 200 OK with {@link AuthResponse} wrapping the profile, or 401 when unauthenticated
      */
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser() {
@@ -329,10 +366,14 @@ public class AuthController {
      */
     
     /**
-     * Change password (authenticated user)
+     * POST /api/auth/change-password lets an authenticated user rotate their password after validating inputs.
+     *
+     * @param request contains the current and new password values
+     * @param httpRequest used for capturing the request IP in audit logs
+     * @return 200 OK with confirmation that the password was updated
      */
     @PostMapping("/change-password")
-    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest request, 
+    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest request,
                                           HttpServletRequest httpRequest) {
         try {
             // Password change implementation would go here

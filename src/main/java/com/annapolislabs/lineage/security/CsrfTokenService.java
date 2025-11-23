@@ -14,8 +14,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Service for managing CSRF tokens in JWT-based REST API
- * Provides secure CSRF token generation and validation
+ * Issues stateless CSRF tokens for SPA/JWT flows, caching them in-memory until the paired header is validated and
+ * discarded to keep replay windows narrow.
  */
 @Service
 public class CsrfTokenService {
@@ -32,7 +32,9 @@ public class CsrfTokenService {
     private volatile String lastGeneratedTokenId;
     
     /**
-     * Generate a new CSRF token
+     * Generates a new CSRF token/ID pair and caches it for one-time validation.
+     *
+     * @return Spring Security token wrapper containing the header metadata and opaque value.
      */
     public CsrfToken generateToken() {
         String tokenValue = generateSecureToken();
@@ -53,16 +55,20 @@ public class CsrfTokenService {
         logger.debug("Generated new CSRF token with ID: {}", tokenId);
         return token;
     }
-    
     /**
-     * Get the last generated token ID
+     * @return identifier associated with the most recently minted token so callers can pair it with the header value.
      */
     public String getLastGeneratedTokenId() {
         return lastGeneratedTokenId;
     }
     
     /**
-     * Validate a CSRF token
+     * Validates the provided token value against the cached entry for the identifier and removes it when matched to
+     * enforce single use semantics.
+     *
+     * @param tokenValue Base64 string provided by the client.
+     * @param tokenId identifier used as the lookup key.
+     * @return {@code true} when validation succeeds.
      */
     public boolean validateToken(String tokenValue, String tokenId) {
         if (tokenValue == null || tokenId == null) {
@@ -84,8 +90,11 @@ public class CsrfTokenService {
         return isValid;
     }
     
-    /**
-     * Add CSRF token header to response
+     /**
+     * Writes the CSRF value into the response header so front-end clients can store it and attach on protected calls.
+     *
+     * @param response outgoing response.
+     * @param token CSRF token to expose; ignored when {@code null}.
      */
     public void addTokenToResponse(HttpServletResponse response, CsrfToken token) {
         if (token != null) {
@@ -94,8 +103,8 @@ public class CsrfTokenService {
         }
     }
     
-    /**
-     * Clean up expired/inactive tokens (should be called periodically)
+     /**
+     * Performs opportunistic cleanup when the token cache grows beyond a safe threshold to avoid memory leaks.
      */
     public void cleanupExpiredTokens() {
         // In a real implementation, you might want to implement token expiration

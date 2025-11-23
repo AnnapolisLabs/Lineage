@@ -13,6 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
+/**
+ * Handles CRUD operations, history tracking, and ID management for requirements scoped to projects.
+ */
 @Service
 public class RequirementService {
 
@@ -38,6 +41,16 @@ public class RequirementService {
         this.authService = authService;
     }
 
+    /**
+     * Creates a new requirement under the specified project while enforcing membership checks,
+     * hierarchical ID generation, optional parent linkage, and automatic history/link creation.
+     *
+     * @param projectId project that will own the requirement
+     * @param request   payload describing the requirement fields and optional parent
+     * @return DTO representing the persisted requirement
+     * @throws AccessDeniedException        when the caller lacks editor permissions
+     * @throws ResourceNotFoundException    when the project or parent requirement cannot be found
+     */
     @Transactional
     public RequirementResponse createRequirement(UUID projectId, CreateRequirementRequest request) {
         User currentUser = authService.getCurrentUser();
@@ -88,6 +101,14 @@ public class RequirementService {
         return toRequirementResponse(requirement);
     }
 
+    /**
+     * Retrieves every non-deleted requirement for the provided project while enforcing membership
+     * checks and sorting by the natural {@code reqId} order.
+     *
+     * @param projectId identifier of the project whose requirements should be listed
+     * @return ordered list of {@link RequirementResponse} DTOs
+     * @throws AccessDeniedException when the caller is not a project member
+     */
     @Transactional(readOnly = true)
     public List<RequirementResponse> getRequirementsByProject(UUID projectId) {
         User currentUser = authService.getCurrentUser();
@@ -104,6 +125,15 @@ public class RequirementService {
                 .toList();
     }
 
+    /**
+     * Retrieves a single requirement by ID after verifying the caller is a member of the owning
+     * project.
+     *
+     * @param requirementId identifier of the requirement entity
+     * @return {@link RequirementResponse} describing the requirement
+     * @throws ResourceNotFoundException when the requirement cannot be located
+     * @throws AccessDeniedException     when the caller lacks project membership
+     */
     @Transactional(readOnly = true)
     public RequirementResponse getRequirementById(UUID requirementId) {
         Requirement requirement = requirementRepository.findById(requirementId)
@@ -118,6 +148,16 @@ public class RequirementService {
         return toRequirementResponse(requirement);
     }
 
+    /**
+     * Applies updates to an existing requirement, tracking old/new values for history entries and
+     * optionally re-parenting the node when {@code parentId} is provided.
+     *
+     * @param requirementId identifier of the requirement being changed
+     * @param request       payload containing updated fields
+     * @return updated {@link RequirementResponse}
+     * @throws ResourceNotFoundException when the requirement or new parent does not exist
+     * @throws AccessDeniedException     when the caller lacks editor permissions
+     */
     @Transactional
     public RequirementResponse updateRequirement(UUID requirementId, CreateRequirementRequest request) {
         Requirement requirement = requirementRepository.findById(requirementId)
@@ -155,6 +195,15 @@ public class RequirementService {
         return toRequirementResponse(requirement);
     }
 
+    /**
+     * Performs a soft delete on the requirement by recording the deletion metadata while leaving the
+     * record intact for history and auditing.
+     *
+     * @param requirementId identifier of the requirement to delete
+     * @throws ResourceNotFoundException when the requirement does not exist
+     * @throws AccessDeniedException     when the caller lacks editor permissions
+     * @throws IllegalStateException     when the requirement has already been deleted
+     */
     @Transactional
     public void deleteRequirement(UUID requirementId) {
         Requirement requirement = requirementRepository.findById(requirementId)
@@ -187,6 +236,15 @@ public class RequirementService {
         createHistoryEntry(requirement, currentUser, ChangeType.DELETED, oldValue, newValue);
     }
 
+    /**
+     * Returns the historical changes for a requirement ordered from newest to oldest after verifying
+     * the caller has access to the underlying project.
+     *
+     * @param requirementId identifier of the requirement whose history is requested
+     * @return list of history entries in descending chronological order
+     * @throws ResourceNotFoundException when the requirement cannot be located
+     * @throws AccessDeniedException     when the caller is not part of the project
+     */
     @Transactional(readOnly = true)
     public List<Map<String, Object>> getRequirementHistory(UUID requirementId) {
         Requirement requirement = requirementRepository.findById(requirementId)
@@ -287,6 +345,13 @@ public class RequirementService {
         return map;
     }
 
+    /**
+     * Converts a requirement entity into the API response while computing inbound/outbound link
+     * counts for UI consumption.
+     *
+     * @param requirement entity to convert
+     * @return hydrated {@link RequirementResponse} including link counts
+     */
     private RequirementResponse toRequirementResponse(Requirement requirement) {
         RequirementResponse response = new RequirementResponse(requirement);
 
@@ -327,6 +392,13 @@ public class RequirementService {
      * Handles formats like "REQ-001", "CR-123", etc.
      * Extracts the numeric portion and compares numerically.
      */
+    /**
+     * Compares requirement identifiers using their numeric suffix to preserve natural ordering.
+     *
+     * @param reqId1 first identifier
+     * @param reqId2 second identifier
+     * @return comparison result suitable for {@link Comparator#compare(Object, Object)} semantics
+     */
     private int compareReqIds(String reqId1, String reqId2) {
         try {
             // Extract numeric portion after the last dash
@@ -346,6 +418,12 @@ public class RequirementService {
         }
     }
 
+    /**
+     * Extracts the numeric portion of a requirement identifier (portion after the last dash).
+     *
+     * @param reqId identifier such as {@code REQ-001}
+     * @return numeric suffix parsed as integer or {@code 0} when absent
+     */
     private int extractNumber(String reqId) {
         // Find the last dash and extract the number after it
         int lastDash = reqId.lastIndexOf('-');

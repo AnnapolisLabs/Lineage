@@ -13,8 +13,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 /**
- * Custom CSRF validation filter for JWT-based REST API
- * Validates CSRF tokens for state-changing requests
+ * Once-per-request filter that enforces CSRF headers on mutating endpoints so JWT-authenticated traffic still proves
+ * browser origin before controllers run.
  */
 public class CsrfValidationFilter extends OncePerRequestFilter {
     
@@ -44,13 +44,28 @@ public class CsrfValidationFilter extends OncePerRequestFilter {
         new AntPathRequestMatcher("/actuator/**")
     };
     
+    /**
+     * Creates the filter with access to the CSRF token store.
+     *
+     * @param csrfTokenService service that issues and validates the headers enforced here.
+     */
     public CsrfValidationFilter(CsrfTokenService csrfTokenService) {
         this.csrfTokenService = csrfTokenService;
     }
     
+    /**
+     * Applies CSRF validation to state-changing requests targeting protected paths, short-circuiting with a JSON 403
+     * response on failure.
+     *
+     * @param request HTTP request being inspected for CSRF headers.
+     * @param response HTTP response used to return 403 payloads when validation fails.
+     * @param filterChain remaining security filters that execute when validation succeeds.
+     * @throws ServletException when downstream filters propagate servlet errors.
+     * @throws IOException when writing an error payload fails.
+     */
     @Override
-    protected void doFilterInternal(HttpServletRequest request, 
-                                   HttpServletResponse response, 
+    protected void doFilterInternal(HttpServletRequest request,
+                                   HttpServletResponse response,
                                    FilterChain filterChain) throws ServletException, IOException {
         
         String requestUri = request.getRequestURI();

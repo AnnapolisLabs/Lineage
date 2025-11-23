@@ -24,6 +24,11 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+/**
+ * Centralizes authentication flows including password verification, lockout handling, audit logging,
+ * and JWT issuance. The service intentionally hides whether an email exists in the system to prevent
+ * user enumeration and to provide consistent responses to clients.
+ */
 @Service
 public class AuthService {
 
@@ -51,17 +56,31 @@ public class AuthService {
     }
 
     /**
-     * Authenticate user and generate JWT token pair.
-     * Centralizes all login-related logic including:
-     * - credential validation
-     * - account lockout and email verification checks
-     * - audit logging
-     * - last login tracking and failed-attempt reset
+     * Authenticates a user via email/password credentials and issues a signed access/refresh token
+     * pair. The overload accepts client metadata for audit correlation.
+     *
+     * <p>The flow enforces lockout windows, email verification, and records audit events regardless
+     * of success or failure to keep telemetry consistent.</p>
+     *
+     * @param request login payload containing email and password
+     * @return authentication response including tokens and the hydrated {@link UserProfileResponse}
      */
     public AuthResponse login(LoginRequest request) {
         return login(request, UNKNOWN);
     }
 
+    /**
+     * Authenticates the user and issues access/refresh tokens. The overload accepts the client IP so
+     * audit logs and lockout telemetry can correlate attempts to a network origin.
+     *
+     * @param request login payload containing email/password
+     * @param clientIp best-effort IP address for the request (may be "unknown")
+     * @return authentication response with tokens and profile info
+     * @throws AccountLockedException    when the account is temporarily locked
+     * @throws EmailNotVerifiedException when the user has not verified their email address
+     * @throws BadCredentialsException   when credentials are invalid (message normalized)
+     * @throws AuthenticationException   for other Spring Security failures
+     */
     public AuthResponse login(LoginRequest request, String clientIp) {
         String ipAddress = (clientIp != null && !clientIp.isBlank()) ? clientIp : UNKNOWN;
         String email = request.getEmail() != null ? request.getEmail().toLowerCase() : null;
@@ -139,6 +158,20 @@ public class AuthService {
         }
     }
 
+    /**
+     * Resolves the authenticated {@link User} from the Spring Security context so downstream
+     * services can load additional domain data before performing authorization checks.
+     *
+     * @return persisted user entity representing the current principal
+     * @throws RuntimeException when the user cannot be located (e.g., deleted after login)
+     */
+    /**
+     * Resolves the {@link User} associated with the current Spring Security context. Callers use
+     * this to hydrate domain models prior to running authorization checks.
+     *
+     * @return user entity for the authenticated principal
+     * @throws RuntimeException when no matching user exists (e.g., deleted while logged in)
+     */
     public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
@@ -146,6 +179,13 @@ public class AuthService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
+    /**
+     * Updates failed login tracking metrics and delegates lockout logic to {@link UserService}. This
+     * helper intentionally swallows downstream exceptions to avoid leaking whether an email exists.
+     *
+     * @param email    normalized email address used to look up the {@link User}
+     * @param clientIp best-effort IP address associated with the login attempt
+     */
     private void handleFailedLogin(String email, String clientIp) {
         try {
             if (email == null) {

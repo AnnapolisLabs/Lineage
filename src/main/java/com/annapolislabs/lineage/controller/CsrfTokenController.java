@@ -14,8 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 /**
- * Controller for CSRF token management in JWT-based REST API
- * Provides endpoints for token generation and validation
+ * REST controller that surfaces CSRF token lifecycle endpoints for SPA clients secured by JWT.
  */
 @RestController
 @RequestMapping("/api/csrf")
@@ -31,8 +30,12 @@ public class CsrfTokenController {
     }
     
     /**
-     * Generate a new CSRF token
-     * This endpoint should be called before making state-changing requests (POST, PUT, DELETE)
+     * GET /api/csrf/token issues a CSRF token/tokenId pair, writes headers, and returns metadata for the caller.
+     * Returns 200 OK when the token is created; unexpected failures return 500.
+     *
+     * @param request current request used for logging
+     * @param response response used to append CSRF headers
+     * @return 200 OK containing token value, id, and header names
      */
     @GetMapping("/token")
     public ResponseEntity<Map<String, String>> generateToken(
@@ -65,8 +68,12 @@ public class CsrfTokenController {
     }
     
     /**
-     * Validate a CSRF token
-     * This endpoint can be used to validate tokens before making requests
+     * POST /api/csrf/validate checks whether the supplied token/tokenId pair matches the server record.
+     * Returns 200 OK with a boolean result; 400 when required fields are missing.
+     *
+     * @param tokenData map containing "token" and "tokenId"
+     * @param request used to record the request URI for diagnostics
+     * @return JSON body describing validation result
      */
     @PostMapping("/validate")
     public ResponseEntity<Map<String, Object>> validateToken(
@@ -93,7 +100,9 @@ public class CsrfTokenController {
     }
     
     /**
-     * Health check for CSRF service
+     * GET /api/csrf/health exposes a lightweight readiness probe for monitoring the CSRF service.
+     *
+     * @return 200 OK with status metadata
      */
     @GetMapping("/health")
     public ResponseEntity<Map<String, Object>> healthCheck() {

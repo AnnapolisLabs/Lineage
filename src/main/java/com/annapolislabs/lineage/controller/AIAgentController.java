@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * REST controller for AI Agent operations
+ * REST controller that exposes conversational AI chat endpoints for authenticated users.
  */
 @RestController
 @RequestMapping("/api/ai")
@@ -34,7 +34,11 @@ public class AIAgentController {
     }
     
     /**
-     * Send a message to the AI agent
+     * POST /api/ai/chat processes a user prompt, ensuring a conversation exists and returning the AI reply.
+     * Returns 200 OK with an {@link AIMessageResponse} body even when downstream errors occur.
+     *
+     * @param request validated payload containing the chat message, project context, and optional chatId
+     * @return 200 OK with the generated response and selected chat identifier
      */
     @PostMapping("/chat")
     public ResponseEntity<AIMessageResponse> sendMessage(@Valid @RequestBody AIMessageRequest request) {
@@ -73,7 +77,9 @@ public class AIAgentController {
     }
     
     /**
-     * Create a new conversation
+     * POST /api/ai/chat/new initializes a blank conversation owned by the current user and returns its ID.
+     *
+     * @return 200 OK containing the new chatId
      */
     @PostMapping("/chat/new")
     public ResponseEntity<String> createNewChat() {
@@ -83,7 +89,9 @@ public class AIAgentController {
     }
     
     /**
-     * Get conversation history for current user
+     * GET /api/ai/chat/history lists conversation metadata for the authenticated user to power history UIs.
+     *
+     * @return 200 OK with lightweight summaries of each chat owned by the caller
      */
     @GetMapping("/chat/history")
     public ResponseEntity<List<AIChatListResponse>> getChatHistory() {
@@ -105,7 +113,10 @@ public class AIAgentController {
     }
     
     /**
-     * Delete a conversation
+     * DELETE /api/ai/chat/{chatId} removes the specified conversation when owned by the caller.
+     *
+     * @param chatId identifier of the conversation to purge
+     * @return 204 No Content on success
      */
     @DeleteMapping("/chat/{chatId}")
     public ResponseEntity<Void> deleteChat(@PathVariable String chatId) {

@@ -57,7 +57,16 @@ public class MfaService {
     }
 
     /**
-     * Generate MFA setup information for a user
+     * Generates a TOTP enrollment package for the specified user including a shared secret, QR
+     * provisioning URL, and one-time backup codes. The method persists the generated secret and
+     * backup codes but leaves MFA disabled until {@link #enableMfa(UUID, String)} succeeds so the
+     * user can retry enrollment safely.
+     *
+     * @param userId identifier of the user initiating MFA enrollment
+     * @return {@link MfaSetupResponse} containing the plaintext secret (for authenticator apps),
+     *         QR code URL, and backup codes that should be shown exactly once to the user
+     * @throws com.annapolislabs.lineage.exception.auth.MfaVerificationException if persistence fails
+     *         or the user cannot be loaded
      */
     public MfaSetupResponse generateMfaSetup(UUID userId) {
         try {
@@ -99,7 +108,13 @@ public class MfaService {
     }
 
     /**
-     * Verify a TOTP code
+     * Validates a TOTP code against the persisted secret for the supplied user. If MFA is disabled
+     * the method short-circuits to false to avoid leaking whether a code is correct. Successful
+     * validations update the {@code lastSecurityCheck} timestamp for auditability.
+     *
+     * @param userId user whose MFA code is being validated
+     * @param code   6-digit TOTP value the user read from their authenticator app
+     * @return {@code true} when the code is valid and MFA enabled; {@code false} otherwise
      */
     public boolean verifyCode(UUID userId, String code) {
         try {
@@ -135,7 +150,13 @@ public class MfaService {
     }
 
     /**
-     * Enable MFA after successful verification
+     * Enables MFA for the supplied user after validating the provided verification code. The method
+     * updates audit timestamps so security reviewers can detect when MFA was last toggled.
+     *
+     * @param userId            identifier of the account enabling MFA
+     * @param verificationCode 6-digit TOTP code produced immediately after setup to confirm control
+     * @throws com.annapolislabs.lineage.exception.auth.MfaVerificationException when verification or
+     *         persistence fails
      */
     public void enableMfa(UUID userId, String verificationCode) {
         try {

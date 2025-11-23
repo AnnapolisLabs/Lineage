@@ -26,7 +26,10 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * Core user management service providing CRUD operations and user lifecycle management
+ * Core user management façade that coordinates repository access, security auditing,
+ * and email notifications for the entire user lifecycle. All public methods either
+ * participate in the class-level transactional scope or declare read-only access to
+ * ensure consistent persistence semantics and alignment with the service JavaDoc audit.
  */
 @Service
 @Transactional
@@ -53,7 +56,14 @@ public class UserService {
     private EmailService emailService;
     
     /**
-     * Register a new user with email verification
+     * Registers a new user account, ensuring password strength, uniqueness of email,
+     * and issuance of an email verification token. The method logs both operational
+     * telemetry and security audit events while sending the verification email best-effort.
+     *
+     * @param request payload containing the email, password, and optional profile metadata
+     * @return {@link UserProfileResponse} reflecting the newly created user state
+     * @throws UserAlreadyExistsException if another user already owns the supplied email
+     * @throws IllegalArgumentException if the password does not satisfy {@link #validatePassword(String)} rules
      */
     public UserProfileResponse registerUser(RegisterUserRequest request) {
         logger.info("Registering new user with email: {}", request.getEmail());
@@ -103,7 +113,14 @@ public class UserService {
     }
     
     /**
-     * Update user profile information
+     * Updates mutable portions of a user's profile while enforcing admin-only role
+     * changes and capturing audit events for compliance review.
+     *
+     * @param userId identifier of the profile being edited
+     * @param request container with optional field updates (null/blank values are ignored)
+     * @param updatedBy identifier of the operator performing the change, used for authorization/audit trails
+     * @return {@link UserProfileResponse} snapshot reflecting persisted changes
+     * @throws UserNotFoundException if the target user cannot be located
      */
     public UserProfileResponse updateUser(UUID userId, UpdateUserRequest request, UUID updatedBy) {
         logger.info("Updating user profile for user ID: {}", userId);
@@ -156,7 +173,15 @@ public class UserService {
     }
     
     /**
-     * Change user password
+     * Changes a user's password after verifying the current hash, re-validating the
+     * new credential against policy, and logging security events. Failed verifications
+     * increment the lockout counter and may trigger account locking.
+     *
+     * @param userId identifier of the account whose password is being rotated
+     * @param request wrapper containing the current and new password values
+     * @param clientIp best-known client IP for inclusion in audit metadata (may be null)
+     * @throws InvalidPasswordException if the current password is wrong or the new password matches the old hash
+     * @throws IllegalArgumentException if the new password violates {@link #validatePassword(String)}
      */
     public void changePassword(UUID userId, ChangePasswordRequest request, String clientIp) {
         logger.info("Changing password for user ID: {}", userId);
@@ -193,7 +218,12 @@ public class UserService {
     }
     
     /**
-     * Verify user email
+     * Confirms ownership of the user's email address using the verification token
+     * generated during registration. Successful verification activates the account
+     * and clears token metadata; failures raise {@link InvalidTokenException}.
+     *
+     * @param token opaque verification token supplied by the email link
+     * @throws InvalidTokenException if the token is missing, expired, or not associated with any user
      */
     public void verifyEmail(String token) {
         logger.info("Verifying email with token: {}", token);
@@ -220,7 +250,11 @@ public class UserService {
     }
     
     /**
-     * Get user by ID
+     * Fetches a persistent user entity by identifier within a read-only transaction.
+     *
+     * @param userId identifier of the user to load
+     * @return {@link User} entity managed by the persistence context
+     * @throws UserNotFoundException if no user matches the provided identifier
      */
     @Transactional(readOnly = true)
     public User getUserById(UUID userId) {
@@ -229,7 +263,12 @@ public class UserService {
     }
     
     /**
-     * Get user by email
+     * Loads a user entity by email address with read-only semantics. Email lookups
+     * are case-sensitive to match repository behavior; callers should normalize input.
+     *
+     * @param email email address to query
+     * @return {@link User} entity for downstream processing
+     * @throws UserNotFoundException if no user record matches the email
      */
     @Transactional(readOnly = true)
     public User getUserByEmail(String email) {
@@ -238,7 +277,12 @@ public class UserService {
     }
     
     /**
-     * Get user profile by ID
+     * Returns a {@link UserProfileResponse} projection for the requested user, reusing
+     * {@link #convertToUserProfileResponse(User)} to centralize mapping logic.
+     *
+     * @param userId identifier of the profile to load
+     * @return response DTO safe for UI consumption
+     * @throws UserNotFoundException if the user does not exist
      */
     @Transactional(readOnly = true)
     public UserProfileResponse getUserProfile(UUID userId) {
@@ -247,7 +291,16 @@ public class UserService {
     }
     
     /**
-     * Search users with pagination and filtering
+     * Searches users with pagination support and optional filtering by status, role,
+     * and verification flag. Currently the repository ignores {@code searchTerm} but
+     * the parameter is retained for future enhancements.
+     *
+     * @param searchTerm textual filter applied downstream (reserved)
+     * @param status optional user status filter
+     * @param role optional global role filter
+     * @param verified optional email verification flag filter
+     * @param pageable pagination information controlling page size and sort order
+     * @return page of {@link UserProfileResponse} objects matching the supplied filters
      */
     @Transactional(readOnly = true)
     public Page<UserProfileResponse> searchUsers(String searchTerm, UserStatus status, 
@@ -257,7 +310,10 @@ public class UserService {
     }
     
     /**
-     * Get all users with pagination
+     * Retrieves all users as a pageable result set using the repository default query.
+     *
+     * @param pageable pagination directives provided by callers
+     * @return pageable {@link UserProfileResponse} collection for UI listing
      */
     @Transactional(readOnly = true)
     public Page<UserProfileResponse> getAllUsers(Pageable pageable) {
@@ -265,7 +321,13 @@ public class UserService {
     }
     
     /**
-     * Deactivate user account
+     * Deactivates a user account by setting its status to {@link UserStatus#DEACTIVATED}
+     * and logging a data access event for future audits. Caller identity is stored
+     * in {@code updatedBy} for traceability.
+     *
+     * @param userId identifier of the account being disabled
+     * @param deactivatedBy operator performing the action
+     * @throws UserNotFoundException if the target user does not exist
      */
     public void deactivateUser(UUID userId, UUID deactivatedBy) {
         logger.info("Deactivating user ID: {}", userId);
@@ -284,7 +346,12 @@ public class UserService {
     }
     
     /**
-     * Reactivate user account
+     * Re-activates a previously deactivated or suspended user account, restoring
+     * {@link UserStatus#ACTIVE} and logging the operator performing the action.
+     *
+     * @param userId identifier of the account to reactivate
+     * @param reactivatedBy operator re-enabling the user
+     * @throws UserNotFoundException if the user cannot be found
      */
     public void reactivateUser(UUID userId, UUID reactivatedBy) {
         logger.info("Reactivating user ID: {}", userId);
@@ -303,7 +370,11 @@ public class UserService {
     }
     
     /**
-     * Suspend user account
+     * Suspends a user account, storing the reason for transparency and emitting an audit event.
+     *
+     * @param userId identifier of the account being suspended
+     * @param suspendedBy operator invoking the suspension
+     * @param reason explanation persisted in audit metadata to justify the action
      */
     public void suspendUser(UUID userId, UUID suspendedBy, String reason) {
         logger.info("Suspending user ID: {} with reason: {}", userId, reason);
@@ -322,7 +393,10 @@ public class UserService {
     }
     
     /**
-     * Get user statistics
+     * Computes aggregate user metrics (total, active, verified, newly created within 30 days)
+     * for use in administrative dashboards.
+     *
+     * @return immutable {@link UserStatistics} snapshot of current repository counts
      */
     @Transactional(readOnly = true)
     public UserStatistics getUserStatistics() {
@@ -337,7 +411,11 @@ public class UserService {
     }
     
     /**
-     * Increment failed login attempts and potentially lock account
+     * Increments the user's failed login counter, issuing an account lock once the
+     * configured threshold is reached and emitting a security audit record.
+     *
+     * @param user user entity whose counter should be incremented and possibly locked
+     * @param clientIp optional client IP associated with the failed attempt
      */
     public void incrementFailedLoginAttempts(User user, String clientIp) {
         user.incrementFailedLoginAttempts();
@@ -353,13 +431,22 @@ public class UserService {
     }
     
     /**
-     * Reset failed login attempts after successful login
+     * Resets the failed login counter after successful authentication so future attempts
+     * do not prematurely lock the account.
+     *
+     * @param user user entity whose counters should be cleared
      */
     public void resetFailedLoginAttempts(User user) {
         user.resetFailedLoginAttempts();
         userRepository.save(user);
     }
     
+    /**
+     * Validates password strength enforcing length and character diversity requirements.
+     *
+     * @param password clear-text password to inspect
+     * @throws IllegalArgumentException if the password violates any policy rule
+     */
     private void validatePassword(String password) {
         if (password == null || password.trim().isEmpty()) {
             throw new IllegalArgumentException("Password is required");
@@ -390,12 +477,39 @@ public class UserService {
             throw new IllegalArgumentException("Password must contain at least one special character (@$!%*?&)");
         }
     }
-    
+/**
+     * Generates a URL-safe random token leveraging {@link java.security.SecureRandom}
+     * for verification and reset flows.
+     *
+     * @return encoded token suitable for links/emails
+     */
+
+/**
+     * Generates a URL-safe random token leveraging {@link java.security.SecureRandom}
+     * for verification and reset flows.
+     *
+     * @return encoded token suitable for links/emails
+     */
     private String generateSecureToken() {
         return java.util.Base64.getUrlEncoder().withoutPadding()
             .encodeToString(java.security.SecureRandom.getSeed(32));
     }
+    /**
+     * Converts a {@link User} entity into a {@link UserProfileResponse} DTO to centralize
+     * mapping rules for API responses.
+     *
+     * @param user entity fetched from persistence
+     * @return populated client-facing DTO
+     */
+
     
+    /**
+     * Converts a {@link User} entity into a {@link UserProfileResponse} DTO to centralize
+     * mapping rules for API responses.
+     *
+     * @param user entity fetched from persistence
+     * @return populated client-facing DTO
+     */
     private UserProfileResponse convertToUserProfileResponse(User user) {
         UserProfileResponse response = new UserProfileResponse();
         response.setId(user.getId());

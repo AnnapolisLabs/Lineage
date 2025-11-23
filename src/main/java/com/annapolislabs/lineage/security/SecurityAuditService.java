@@ -19,8 +19,8 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Service for security auditing and logging of security events
- * Provides centralized logging for authentication, authorization, and security events
+ * Centralized security audit facility that persists authentication, authorization, and anomaly events while also
+ * emitting high-signal log lines for realtime monitoring.
  */
 @Service
 public class SecurityAuditService {
@@ -45,7 +45,14 @@ public class SecurityAuditService {
     private ObjectFactory<HttpServletRequest> httpRequestFactory;
 
     /**
-     * Log a general security event
+     * Persists an audit log entry capturing generic security activity while mirroring details to the security logger.
+     *
+     * @param userId subject performing the action, nullable for system events.
+     * @param action short verb summarizing the event.
+     * @param resource domain aggregate being touched.
+     * @param resourceId identifier of the resource when available.
+     * @param severity severity classification used for alerts.
+     * @param details additional structured metadata about the event.
      */
     public void logSecurityEvent(String userId, String action, String resource, String resourceId,
                                 AuditSeverity severity, Map<String, Object> details) {

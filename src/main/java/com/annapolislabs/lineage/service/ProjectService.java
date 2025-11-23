@@ -21,6 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Handles project lifecycle operations including creation, retrieval, updates, and deletion while
+ * enforcing membership-based authorization and audit-friendly history creation.
+ */
 @Service
 public class ProjectService {
 
@@ -40,6 +44,15 @@ public class ProjectService {
         this.requirementRepository = requirementRepository;
     }
 
+    /**
+     * Creates a new project with the current user set as the initial admin member. The method
+     * enforces uniqueness of the project key and persists both the project entity and the creator's
+     * membership within the same transaction.
+     *
+     * @param request payload containing project metadata and desired key
+     * @return DTO representation of the persisted project
+     * @throws DuplicateKeyException when the requested project key already exists
+     */
     @Transactional
     public ProjectResponse createProject(CreateProjectRequest request) {
         User currentUser = authService.getCurrentUser();
@@ -64,6 +77,12 @@ public class ProjectService {
         return new ProjectResponse(project);
     }
 
+    /**
+     * Retrieves every project the current user belongs to, mapping each entity into a lightweight
+     * {@link ProjectResponse}. Uses a read-only transaction because the method only performs queries.
+     *
+     * @return list of projects ordered according to repository defaults
+     */
     @Transactional(readOnly = true)
     public List<ProjectResponse> getAllProjects() {
         User currentUser = authService.getCurrentUser();
@@ -87,6 +106,16 @@ public class ProjectService {
         return new ProjectResponse(project);
     }
 
+    /**
+     * Updates mutable project fields (name, description, level prefixes) when the caller is a project
+     * admin. The project key remains immutable after creation to prevent identifier churn.
+     *
+     * @param projectId identifier of the project being updated
+     * @param request   payload with updated values
+     * @return latest project representation
+     * @throws ResourceNotFoundException when the project cannot be located
+     * @throws AccessDeniedException     when the caller is not an admin member of the project
+     */
     @Transactional
     public ProjectResponse updateProject(UUID projectId, CreateProjectRequest request) {
         Project project = projectRepository.findById(projectId)

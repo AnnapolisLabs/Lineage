@@ -7,6 +7,9 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Utility helper that parses multipart JSON payloads into {@link ImportProjectRequest}s for controllers.
+ */
 class ProjectImportHelper {
 
     private static final Logger logger = LoggerFactory.getLogger(ProjectImportHelper.class);
@@ -17,6 +20,12 @@ class ProjectImportHelper {
     private ProjectImportHelper() {
     }
 
+    /**
+     * Parses the supplied JSON import payload and logs diagnostics for debugging failed uploads.
+     *
+     * @param json raw JSON string uploaded by the client
+     * @return deserialized {@link ImportProjectRequest}
+     */
     static ImportProjectRequest parse(String json) {
         try {
             logger.info("Attempting to parse JSON payload of length: {}", json.length());

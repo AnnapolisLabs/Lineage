@@ -20,6 +20,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * REST controller exposing CRUD operations plus import helpers for project resources.
+ */
 @RestController
 @RequestMapping("/api/projects")
 public class ProjectController {
@@ -33,12 +36,22 @@ public class ProjectController {
         this.projectImportService = projectImportService;
     }
 
+    /**
+     * POST /api/projects creates a new project owned by the authenticated user.
+     * Returns 201 Created with the full {@link ProjectResponse} from {@link ProjectService}.
+     */
     @PostMapping
     public ResponseEntity<ProjectResponse> createProject(@Valid @RequestBody CreateProjectRequest request) {
         ProjectResponse response = projectService.createProject(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    /**
+     * POST /api/projects/import (JSON) ingests a structured import payload and persists the project + requirements.
+     *
+     * @param request JSON payload containing project metadata and requirement list
+     * @return 201 Created with the persisted project and requirements summary
+     */
     @PostMapping(value = "/import", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Object>> importProject(@Valid @RequestBody ImportProjectRequest request) {
         ProjectImportService.ImportResult result = projectImportService.importProject(request);
@@ -48,6 +61,13 @@ public class ProjectController {
         ));
     }
 
+    /**
+     * POST /api/projects/import (multipart) accepts an uploaded JSON file and reuses the JSON import pipeline.
+     *
+     * @param file uploaded JSON describing the project
+     * @return 201 Created mirroring the JSON import response
+     * @throws IOException when file reading fails
+     */
     @PostMapping(value = "/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Map<String, Object>> importProjectFile(@RequestPart("importFile") MultipartFile file) throws IOException {
         try {
@@ -81,24 +101,48 @@ public class ProjectController {
     }
 
     // Temporary test endpoint to debug JSON parsing
+    /**
+     * POST /api/projects/test-import is a diagnostic helper that echoes key values from the import payload.
+     *
+     * @param request import structure to inspect
+     * @return 200 OK with summary text used during troubleshooting
+     */
     @PostMapping(value = "/test-import", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> testImport(@RequestBody ImportProjectRequest request) {
         return ResponseEntity.ok("SUCCESS - Project: " + request.getProject().getName() + 
                                ", Requirements: " + (request.getRequirements() != null ? request.getRequirements().size() : 0));
     }
 
+    /**
+     * GET /api/projects lists all projects visible to the caller.
+     *
+     * @return 200 OK with an array of {@link ProjectResponse}
+     */
     @GetMapping
     public ResponseEntity<List<ProjectResponse>> getAllProjects() {
         List<ProjectResponse> projects = projectService.getAllProjects();
         return ResponseEntity.ok(projects);
     }
 
+    /**
+     * GET /api/projects/{id} fetches a single project resource by identifier.
+     *
+     * @param id project identifier
+     * @return 200 OK when found or propagates service-layer exceptions when not
+     */
     @GetMapping("/{id}")
     public ResponseEntity<ProjectResponse> getProjectById(@PathVariable UUID id) {
         ProjectResponse response = projectService.getProjectById(id);
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * PUT /api/projects/{id} updates core project attributes.
+     *
+     * @param id project identifier
+     * @param request payload with updated fields
+     * @return 200 OK containing the updated project representation
+     */
     @PutMapping("/{id}")
     public ResponseEntity<ProjectResponse> updateProject(
             @PathVariable UUID id,
@@ -107,6 +151,12 @@ public class ProjectController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * DELETE /api/projects/{id} removes the specified project and returns 204 No Content on success.
+     *
+     * @param id project identifier to delete
+     * @return 204 No Content
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProject(@PathVariable UUID id) {
         projectService.deleteProject(id);

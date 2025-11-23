@@ -12,7 +12,8 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 /**
- * JWT Authentication Entry Point that handles unauthorized access attempts
+ * Authentication entry point that converts unauthenticated JWT requests into structured 401 JSON responses
+ * while logging contextual details for downstream monitoring.
  */
 @Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
@@ -23,6 +24,16 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     private static final String INVALID_TOKEN_MESSAGE = "Invalid or expired authentication token";
     private static final String NO_TOKEN_MESSAGE = "No authentication token provided";
     
+    /**
+     * Emits a consistent 401 payload whenever Spring Security detects missing or invalid JWT credentials and logs the
+     * originating request metadata for audit trails.
+     *
+     * @param request current request that triggered authentication failure, used to derive IP, headers, and path.
+     * @param response HTTP response populated with a JSON error contract.
+     * @param authException root authentication error supplied by the security chain.
+     * @throws IOException when writing the JSON body fails.
+     * @throws ServletException when container-level failures bubble up during handling.
+     */
     @Override
     public void commence(HttpServletRequest request, 
                         HttpServletResponse response,

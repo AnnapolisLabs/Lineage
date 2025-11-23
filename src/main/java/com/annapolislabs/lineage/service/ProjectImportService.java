@@ -34,6 +34,11 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Imports a project definition plus its requirements and accompanying links/history from a structured
+ * request payload. The service performs validation, creates membership for the actor, and ensures the
+ * resulting graph is persisted atomically.
+ */
 @Service
 public class ProjectImportService {
 
@@ -58,6 +63,16 @@ public class ProjectImportService {
         this.requirementHistoryRepository = requirementHistoryRepository;
     }
 
+    /**
+     * Primary entry point for ingesting a project export. Validates payload uniqueness, persists the
+     * project + membership for the current user, and builds out the requirement graph while creating
+     * history entries for each imported node.
+     *
+     * @param request payload containing project metadata and ordered requirement definitions
+     * @return {@link ImportResult} summarizing persisted project metadata and the resulting
+     *         requirement responses
+     * @throws DuplicateKeyException when the project key or a requirement ID already exists
+     */
     @Transactional
     public ImportResult importProject(@Valid ImportProjectRequest request) {
         ImportProjectMetadata metadata = request.getProject();
@@ -108,6 +123,20 @@ public class ProjectImportService {
         return new ImportResult(projectResponse, requirementResponses);
     }
 
+    /**
+     * Recursively creates a requirement graph node for the provided import payload. The helper
+     * detects cycles, ensures duplicate IDs are rejected, resolves parent references (including
+     * cross-project lookups), and writes history entries for auditing.
+     *
+     * @param project             project receiving the imported requirement
+     * @param importedRequirement wrapper containing the {@code ImportRequirementRequest} and optional
+     *                            parent ID reference
+     * @param graph               map of requirement IDs to payloads used for DFS traversal
+     * @param created             cache of requirements already persisted this run
+     * @param visiting            set tracking the current DFS stack for cycle detection
+     * @param currentUser         user initiating the import; used for ownership and history data
+     * @return persisted {@link Requirement}
+     */
     private Requirement createRequirement(Project project,
                                           ImportedRequirement importedRequirement,
                                           Map<String, ImportedRequirement> graph,
@@ -184,6 +213,13 @@ public class ProjectImportService {
         return requirement;
     }
 
+    /**
+     * Creates a {@link RequirementHistory} entry capturing the initial state of the imported
+     * requirement so later edits have an audit baseline.
+     *
+     * @param requirement newly persisted requirement
+     * @param user        actor recorded as the creator within the history row
+     */
     private void createHistoryEntry(Requirement requirement, User user) {
         Map<String, Object> newValue = new HashMap<>();
         newValue.put("reqId", requirement.getReqId());
@@ -198,5 +234,13 @@ public class ProjectImportService {
         requirementHistoryRepository.save(history);
     }
 
+    /**
+     * Structured response returned by {@link #importProject(ImportProjectRequest)} containing the
+     * persisted project details plus the ordered list of imported requirements so clients can refresh
+     * their UI without additional reads.
+     *
+     * @param project      metadata describing the persisted project
+     * @param requirements list of requirements created during the import in the original order
+     */
     public record ImportResult(ProjectResponse project, List<RequirementResponse> requirements) {}
 }

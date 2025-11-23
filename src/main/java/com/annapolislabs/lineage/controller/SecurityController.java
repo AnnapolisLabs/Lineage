@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Security Controller handling MFA, session management, and security-related operations
+ * REST controller covering MFA lifecycle, session management, security events, and password hygiene endpoints.
  */
 @RestController
 @RequestMapping("/api/security")
@@ -63,7 +63,10 @@ public class SecurityController {
     private SecurityAuditService securityAuditService;
 
     /**
-     * Get MFA setup data
+     * GET /api/security/mfa/setup returns QR-code and secret data unless MFA is already enabled.
+     *
+     * @param request used only for logging request scope
+     * @return 200 OK with setup metadata or confirmation that MFA is already configured
      */
     @GetMapping("/mfa/setup")
     public ResponseEntity<?> getMfaSetup(HttpServletRequest request) {
@@ -104,7 +107,11 @@ public class SecurityController {
     }
 
     /**
-     * Enable MFA
+     * POST /api/security/mfa/enable verifies a TOTP code and persists MFA enablement state.
+     * Returns 200 OK on success or surfaces {@link MfaVerificationException} when verification fails.
+     *
+     * @param request payload containing the verification code
+     * @param httpRequest used for contextual logging
      */
     @PostMapping("/mfa/enable")
     public ResponseEntity<?> enableMfa(@Valid @RequestBody SetupMfaRequest request,
@@ -149,7 +156,11 @@ public class SecurityController {
     }
 
     /**
-     * Validate MFA code
+     * POST /api/security/mfa/validate verifies the provided code and logs the outcome for auditing.
+     *
+     * @param request validation payload with TOTP code
+     * @param httpRequest used to derive IP information for logs
+     * @return 200 OK with "valid" flag detailing the result
      */
     @PostMapping("/mfa/validate")
     public ResponseEntity<?> validateMfa(@Valid @RequestBody ValidateMfaRequest request,
@@ -187,7 +198,11 @@ public class SecurityController {
     }
 
     /**
-     * Disable MFA
+     * POST /api/security/mfa/disable requires a verification code before clearing MFA state for the user.
+     *
+     * @param request map containing verificationCode
+     * @param httpRequest used for logging metadata
+     * @return 200 OK once MFA is disabled or 400/409 style errors on failure
      */
     @PostMapping("/mfa/disable")
     public ResponseEntity<?> disableMfa(@RequestBody Map<String, String> request,
@@ -235,7 +250,7 @@ public class SecurityController {
     }
 
     /**
-     * Get user sessions
+     * GET /api/security/sessions returns a placeholder response until session inventory is implemented.
      */
     @GetMapping("/sessions")
     public ResponseEntity<?> getUserSessions(HttpServletRequest request) {
@@ -264,7 +279,11 @@ public class SecurityController {
     }
 
     /**
-     * Revoke session
+     * DELETE /api/security/sessions/{sessionId} revokes a session token as part of session management.
+     *
+     * @param sessionId identifier of the session to revoke
+     * @param request HTTP request for logging
+     * @return 200 OK with confirmation
      */
     @DeleteMapping("/sessions/{sessionId}")
     public ResponseEntity<?> revokeSession(@PathVariable String sessionId,
@@ -291,7 +310,11 @@ public class SecurityController {
     }
 
     /**
-     * Change password
+     * POST /api/security/change-password validates current credentials then delegates the change to {@link UserService}.
+     *
+     * @param request map containing currentPassword and newPassword
+     * @param httpRequest request used to capture client IP for auditing
+     * @return 200 OK when the change succeeds
      */
     @PostMapping("/change-password")
     public ResponseEntity<?> changePassword(@RequestBody Map<String, String> request,
@@ -331,7 +354,10 @@ public class SecurityController {
     }
 
     /**
-     * Get last password change date
+     * GET /api/security/password/last-changed reports the timestamp of the latest password update event.
+     *
+     * @param request used to derive the authenticated principal email
+     * @return 200 OK with timestamp or null when no change exists
      */
     @GetMapping("/password/last-changed")
     public ResponseEntity<?> getLastPasswordChange(HttpServletRequest request) {
@@ -366,7 +392,12 @@ public class SecurityController {
     }
 
     /**
-     * Get security events
+     * GET /api/security/events paginates recent audit entries for the authenticated user.
+     *
+     * @param page zero-based page index
+     * @param size page size
+     * @param request used for authentication context
+     * @return 200 OK with event slice metadata
      */
     @GetMapping("/events")
     public ResponseEntity<?> getSecurityEvents(@RequestParam(defaultValue = "0") int page,

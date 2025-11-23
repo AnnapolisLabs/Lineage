@@ -18,6 +18,10 @@ import org.springframework.stereotype.Component;
 import java.security.SecureRandom;
 import java.util.Set;
 
+/**
+ * Command-line bootstrapper that seeds an initial admin account when none exists, honoring configured credentials
+ * or generating secure defaults on first run.
+ */
 @Component
 public class DataLoader implements CommandLineRunner {
 
@@ -37,12 +41,25 @@ public class DataLoader implements CommandLineRunner {
     @Value("${lineage.admin.password:}")
     private String adminPassword;
 
+    /**
+     * Constructs the loader with repository, service, and validation collaborators used during bootstrap.
+     *
+     * @param userRepository persistence accessor used for existence checks and elevation saves.
+     * @param userService application service leveraged for standard registration flows.
+     * @param validator bean validation facade used to vet configured admin emails.
+     */
     public DataLoader(UserRepository userRepository, UserService userService, Validator validator) {
         this.userRepository = userRepository;
         this.userService = userService;
         this.validator = validator;
     }
 
+    /**
+     * Executes on application startup to create an admin account when none exist, preferring configured credentials
+     * and falling back to generated secure defaults.
+     *
+     * @param args command-line arguments passed to the Spring Boot runner (unused but required by interface).
+     */
     @Override
     public void run(String... args) {
         logger.info("DataLoader: Checking for existing admin user...");
@@ -96,6 +113,12 @@ public class DataLoader implements CommandLineRunner {
         }
     }
 
+    /**
+     * Determines which email should be used for the initial admin by validating configured values and falling back to
+     * defaults as required.
+     *
+     * @return sanitized admin email or {@code null} when no valid address can be established.
+     */
     private String resolveAdminEmail() {
         String rawConfigured = (adminEmail != null && !adminEmail.trim().isEmpty())
                 ? adminEmail.trim()
@@ -125,6 +148,13 @@ public class DataLoader implements CommandLineRunner {
         return null;
     }
 
+    /**
+     * Performs defensive trimming and tokenization on the configured admin email to remove commas/whitespace that may
+     * hide additional sensitive content.
+     *
+     * @param rawEmail raw configuration value.
+     * @return sanitized lowercase email or {@code null} when no token remains.
+     */
     private String sanitizeAdminEmail(String rawEmail) {
         if (rawEmail == null || rawEmail.isBlank()) {
             return null;
@@ -158,6 +188,12 @@ public class DataLoader implements CommandLineRunner {
         return email.toLowerCase();
     }
 
+    /**
+     * Validates the email using Jakarta Bean Validation constraints defined on {@link User#email}.
+     *
+     * @param email candidate address.
+     * @return {@code true} when validation passes.
+     */
     private boolean isValidAdminEmail(String email) {
         if (email == null || email.isBlank()) {
             return false;
@@ -175,6 +211,11 @@ public class DataLoader implements CommandLineRunner {
         return true;
     }
 
+    /**
+     * Generates a high-entropy password when no admin password is provided via configuration.
+     *
+     * @return randomly generated password string meeting complexity expectations.
+     */
     private String generateSecureAdminPassword() {
         String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         String lower = "abcdefghijklmnopqrstuvwxyz";
@@ -208,6 +249,12 @@ public class DataLoader implements CommandLineRunner {
         return password;
     }
 
+    /**
+     * Emits the generated credentials to logs so operators can capture them before enforcing a password change.
+     *
+     * @param email provisioned admin email.
+     * @param password random password emitted for first login.
+     */
     private void logGeneratedAdminCredentials(String email, String password) {
         logger.warn("====================================================");
         logger.warn("Initial admin user created");

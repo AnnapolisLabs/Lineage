@@ -22,7 +22,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * JWT Authentication Filter that processes JWT tokens from incoming requests
+ * Filter that extracts bearer tokens from requests, validates them via {@link JwtTokenProvider},
+ * and hydrates the {@link SecurityContextHolder} for downstream authorization checks.
  */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -41,6 +42,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private SecurityAuditService securityAuditService;
     
+    /**
+     * Attempts to resolve and verify a bearer token for each request, authenticating valid access tokens and logging
+     * failures before continuing the chain.
+     *
+     * @param request inbound HTTP request inspected for Authorization headers.
+     * @param response outbound HTTP response passed along regardless of auth result.
+     * @param filterChain remaining filter chain to invoke when processing completes.
+     * @throws ServletException when downstream filters raise servlet errors.
+     * @throws IOException when response writing fails during chaining.
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -126,7 +137,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
     
     /**
-     * Check if request should be skipped from JWT authentication
+     * Declares which URIs bypass JWT mediation so login flows, invitations, docs, and diagnostics stay anonymous.
+     *
+     * @param request current HTTP request used to derive the route.
+     * @return {@code true} when the endpoint should skip JWT validation.
      */
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
