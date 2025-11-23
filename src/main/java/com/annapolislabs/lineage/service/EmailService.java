@@ -47,4 +47,43 @@ public interface EmailService {
      * @param qrCodeUrl link to the QR image/provisioning URI compatible with authenticator apps
      */
     void sendMfaSetupEmail(String email, String qrCodeUrl);
+
+    // Team invitation methods
+    /**
+     * Sends a team invitation email
+     */
+    void sendTeamInvitation(String userEmail, String teamName, String roleDisplayName, 
+                           String message, String teamId, String invitationId);
+
+    // Task assignment methods
+    /**
+     * Sends task assignment notification email
+     */
+    void sendTaskAssignmentNotification(String assigneeEmail, String taskTitle, 
+                                      String taskDescription, String projectId);
+
+    // Peer review methods
+    /**
+     * Sends peer review invitation email
+     */
+    void sendPeerReviewInvitation(String reviewerEmail, String requirementTitle, 
+                                 String authorName, String reviewType, String deadline);
+    
+    /**
+     * Sends peer review approval notification email
+     */
+    void sendPeerReviewApprovalNotification(String authorEmail, String requirementTitle, 
+                                          String reviewerName, String comments);
+    
+    /**
+     * Sends peer review rejection notification email
+     */
+    void sendPeerReviewRejectionNotification(String authorEmail, String requirementTitle, 
+                                           String reviewerName, String comments);
+    
+    /**
+     * Sends peer review revision request notification email
+     */
+    void sendPeerReviewRevisionRequestNotification(String authorEmail, String requirementTitle, 
+                                                 String reviewerName, String feedback);
 }

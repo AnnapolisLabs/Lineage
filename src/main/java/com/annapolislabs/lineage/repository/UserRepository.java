@@ -48,7 +48,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
            "LOWER(u.firstName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
            "LOWER(u.lastName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
            "LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-           "LOWER(u.name) LIKE LOWER(CONCAT('%', :search, '%'))")
+           "LOWER(COALESCE(u.name, CONCAT(u.firstName, ' ', u.lastName))) LIKE LOWER(CONCAT('%', :search, '%'))")
     Page<User> findBySearchTerm(@Param("search") String search, Pageable pageable);
     
     // Statistics queries

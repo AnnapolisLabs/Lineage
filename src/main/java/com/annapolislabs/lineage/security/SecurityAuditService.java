@@ -321,4 +321,99 @@ public class SecurityAuditService {
         // Could integrate with automated response systems here
         // Example: ResponseService.handleSuspiciousActivity(userId);
     }
+
+    public void logEvent(String eventType, UUID requestingUserId, String task, UUID taskId, Map<String, Object> details) {
+        try {
+            Map<String, Object> eventDetails = new HashMap<>(details != null ? details : new HashMap<>());
+            eventDetails.put(EVENT_TYPE, eventType);
+            eventDetails.put(TIMESTAMP, LocalDateTime.now());
+            eventDetails.put(IP_ADDRESS, getClientIpAddress());
+            eventDetails.put(USER_AGENT, getUserAgent());
+            eventDetails.put(REQUEST, task);
+            
+            if (taskId != null) {
+                eventDetails.put("task_id", taskId.toString());
+            }
+            
+            AuditSeverity severity = determineEventSeverity(eventType);
+            logSecurityEvent(
+                requestingUserId != null ? requestingUserId.toString() : null,
+                task,
+                eventType,
+                taskId != null ? taskId.toString() : null,
+                severity,
+                eventDetails
+            );
+            
+            // Log to security logger for important events
+            if (severity != AuditSeverity.INFO) {
+                securityLogger.warn("Security Event: {} | User: {} | Event: {} | Task: {} | Details: {}", 
+                        LocalDateTime.now(), requestingUserId, eventType, task, details);
+            }
+            
+        } catch (Exception e) {
+            logger.error("Failed to log event: {} for user: {}", eventType, requestingUserId, e);
+        }
+    }
+
+    /**
+     * Get audit count for time range
+     */
+    public long getAuditCount(LocalDateTime since) {
+        try {
+            return auditLogRepository.countByCreatedAtAfter(since);
+        } catch (Exception e) {
+            logger.error("Failed to get audit count since: {}", since, e);
+            return 0;
+        }
+    }
+
+    /**
+     * Log collaboration events (team, task, review operations)
+     */
+    public void logCollaborationEvent(String userId, String action, String resource, String resourceId, Map<String, Object> details) {
+        Map<String, Object> collabDetails = new HashMap<>(details != null ? details : new HashMap<>());
+        collabDetails.put(EVENT_TYPE, "COLLABORATION");
+        collabDetails.put(IP_ADDRESS, getClientIpAddress());
+        collabDetails.put(USER_AGENT, getUserAgent());
+        collabDetails.put(TIMESTAMP, LocalDateTime.now());
+        
+        logSecurityEvent(userId, action, resource, resourceId, AuditSeverity.INFO, collabDetails);
+    }
+
+    /**
+     * Log permission changes
+     */
+    public void logPermissionChange(String userId, String action, String permissionKey, String changeType, Map<String, Object> details) {
+        Map<String, Object> permissionDetails = new HashMap<>(details != null ? details : new HashMap<>());
+        permissionDetails.put(EVENT_TYPE, "PERMISSION_CHANGE");
+        permissionDetails.put("permission_key", permissionKey);
+        permissionDetails.put("change_type", changeType);
+        permissionDetails.put(IP_ADDRESS, getClientIpAddress());
+        permissionDetails.put(USER_AGENT, getUserAgent());
+        permissionDetails.put(TIMESTAMP, LocalDateTime.now());
+        
+        AuditSeverity severity = determinePermissionChangeSeverity(changeType);
+        logSecurityEvent(userId, action, "PERMISSION", permissionKey, severity, permissionDetails);
+    }
+
+    private AuditSeverity determineEventSeverity(String eventType) {
+        return switch (eventType.toUpperCase()) {
+            case "ROLE_CREATED", "ROLE_UPDATED", "PERMISSIONS_GRANTED" -> AuditSeverity.INFO;
+            case "ROLE_DELETED", "PERMISSIONS_REVOKED" -> AuditSeverity.WARNING;
+            case "SUSPICIOUS_ACTIVITY", "UNAUTHORIZED_ACCESS" -> AuditSeverity.ERROR;
+            case "SECURITY_BREACH", "PRIVILEGE_ESCALATION" -> AuditSeverity.CRITICAL;
+            default -> AuditSeverity.INFO;
+        };
+    }
+
+    private AuditSeverity determinePermissionChangeSeverity(String changeType) {
+        return switch (changeType.toUpperCase()) {
+            case "GRANT" -> AuditSeverity.INFO;
+            case "REVOKE", "SUSPEND" -> AuditSeverity.WARNING;
+            case "MODIFY", "EXTEND" -> AuditSeverity.MEDIUM;
+            case "BULK_CHANGE" -> AuditSeverity.HIGH;
+            default -> AuditSeverity.INFO;
+        };
+    }
 }
