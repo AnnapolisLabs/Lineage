@@ -40,6 +40,16 @@ out/
 .env
 **/.env
 **/token_response.txt
+
+### Development/Debug Files ###
+gradle.properties
+*.sh
+*_response.json
+login_response.json
+
+### Test/Coverage ###
+/frontend/coverage/
+
 ### Node ###
 node_modules/
 dist/

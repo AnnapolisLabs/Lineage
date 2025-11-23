@@ -88,6 +88,38 @@ export const useProjectStore = defineStore('projects', () => {
     }
   }
 
+  async function importProject(file: File) {
+    loading.value = true
+    error.value = null
+    try {
+      const project = await projectService.importProject(file)
+      projects.value.push(project)
+      return project
+    } catch (err: any) {
+      // Provide more specific error messages for common validation issues
+      const errorMessage = err.response?.data?.message || err.message || 'Failed to import project'
+      
+      if (errorMessage.includes('Project metadata is required') || 
+          errorMessage.includes('project') && 
+          (errorMessage.includes('null') || errorMessage.includes('rejected'))) {
+        error.value = 'Invalid file format. Please ensure your JSON file contains both "project" and "requirements" sections. Use the template for guidance.'
+      } else if (errorMessage.includes('Project name is required')) {
+        error.value = 'Project name is required in the JSON file.'
+      } else if (errorMessage.includes('Project key is required')) {
+        error.value = 'Project key is required in the JSON file.'
+      } else if (errorMessage.includes('already exists')) {
+        error.value = 'A project with this key or requirement ID already exists.'
+      } else if (errorMessage.includes('Invalid import payload') || errorMessage.includes('JSON')) {
+        error.value = 'Invalid JSON format. Please check your file structure and syntax.'
+      } else {
+        error.value = errorMessage
+      }
+      return null
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     projects,
     currentProject,
@@ -97,6 +129,7 @@ export const useProjectStore = defineStore('projects', () => {
     fetchProject,
     createProject,
     updateProject,
-    deleteProject
+    deleteProject,
+    importProject
   }
 })

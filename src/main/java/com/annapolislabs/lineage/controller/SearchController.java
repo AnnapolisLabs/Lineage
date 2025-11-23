@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * REST controller providing authenticated requirement search within a project.
+ */
 @RestController
 @RequestMapping("/api/projects/{projectId}/search")
 public class SearchController {
@@ -31,6 +34,16 @@ public class SearchController {
         this.authService = authService;
     }
 
+    /**
+     * GET /api/projects/{projectId}/search filters or full-text searches requirements within a project.
+     * Enforces membership before querying and returns 200 OK with matching requirement summaries.
+     *
+     * @param projectId project scope constrained by path variable
+     * @param q optional full-text query
+     * @param status optional status filter
+     * @param priority optional priority filter
+     * @return filtered requirements as DTOs
+     */
     @GetMapping
     public ResponseEntity<List<RequirementResponse>> search(
             @PathVariable UUID projectId,

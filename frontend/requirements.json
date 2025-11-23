@@ -1,0 +1,278 @@
+{
+  "requirements" : [ {
+    "createdAt" : "2025-11-15T00:19:46.078650",
+    "customFields" : { },
+    "description" : "As a user I would like to be able to save filter configurations",
+    "title" : "Saved Filters",
+    "priority" : "MEDIUM",
+    "parentId" : "REQ-L1-002",
+    "reqId" : "REQ-L2-003",
+    "status" : "DRAFT"
+  }, {
+    "createdAt" : "2025-11-15T00:23:41.525965",
+    "customFields" : { },
+    "description" : "",
+    "title" : "Bulk CRUD",
+    "priority" : "MEDIUM",
+    "parentId" : "REQ-L1-002",
+    "reqId" : "REQ-L2-004",
+    "status" : "DRAFT"
+  }, {
+    "createdAt" : "2025-11-15T00:24:54.256861",
+    "customFields" : { },
+    "description" : "",
+    "title" : "Approval Process for edits.",
+    "priority" : "MEDIUM",
+    "parentId" : "REQ-L1-002",
+    "reqId" : "REQ-L2-005",
+    "status" : "DRAFT"
+  }, {
+    "createdAt" : "2025-11-15T00:26:43.957223",
+    "customFields" : { },
+    "description" : "I should be able to lock one requirement for edit from other users",
+    "title" : "Requirement Edit locking",
+    "priority" : "MEDIUM",
+    "parentId" : "REQ-L1-002",
+    "reqId" : "REQ-L2-006",
+    "status" : "DRAFT"
+  }, {
+    "createdAt" : "2025-11-15T22:11:11.526701",
+    "customFields" : { },
+    "description" : "I should be able to view the link popup window from any link button.",
+    "title" : "Links from Object preview inaccessible ",
+    "priority" : "MEDIUM",
+    "parentId" : "REQ-L1-001",
+    "reqId" : "SYS-001",
+    "status" : "APPROVED"
+  }, {
+    "createdAt" : "2025-11-15T22:12:50.795840",
+    "customFields" : { },
+    "description" : "",
+    "title" : "Version History",
+    "priority" : "MEDIUM",
+    "parentId" : "REQ-L1-002",
+    "reqId" : "SYS-002",
+    "status" : "DRAFT"
+  }, {
+    "createdAt" : "2025-11-15T22:13:28.057622",
+    "customFields" : { },
+    "description" : "",
+    "title" : "View any change to object",
+    "priority" : "MEDIUM",
+    "parentId" : "SYS-002",
+    "reqId" : "SRS-002",
+    "status" : "DRAFT"
+  }, {
+    "createdAt" : "2025-11-15T22:15:53.969332",
+    "customFields" : { },
+    "description" : "",
+    "title" : "Track Metadata",
+    "priority" : "MEDIUM",
+    "parentId" : "SYS-002",
+    "reqId" : "SRS-003",
+    "status" : "DRAFT"
+  }, {
+    "createdAt" : "2025-11-15T22:13:20.249072",
+    "customFields" : { },
+    "description" : "This means creating a history entry of specific meta data changes.",
+    "title" : "Track any change to object",
+    "priority" : "MEDIUM",
+    "parentId" : "SYS-002",
+    "reqId" : "SRS-001",
+    "status" : "DRAFT"
+  }, {
+    "createdAt" : "2025-11-15T00:49:34.686295",
+    "customFields" : { },
+    "description" : "Users should not be able to create requirements until initial project configuration is complete.",
+    "title" : "Project Initialization ",
+    "priority" : "LOW",
+    "parentId" : "REQ-L1-001",
+    "reqId" : "REQ-L2-009",
+    "status" : "DRAFT"
+  }, {
+    "createdAt" : "2025-11-15T00:17:48.475109",
+    "customFields" : { },
+    "description" : "",
+    "title" : "Project key displays caps, but isn't.",
+    "priority" : "LOW",
+    "parentId" : "REQ-L1-001",
+    "reqId" : "REQ-L2-001",
+    "status" : "DRAFT"
+  }, {
+    "createdAt" : "2025-11-15T22:17:52.624977",
+    "customFields" : { },
+    "description" : "",
+    "title" : "Object sorting",
+    "priority" : "MEDIUM",
+    "parentId" : "REQ-L1-002",
+    "reqId" : "SYS-003",
+    "status" : "DRAFT"
+  }, {
+    "createdAt" : "2025-11-15T00:19:19.078167",
+    "customFields" : { },
+    "description" : "Features to be implemented.",
+    "title" : "Core Features",
+    "priority" : "HIGH",
+    "parentId" : null,
+    "reqId" : "REQ-L1-002",
+    "status" : "APPROVED"
+  }, {
+    "createdAt" : "2025-11-15T22:19:55.307633",
+    "customFields" : { },
+    "description" : "",
+    "title" : "Production Deployment",
+    "priority" : "MEDIUM",
+    "parentId" : null,
+    "reqId" : "REQ-002",
+    "status" : "DRAFT"
+  }, {
+    "createdAt" : "2025-11-15T22:20:54.115447",
+    "customFields" : { },
+    "description" : "We should be able to import requirements for easy backup and restructuring.",
+    "title" : "Import Requirements ",
+    "priority" : "MEDIUM",
+    "parentId" : "REQ-L1-002",
+    "reqId" : "SYS-005",
+    "status" : "DRAFT"
+  }, {
+    "createdAt" : "2025-11-15T00:14:33.365476",
+    "customFields" : { },
+    "description" : "These are the live bugs",
+    "title" : "BUGS",
+    "priority" : "LOW",
+    "parentId" : null,
+    "reqId" : "REQ-L1-001",
+    "status" : "APPROVED"
+  }, {
+    "createdAt" : "2025-11-15T22:19:30.109391",
+    "customFields" : { },
+    "description" : "",
+    "title" : "AI Integration",
+    "priority" : "LOW",
+    "parentId" : null,
+    "reqId" : "REQ-001",
+    "status" : "DRAFT"
+  }, {
+    "createdAt" : "2025-11-15T22:28:11.453758",
+    "customFields" : { },
+    "description" : "",
+    "title" : "Custom Object Attributes",
+    "priority" : "MEDIUM",
+    "parentId" : "REQ-L1-002",
+    "reqId" : "SYS-006",
+    "status" : "DRAFT"
+  }, {
+    "createdAt" : "2025-11-15T22:30:29.771061",
+    "customFields" : { },
+    "description" : "",
+    "title" : "Setup Prod CI/CD",
+    "priority" : "MEDIUM",
+    "parentId" : "REQ-002",
+    "reqId" : "SYS-007",
+    "status" : "DRAFT"
+  }, {
+    "createdAt" : "2025-11-15T22:30:45.903591",
+    "customFields" : { },
+    "description" : "",
+    "title" : "Setup Prod VM",
+    "priority" : "MEDIUM",
+    "parentId" : "REQ-002",
+    "reqId" : "SYS-008",
+    "status" : "DRAFT"
+  }, {
+    "createdAt" : "2025-11-15T22:32:17.491283",
+    "customFields" : { },
+    "description" : "Anywhere a drop down or selection exists we should be able to fuzzy search the metadata of the object to help narrow down links or other object related searches",
+    "title" : "Fuzzy Combo Filtering",
+    "priority" : "MEDIUM",
+    "parentId" : "REQ-L1-002",
+    "reqId" : "SYS-009",
+    "status" : "DRAFT"
+  }, {
+    "createdAt" : "2025-11-15T00:27:02.087879",
+    "customFields" : { },
+    "description" : "Users should be able to create accounts and have individual sessions",
+    "title" : "User Session Management",
+    "priority" : "MEDIUM",
+    "parentId" : "REQ-L1-002",
+    "reqId" : "REQ-L2-008",
+    "status" : "DRAFT"
+  }, {
+    "createdAt" : "2025-11-15T00:19:31.898205",
+    "customFields" : { },
+    "description" : "The ability to create traceable links between requirements, design elements, test cases, and other artifacts.\n\nLinks can be directional (e.g., \"satisfies,\" \"derives from\") and support impact analysis for changes, flagging \"suspect\" links when modifications occur.\n\nEnables end-to-end traceability views, matrices, and reports to verify coverage and identify gaps.",
+    "title" : "Traceability matrix",
+    "priority" : "MEDIUM",
+    "parentId" : "REQ-L1-002",
+    "reqId" : "REQ-L2-002",
+    "status" : "DRAFT"
+  }, {
+    "createdAt" : "2025-11-15T23:41:01.299882",
+    "customFields" : { },
+    "description" : "These description text boxes aren't properly keeping or allowing formatting, either in the text box itself or in the rendered display. These should be upgraded to actual Web based \"Text editors\"",
+    "title" : "Description Text isn't keeping formatting",
+    "priority" : "MEDIUM",
+    "parentId" : "REQ-L1-001",
+    "reqId" : "SYS-010",
+    "status" : "DRAFT"
+  }, {
+    "createdAt" : "2025-11-15T23:41:52.749504",
+    "customFields" : { },
+    "description" : "Tracks changes to requirements over time with baselining, which creates snapshots of modules at key milestones.\n\nSupports versioning, history tracking, and comparison of baselines to manage evolving projects.\n\nIntegrates with configuration management for controlled access and audits.",
+    "title" : "Change Management and Version Control",
+    "priority" : "MEDIUM",
+    "parentId" : "REQ-L1-002",
+    "reqId" : "SYS-011",
+    "status" : "DRAFT"
+  }, {
+    "createdAt" : "2025-11-15T22:18:42.029031",
+    "customFields" : { },
+    "description" : "Multi-user environment with role-based access control (RBAC) to ensure secure sharing among teams.\n\nIn DOORS Next Generation, it offers web-based collaboration on the Jazz platform, allowing real-time editing, comments, and reviews.\nClassic DOORS supports database sharing for distributed teams.",
+    "title" : "Collaberation",
+    "priority" : "MEDIUM",
+    "parentId" : "REQ-L1-002",
+    "reqId" : "SYS-004",
+    "status" : "DRAFT"
+  }, {
+    "createdAt" : "2025-11-15T23:42:44.872370",
+    "customFields" : { },
+    "description" : "Built-in tools for querying, filtering, and analyzing requirements using views, wizards, and custom scripts (via DOORS eXtension Language or DXL).\nGenerates reports, traceability matrices, and metrics (e.g., coverage percentages, change impact).\nSupports compliance reporting for standards like ISO 26262 or DO-178C in regulated industries.",
+    "title" : "Analysis and Reporting",
+    "priority" : "MEDIUM",
+    "parentId" : "REQ-L1-002",
+    "reqId" : "SYS-012",
+    "status" : "DRAFT"
+  }, {
+    "createdAt" : "2025-11-15T23:43:12.520257",
+    "customFields" : { },
+    "description" : "Integrates with other IBM tools (e.g., Rational Quality Manager for testing, Rational Team Concert for agile planning) and third-party applications via OSLC (Open Services for Lifecycle Collaboration).\nCustomizable through DXL scripting for automation, such as custom views or data exports.",
+    "title" : "Integration and Extensibility",
+    "priority" : "MEDIUM",
+    "parentId" : "REQ-L1-002",
+    "reqId" : "SYS-013",
+    "status" : "DRAFT"
+  }, {
+    "createdAt" : "2025-11-15T23:44:07.488906",
+    "customFields" : { },
+    "description" : "The Tree should be able to dynamically be sized for ease of navigation",
+    "title" : "Requirements tree unable to be resized",
+    "priority" : "MEDIUM",
+    "parentId" : "REQ-L1-001",
+    "reqId" : "SYS-014",
+    "status" : "DRAFT"
+  }, {
+    "createdAt" : "2025-11-15T00:26:55.611383",
+    "customFields" : { },
+    "description" : "",
+    "title" : "LDAP / IDM Integration",
+    "priority" : "MEDIUM",
+    "parentId" : "REQ-L1-002",
+    "reqId" : "REQ-L2-007",
+    "status" : "DRAFT"
+  } ],
+  "project" : {
+    "name" : "Lineage",
+    "key" : "LIN",
+    "description" : "The live requirements for this very web project"
+  }
+}

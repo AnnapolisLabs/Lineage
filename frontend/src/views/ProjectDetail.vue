@@ -162,27 +162,24 @@
                 v-if="showExportMenu"
                 class="absolute right-0 mt-2 w-48 bg-annapolis-charcoal rounded-lg shadow-lg z-10 border border-annapolis-teal/30"
               >
-                <a
-                  :href="`/api/projects/${projectId}/export/csv`"
-                  class="block px-4 py-2 text-sm text-annapolis-gray-300 hover:bg-annapolis-teal/20 hover:text-annapolis-teal first:rounded-t-lg transition-colors"
-                  download
+                <button
+                  @click="handleExport('csv')"
+                  class="block w-full text-left px-4 py-2 text-sm text-annapolis-gray-300 hover:bg-annapolis-teal/20 hover:text-annapolis-teal first:rounded-t-lg transition-colors"
                 >
                   Export as CSV
-                </a>
-                <a
-                  :href="`/api/projects/${projectId}/export/json`"
-                  class="block px-4 py-2 text-sm text-annapolis-gray-300 hover:bg-annapolis-teal/20 hover:text-annapolis-teal transition-colors"
-                  download
+                </button>
+                <button
+                  @click="handleExport('json')"
+                  class="block w-full text-left px-4 py-2 text-sm text-annapolis-gray-300 hover:bg-annapolis-teal/20 hover:text-annapolis-teal transition-colors"
                 >
                   Export as JSON
-                </a>
-                <a
-                  :href="`/api/projects/${projectId}/export/markdown`"
-                  class="block px-4 py-2 text-sm text-annapolis-gray-300 hover:bg-annapolis-teal/20 hover:text-annapolis-teal last:rounded-b-lg transition-colors"
-                  download
+                </button>
+                <button
+                  @click="handleExport('markdown')"
+                  class="block w-full text-left px-4 py-2 text-sm text-annapolis-gray-300 hover:bg-annapolis-teal/20 hover:text-annapolis-teal last:rounded-b-lg transition-colors"
                 >
                   Export as Markdown
-                </a>
+                </button>
               </div>
             </button>
             <button
@@ -449,6 +446,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { projectService, type Project } from '@/services/projectService'
 import { requirementService, type Requirement } from '@/services/requirementService'
+import { exportData } from '@/services/api'
 import RequirementTreeView from '@/components/RequirementTreeView.vue'
 import { compareReqIds } from '@/utils/requirementSorting'
 
@@ -651,5 +649,15 @@ function navigateToRequirement(reqId: string) {
 function handleLogout() {
   authStore.logout()
   router.push('/login')
+}
+
+async function handleExport(format: 'csv' | 'json' | 'markdown') {
+  try {
+    await exportData(projectId.value, format)
+    showExportMenu.value = false
+  } catch (error) {
+    console.error(`Failed to export ${format}:`, error)
+    alert(`Failed to export ${format} file. Please try again.`)
+  }
 }
 </script>

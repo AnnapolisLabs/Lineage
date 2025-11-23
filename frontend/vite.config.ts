@@ -15,7 +15,11 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: 'http://localhost:8080',
-        changeOrigin: true
+        changeOrigin: true,
+        secure: false,
+        headers: {
+          'Accept': 'application/octet-stream,text/csv,application/json,text/plain,*/*'
+        }
       }
     }
   }

@@ -29,7 +29,7 @@
                   type="email"
                   required
                   class="w-full px-4 py-3 bg-annapolis-navy/50 border border-annapolis-teal/30 rounded-lg text-white placeholder-annapolis-gray-400 focus:outline-none focus:ring-2 focus:ring-annapolis-teal focus:border-transparent transition-all"
-                  placeholder="admin@lineage.local"
+                  placeholder="Enter your email"
                 />
               </div>
 
@@ -58,10 +58,7 @@
               </button>
             </div>
 
-            <div class="text-center pt-6 mt-4 border-t border-annapolis-teal/20">
-              <p class="text-sm text-annapolis-gray-400 mb-3">Default credentials:</p>
-              <p class="font-mono text-sm text-annapolis-teal">admin@lineage.local / admin123</p>
-            </div>
+            <!-- Removed default credentials display for security -->
           </form>
         </div>
 
@@ -81,8 +78,8 @@ import { useAuthStore } from '@/stores/auth'
 const router = useRouter()
 const authStore = useAuthStore()
 
-const email = ref('admin@lineage.local')
-const password = ref('admin123')
+const email = ref('')
+const password = ref('')
 
 async function handleLogin() {
   const success = await authStore.login({ email: email.value, password: password.value })

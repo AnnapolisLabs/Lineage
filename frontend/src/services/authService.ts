@@ -8,15 +8,47 @@ export interface LoginRequest {
 export interface AuthResponse {
   token: string
   email: string
-  name: string
-  role: string
+  refreshToken: string
+  user: {
+    id: string
+    email: string
+    name: string
+    firstName?: string | null
+    lastName?: string | null
+    globalRole: string
+    status: string
+    emailVerified: boolean
+    createdAt: string
+    updatedAt: string
+    lastLoginAt?: string
+    phoneNumber?: string | null
+    avatarUrl?: string | null
+    bio?: string | null
+    preferences: Record<string, any>
+  }
+  message: string
+  success: boolean
+  userId: string
+  expiresAt: string | null
+  mfaRequired: boolean
 }
 
 export interface User {
   id: string
   email: string
   name: string
-  role: string
+  firstName?: string | null
+  lastName?: string | null
+  globalRole: string
+  status: string
+  phoneNumber?: string | null
+  avatarUrl?: string | null
+  bio?: string | null
+  preferences: Record<string, any>
+  emailVerified: boolean
+  createdAt: string
+  updatedAt: string
+  lastLoginAt?: string
 }
 
 export const authService = {

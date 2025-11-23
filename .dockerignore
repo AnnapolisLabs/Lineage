@@ -1,0 +1,57 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# CI/CD
+.gitlab-ci.yml
+.gitlab-ci.yml.bak
+
+# Documentation
+*.md
+LICENSE
+
+# IDE
+.idea
+.vscode
+*.iml
+
+# Build artifacts (will be built inside Docker)
+build/
+target/
+.gradle/
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/coverage/
+
+# Test and coverage
+frontend/coverage/
+frontend/test-report.xml
+build/reports/
+build/test-results/
+
+# Development
+.env
+.env.local
+.env.*.local
+docker-compose.dev.yml
+docker-compose.yml
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python virtual env
+.venv/
+__pycache__/
+*.pyc
+
+# MCP tools (not needed in container)
+mcp_tools/
+
+# Gradle wrapper jar is needed
+!gradle/wrapper/gradle-wrapper.jar

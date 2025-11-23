@@ -19,6 +19,34 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
+      path: '/profile',
+      name: 'profile',
+      component: () => import('@/views/profile/ProfileView.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/security',
+      name: 'security',
+      component: () => import('@/views/profile/SecurityView.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/admin',
+      component: () => import('@/layouts/AdminLayout.vue'),
+      meta: { requiresAuth: true, requiresRole: ['ADMIN'] },
+      children: [
+        {
+          path: '',
+          redirect: '/admin/users'
+        },
+        {
+          path: 'users',
+          name: 'admin-users',
+          component: () => import('@/views/admin/UserManagementView.vue')
+        }
+      ]
+    },
+    {
       path: '/projects/:id',
       name: 'project-detail',
       component: () => import('@/views/ProjectDetail.vue'),
@@ -46,10 +74,14 @@ const router = createRouter({
 router.beforeEach((to, _from, next) => {
   const authStore = useAuthStore()
   const requiresAuth = to.meta.requiresAuth !== false
+  const requiresRole = to.meta.requiresRole as string[]
 
   if (requiresAuth && !authStore.isAuthenticated) {
     next({ name: 'login' })
   } else if (to.name === 'login' && authStore.isAuthenticated) {
+    next({ name: 'projects' })
+  } else if (requiresRole && authStore.user && !requiresRole.includes(authStore.user.globalRole)) {
+    // User doesn't have required role, redirect to projects
     next({ name: 'projects' })
   } else {
     next()

@@ -1,3 +1,0 @@
-1. The system must authenticate users
-2. The system should support dark mode
-3. High priority: Must encrypt all data

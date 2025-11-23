@@ -1,67 +1,199 @@
 stages:
-  - build-gradle
-  - sonar
+  - build
+  - test
+  - quality
+  - package
   - deploy
 
-build-backend:
-  image: gradle:8.10.0-jdk21-jammy
-  stage: build-gradle
+variables:
+  REGISTRY_URL: registry.ftco.ca
+  IMAGE_NAME: ${REGISTRY_URL}/${CI_PROJECT_PATH}
+  DOCKER_TLS_CERTDIR: ""
+  # Central Gradle + JDK image to keep backend pipeline aligned with the project runtime
+  GRADLE_IMAGE: gradle:8.10.0-jdk21-jammy
+
+build:backend:
+  stage: build
+  image: ${GRADLE_IMAGE}
   script:
-    - gradle build test jacocoTestReport
+    - gradle build -x test --no-daemon
   artifacts:
     paths:
+      - build/libs/*.jar
       - build/classes/
-      - build/reports/jacoco/
     expire_in: 1 hour
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-    - if: $CI_COMMIT_BRANCH == 'master'
-    - if: $CI_COMMIT_BRANCH == 'main'
-    - if: $CI_COMMIT_BRANCH == 'develop'
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}-gradle
+    paths:
+      - .gradle/
+  needs: []
 
-build-frontend:
-  image: node:20
-  stage: build-gradle
+build:frontend:
+  stage: build
+  image: node:20-alpine
   script:
     - cd frontend
-    - npm ci
+    - npm ci --prefer-offline --no-audit
+    - npx vite build
+  artifacts:
+    paths:
+      - frontend/dist/
+    expire_in: 1 hour
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}-npm
+    paths:
+      - frontend/node_modules/
+  needs: []
+
+test:backend:
+  stage: test
+  image: ${GRADLE_IMAGE}
+  script:
+    - gradle test jacocoTestReport --no-daemon
+  artifacts:
+    paths:
+      - build/reports/jacoco/test/jacocoTestReport.xml
+      - build/test-results/test/
+    reports:
+      junit: build/test-results/test/**/TEST-*.xml
+    expire_in: 1 week
+  coverage: '/Total.*?([0-9]{1,3})%/'
+  needs:
+    - build:backend
+
+test:frontend:
+  stage: test
+  image: node:20-alpine
+  script:
+    - cd frontend
+    - npm ci --prefer-offline --no-audit
     - npm run test:coverage
   artifacts:
     paths:
-      - frontend/coverage/
+      - frontend/coverage/lcov.info
       - frontend/test-report.xml
-    expire_in: 1 hour
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-    - if: $CI_COMMIT_BRANCH == 'master'
-    - if: $CI_COMMIT_BRANCH == 'main'
-    - if: $CI_COMMIT_BRANCH == 'develop'
+    reports:
+      junit: frontend/test-report.xml
+    expire_in: 1 week
+  coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}-npm
+    paths:
+      - frontend/node_modules/
+    policy: pull
+  needs:
+    - build:frontend
 
-sonar-scan:
+quality:sonar:
+  stage: quality
   image:
     name: sonarsource/sonar-scanner-cli:11
-    entrypoint: [ "" ]
-  stage: sonar
-  dependencies:
-    - build-backend
-    - build-frontend
+    entrypoint: [""]
   variables:
     SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
     GIT_DEPTH: "0"
   script:
-    - sonar-scanner -Dsonar.host.url="${SONAR_HOST_URL}" -Dsonar.token="${SONAR_TOKEN}"
+    - sonar-scanner
+      -Dsonar.host.url="${SONAR_HOST_URL}"
+      -Dsonar.token="${SONAR_TOKEN}"
   allow_failure: true
   rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-    - if: $CI_COMMIT_BRANCH == 'master'
-    - if: $CI_COMMIT_BRANCH == 'main'
-    - if: $CI_COMMIT_BRANCH == 'develop'
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "develop"
+    - if: $CI_COMMIT_BRANCH == "production"
+  needs:
+    - build:backend
+    - test:backend
+    - test:frontend
 
-sync-to-github:
-  image: bitnami/git:latest
-  stage: deploy
-  only:
-    - main
+package:image:
+  stage: package
+  image:
+    name: gcr.io/kaniko-project/executor:v1.23.0-debug
+    entrypoint: [""]
+  before_script:
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"${REGISTRY_URL}\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
   script:
-    - git remote add github https://${GITHUB_TOKEN}@github.com/AnnapolisLabs/Lineage.git
+    - |
+      TAGS="--destination ${IMAGE_NAME}:${CI_COMMIT_REF_SLUG}"
+      if [ "$CI_COMMIT_REF_NAME" = "main" ] || [ "$CI_COMMIT_REF_NAME" = "master" ] || [ "$CI_COMMIT_REF_NAME" = "production" ]; then
+        TAGS="$TAGS --destination ${IMAGE_NAME}:latest"
+      fi
+      if [ "$CI_COMMIT_REF_NAME" = "production" ]; then
+        TAGS="$TAGS --destination ${IMAGE_NAME}:production"
+      fi
+      /kaniko/executor \
+        --context "${CI_PROJECT_DIR}" \
+        --dockerfile "${CI_PROJECT_DIR}/Dockerfile" \
+        $TAGS \
+        --cache=true \
+        --cache-repo="${IMAGE_NAME}/cache" \
+        --cache-ttl=168h \
+        --cleanup
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "master"
+    - if: $CI_COMMIT_BRANCH == "develop"
+    - if: $CI_COMMIT_BRANCH == "production"
+  needs:
+    - test:backend
+    - test:frontend
+
+sync:github:
+  stage: quality
+  image: bitnami/git:latest
+  script:
+    - git remote add github https://${GITHUB_TOKEN}@github.com/AnnapolisLabs/Lineage.git || git remote set-url github https://${GITHUB_TOKEN}@github.com/AnnapolisLabs/Lineage.git
     - git push github HEAD:refs/heads/main --force
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: on_success
+  needs: []
+  allow_failure: true
+
+deploy:production:
+  stage: deploy
+  tags:
+    - production
+  script:
+    - mkdir -p /opt/lineage
+    - cd /opt/lineage
+    - cp ${CI_PROJECT_DIR}/docker-compose.prod.yml ./docker-compose.prod.yml
+    - echo "${PODMAN_ACCESS_TOKEN}" | podman login -u podman_token --password-stdin registry.ftco.ca
+    - |
+      cat > .env << EOF
+      CONTAINER_NAME=lineage-prod
+      APP_PORT=8080
+      IMAGE_NAME=registry.ftco.ca/mfraser/lineage
+      IMAGE_TAG=production
+      DB_PASSWORD=${PROD_DB_PASSWORD}
+      EOF
+    - podman-compose -f docker-compose.prod.yml pull
+    - podman-compose -f docker-compose.prod.yml down
+    - podman-compose -f docker-compose.prod.yml up -d
+    - |
+      echo "Waiting for application to be healthy..."
+      MAX_ATTEMPTS=30
+      ATTEMPT=0
+      while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
+        if curl -f -s http://localhost:8080/actuator/health > /dev/null 2>&1; then
+          echo "Application is healthy!"
+          exit 0
+        fi
+        ATTEMPT=$((ATTEMPT + 1))
+        echo "Attempt $ATTEMPT/$MAX_ATTEMPTS: Application not ready yet, waiting..."
+        sleep 5
+      done
+      echo "Application failed to become healthy after $MAX_ATTEMPTS attempts"
+      podman-compose -f docker-compose.prod.yml logs --tail=50 app
+      exit 1
+  rules:
+    - if: $CI_COMMIT_BRANCH == "production"
+  needs:
+    - package:image
+  environment:
+    name: production
+    url: http://localhost:8080

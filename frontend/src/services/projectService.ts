@@ -42,5 +42,19 @@ export const projectService = {
 
   async delete(id: string): Promise<void> {
     await api.delete(`/projects/${id}`)
+  },
+
+  async importProject(file: File): Promise<Project> {
+    console.log('📁 DEBUG: Starting project import for file:', file.name, 'Size:', file.size, 'bytes')
+    
+    let formData = new FormData()
+    formData.append('importFile', file)
+    
+    console.log('📁 DEBUG: FormData created, sending to /projects/import')
+    
+    const response = await api.post<{ project: Project }>('/projects/import', formData)
+    
+    console.log('📁 DEBUG: Import successful, project ID:', response.data.project.id)
+    return response.data.project
   }
 }

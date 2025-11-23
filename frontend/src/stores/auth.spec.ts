@@ -33,7 +33,7 @@ describe('useAuthStore', () => {
     const store = useAuthStore()
     expect(store.isAdmin).toBe(false)
 
-    store.user = { id: '1', email: 'test@test.com', name: 'Test', role: 'ADMIN' }
+    store.user = { id: '1', email: 'test@test.com', name: 'Test', globalRole: 'ADMIN', status: 'ACTIVE', emailVerified: true, createdAt: '2023-01-01', updatedAt: '2023-01-01', preferences: {} }
     expect(store.isAdmin).toBe(true)
   })
 
@@ -41,10 +41,10 @@ describe('useAuthStore', () => {
     const store = useAuthStore()
     expect(store.isEditor).toBe(false)
 
-    store.user = { id: '1', email: 'test@test.com', name: 'Test', role: 'EDITOR' }
+    store.user = { id: '1', email: 'test@test.com', name: 'Test', globalRole: 'DEVELOPER', status: 'ACTIVE', emailVerified: true, createdAt: '2023-01-01', updatedAt: '2023-01-01', preferences: {} }
     expect(store.isEditor).toBe(true)
 
-    store.user = { id: '1', email: 'test@test.com', name: 'Test', role: 'ADMIN' }
+    store.user = { id: '1', email: 'test@test.com', name: 'Test', globalRole: 'ADMIN', status: 'ACTIVE', emailVerified: true, createdAt: '2023-01-01', updatedAt: '2023-01-01', preferences: {} }
     expect(store.isEditor).toBe(true)
   })
 
@@ -54,8 +54,23 @@ describe('useAuthStore', () => {
       const mockResponse = {
         token: 'jwt-token',
         email: 'test@test.com',
-        name: 'Test User',
-        role: 'USER'
+        refreshToken: 'refresh-token',
+        user: {
+          id: 'user-123',
+          email: 'test@test.com',
+          name: 'Test User',
+          globalRole: 'USER',
+          status: 'ACTIVE',
+          emailVerified: true,
+          createdAt: '2023-01-01',
+          updatedAt: '2023-01-01',
+          preferences: {}
+        },
+        message: 'Login successful',
+        success: true,
+        userId: 'user-123',
+        expiresAt: null,
+        mfaRequired: false
       }
       vi.mocked(authService.login).mockResolvedValue(mockResponse)
 
@@ -64,13 +79,24 @@ describe('useAuthStore', () => {
       expect(result).toBe(true)
       expect(store.token).toBe('jwt-token')
       expect(store.user).toEqual({
-        id: 'test@test.com',
+        id: 'user-123',
         email: 'test@test.com',
         name: 'Test User',
-        role: 'USER'
+        firstName: undefined,
+        lastName: undefined,
+        globalRole: 'USER',
+        status: 'ACTIVE',
+        phoneNumber: undefined,
+        avatarUrl: undefined,
+        bio: undefined,
+        preferences: {},
+        emailVerified: true,
+        createdAt: '2023-01-01',
+        updatedAt: '2023-01-01',
+        lastLoginAt: undefined
       })
       expect(localStorage.getItem('auth_token')).toBe('jwt-token')
-      expect(localStorage.getItem('user_id')).toBe('test@test.com')
+      expect(localStorage.getItem('user_id')).toBe('user-123')
     })
 
     it('should handle login error', async () => {
@@ -92,13 +118,13 @@ describe('useAuthStore', () => {
     it('should fetch current user when token exists', async () => {
       const store = useAuthStore()
       store.token = 'test-token'
-      const mockUser = { id: 'user-1', email: 'test@test.com', name: 'Test User', role: 'USER' }
+      const mockUser = { id: 'user-1', email: 'test@test.com', name: 'Test User', globalRole: 'USER', status: 'ACTIVE', emailVerified: true, createdAt: '2023-01-01', updatedAt: '2023-01-01', preferences: {} }
       vi.mocked(authService.getCurrentUser).mockResolvedValue(mockUser)
 
       await store.fetchCurrentUser()
 
       expect(store.user).toEqual(mockUser)
-      expect(localStorage.getItem('user_id')).toBe('test@test.com')
+      expect(localStorage.getItem('user_id')).toBe('user-1')
     })
 
     it('should not fetch user when no token', async () => {
@@ -125,13 +151,13 @@ describe('useAuthStore', () => {
     it('should validate token and set user', async () => {
       const store = useAuthStore()
       store.token = 'test-token'
-      const mockUser = { id: 'user-1', email: 'test@test.com', name: 'Test User', role: 'USER' }
+      const mockUser = { id: 'user-1', email: 'test@test.com', name: 'Test User', globalRole: 'USER', status: 'ACTIVE', emailVerified: true, createdAt: '2023-01-01', updatedAt: '2023-01-01', preferences: {} }
       vi.mocked(authService.getCurrentUser).mockResolvedValue(mockUser)
 
       await store.validateToken()
 
       expect(store.user).toEqual(mockUser)
-      expect(localStorage.getItem('user_id')).toBe('test@test.com')
+      expect(localStorage.getItem('user_id')).toBe('user-1')
     })
 
     it('should logout on validation error', async () => {
@@ -159,7 +185,7 @@ describe('useAuthStore', () => {
     it('should clear user and token', () => {
       const store = useAuthStore()
       store.token = 'test-token'
-      store.user = { id: '1', email: 'test@test.com', name: 'Test', role: 'USER' }
+      store.user = { id: '1', email: 'test@test.com', name: 'Test', globalRole: 'USER', status: 'ACTIVE', emailVerified: true, createdAt: '2023-01-01', updatedAt: '2023-01-01', preferences: {} }
       localStorage.setItem('auth_token', 'test-token')
       localStorage.setItem('user_id', 'test@test.com')
 

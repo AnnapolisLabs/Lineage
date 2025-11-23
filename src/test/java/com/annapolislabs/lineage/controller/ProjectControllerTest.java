@@ -1,10 +1,14 @@
 package com.annapolislabs.lineage.controller;
 
 import com.annapolislabs.lineage.dto.request.CreateProjectRequest;
+import com.annapolislabs.lineage.dto.request.ImportProjectMetadata;
+import com.annapolislabs.lineage.dto.request.ImportProjectRequest;
+import com.annapolislabs.lineage.dto.request.ImportRequirementRequest;
 import com.annapolislabs.lineage.dto.response.ProjectResponse;
 import com.annapolislabs.lineage.entity.Project;
 import com.annapolislabs.lineage.entity.User;
 import com.annapolislabs.lineage.entity.UserRole;
+import com.annapolislabs.lineage.service.ProjectImportService;
 import com.annapolislabs.lineage.service.ProjectService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +18,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import java.util.List;
+import java.util.Map;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,6 +37,9 @@ class ProjectControllerTest {
     @Mock
     private ProjectService projectService;
 
+    @Mock
+    private ProjectImportService projectImportService;
+
     @InjectMocks
     private ProjectController projectController;
 
@@ -42,6 +52,22 @@ class ProjectControllerTest {
         testUser.setId(UUID.randomUUID());
         testProject = new Project("Test Project", "Description", "TEST", testUser);
         testProject.setId(UUID.randomUUID());
+    }
+
+    @Test
+    void importProjectFromJson_Success() {
+        ImportProjectRequest request = buildImportRequest();
+        ProjectImportService.ImportResult result = new ProjectImportService.ImportResult(
+                new ProjectResponse(testProject),
+                List.of()
+        );
+        when(projectImportService.importProject(any(ImportProjectRequest.class))).thenReturn(result);
+
+        ResponseEntity<Map<String, Object>> response = projectController.importProject(request);
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertNotNull(response.getBody());
+        verify(projectImportService).importProject(any(ImportProjectRequest.class));
     }
 
     @Test
@@ -128,16 +154,29 @@ class ProjectControllerTest {
 
     @Test
     void deleteProject_Success() {
-        // Arrange
         UUID projectId = UUID.randomUUID();
         doNothing().when(projectService).deleteProject(projectId);
 
-        // Act
         ResponseEntity<Void> response = projectController.deleteProject(projectId);
 
-        // Assert
         assertNotNull(response);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
         verify(projectService).deleteProject(projectId);
+    }
+
+    private ImportProjectRequest buildImportRequest() {
+        ImportProjectMetadata metadata = new ImportProjectMetadata();
+        metadata.setName("Imported");
+        metadata.setKey("IMP");
+        metadata.setDescription("Imported project");
+
+        ImportRequirementRequest requirement = new ImportRequirementRequest();
+        requirement.setReqId("REQ-001");
+        requirement.setTitle("Imported Requirement");
+
+        ImportProjectRequest request = new ImportProjectRequest();
+        request.setProject(metadata);
+        request.setRequirements(List.of(requirement));
+        return request;
     }
 }

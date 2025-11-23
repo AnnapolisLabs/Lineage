@@ -1,6 +1,8 @@
 package com.annapolislabs.lineage.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.springframework.data.annotation.CreatedDate;
@@ -15,11 +17,14 @@ import java.util.UUID;
 /**
  * Entity for storing AI agent conversation history
  */
+@Setter
+@Getter
 @Entity
 @Table(name = "ai_conversations")
 @EntityListeners(AuditingEntityListener.class)
 public class AIConversation {
-    
+
+    // Getters and Setters
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -57,64 +62,7 @@ public class AIConversation {
         this.user = user;
         this.title = title;
     }
-    
-    // Getters and Setters
-    public UUID getId() {
-        return id;
-    }
-    
-    public void setId(UUID id) {
-        this.id = id;
-    }
-    
-    public String getChatId() {
-        return chatId;
-    }
-    
-    public void setChatId(String chatId) {
-        this.chatId = chatId;
-    }
-    
-    public User getUser() {
-        return user;
-    }
-    
-    public void setUser(User user) {
-        this.user = user;
-    }
-    
-    public String getTitle() {
-        return title;
-    }
-    
-    public void setTitle(String title) {
-        this.title = title;
-    }
-    
-    public List<ConversationMessage> getMessages() {
-        return messages;
-    }
-    
-    public void setMessages(List<ConversationMessage> messages) {
-        this.messages = messages;
-    }
-    
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-    
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-    
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-    
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-    
+
     /**
      * Inner class for conversation messages
      */

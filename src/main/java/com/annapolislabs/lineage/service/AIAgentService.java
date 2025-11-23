@@ -26,8 +26,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Service for AI Agent operations
- * Handles LLM integration, agentic loops, and tool execution
+ * Coordinates the AI assistant experience including persistence of chat history, invocation
+ * of the large language model, and orchestration of MCP tool executions.
+ *
+ * <p>The service is intentionally stateful per user/chat via {@link AIConversation} entities and
+ * relies on transactional boundaries where mutations occur to guarantee message ordering and
+ * prevent duplicate tool execution when retries happen.</p>
  */
 @Service
 public class AIAgentService {
@@ -122,7 +126,21 @@ public class AIAgentService {
     }
     
     /**
-     * Process user input with agentic loop
+     * Processes user input through the agentic loop until a final assistant response is produced
+     * or the iteration cap is reached.
+     *
+     * <p>The transactional boundary ensures each appended {@link ConversationMessage} persists with
+     * the same atomicity as tool execution logs so a retried HTTP call cannot re-run a previously
+     * completed tool step. Security-sensitive context such as the authenticated user and selected
+     * project identifier are injected into both the prompt and tool execution path so downstream
+     * MCP tools can enforce authorization without reloading user state.</p>
+     *
+     * @param chatId      stable identifier for an existing conversation or {@code null} to create one
+     * @param userMessage raw text supplied by the user for this turn
+     * @param projectId   identifier injected into the prompt to scope tool calls and responses
+     * @param user        authenticated user executing the chat flow, used for audit context
+     * @return assistant-visible text aggregated from the loop iterations; includes warning text when
+     *         the maximum iteration threshold is hit
      */
     @Transactional
     public String processMessage(String chatId, String userMessage, String projectId, User user) {
@@ -185,7 +203,24 @@ public class AIAgentService {
     }
     
     /**
-     * Call LLM API
+     * Calls the configured LLM endpoint with the persisted conversation plus any ad-hoc
+     * additional input and converts the response into an {@link AgentAction}.
+     *
+     * <p>The payload mirrors the OpenAI chat-completions schema including the guardrail system
+     * prompt so downstream providers can be swapped without touching the agent loop. The rate limit
+     * and timeout configuration is tuned for the in-house LM Studio proxy, but failures bubble up so
+     * callers can decide whether to retry or return an apology to users. Each successful call appends
+     * the raw assistant response to the database to provide replayable history if a follow-up tool
+     * action fails.</p>
+     *
+     * @param conversation persisted chat state that provides prior turns and is mutated with the
+     *                     assistant response
+     * @param additionalInput optional user text injected as the last message to steer the model
+     * @return structured action parsed from the assistant response (may instruct a tool call or
+     *         contain a direct user message)
+     * @throws LLMApiException if the remote service responds with a non-200 status or malformed body
+     * @throws java.io.IOException if the HTTP request cannot be sent or the response cannot be read
+     * @throws InterruptedException if the HTTP call is interrupted while waiting for completion
      */
     private AgentAction callLLM(AIConversation conversation, String additionalInput) throws Exception {
         logger.info("Calling LLM API at {} with model {}", llmApiUrl, llmModel);
@@ -254,7 +289,19 @@ public class AIAgentService {
     }
     
     /**
-     * Handle tool execution and update conversation
+     * Executes the MCP tool requested by the agent, persists the serialized response into the
+     * conversation, and records failures as additional conversation entries.
+     *
+     * <p>Tool invocation runs outside a dedicated transaction because persistence already occurs for
+     * each appended message. The helper serializes tool results into JSON strings so future agent
+     * calls can replay context without touching the original tool DTO. Exceptions are intentionally
+     * swallowed after being logged so the user receives a descriptive failure message inside the
+     * conversation stream rather than a generic HTTP 500.</p>
+     *
+     * @param action       structured request emitted by the agent containing the tool and arguments
+     * @param conversation conversation that is mutated with synthetic "user" messages for tool output
+     * @param user         authenticated user whose identity is injected into the tool context for
+     *                     downstream authorization checks
      */
     private void handleToolExecution(AgentAction action, AIConversation conversation, User user) {
         try {
@@ -278,8 +325,18 @@ public class AIAgentService {
     }
 
     /**
-     * Parse LLM response into structured action
-     * Strips thinking tags and extracts JSON
+     * Derives an actionable instruction from the assistant payload by stripping special tags and
+     * extracting the JSON directive enforced by the system prompt. When parsing fails, the method
+     * falls back to treating the cleaned content as a simple assistant message and, ultimately,
+     * a generic clarification request.
+     *
+     * <p>The contract expects the LLM to emit a JSON object containing {@code tool},
+     * {@code arguments}, and {@code message} fields. This helper centralizes that expectation so
+     * future schema changes only touch one location. It also guarantees that user-facing output is
+     * never empty by injecting a final clarification message when the model returns unusable data.</p>
+     *
+     * @param content raw assistant message returned by the LLM
+     * @return structured {@link AgentAction} describing a tool invocation or user-facing reply
      */
     private AgentAction parseAgentResponse(String content) {
         String cleanContent = stripTagsAndMarkdown(content);
@@ -299,7 +356,16 @@ public class AIAgentService {
     }
 
     /**
-     * Strip thinking tags and markdown from content
+     * Removes agent reasoning blocks and markdown fences so downstream JSON extraction operates on
+     * plain text.
+     *
+     * <p>The helper specifically strips {@code <think>} and {@code <system-reminder>} tags along with
+     * triple-backtick code fences before trimming whitespace. It intentionally avoids executing any
+     * markdown or HTML rendering to mitigate injection risks, effectively acting as an allow-list for
+     * text that resembles the JSON contract the agent must satisfy.</p>
+     *
+     * @param content raw assistant content returned by the LLM
+     * @return sanitized content eligible for JSON regex parsing
      */
     private String stripTagsAndMarkdown(String content) {
         return content
@@ -311,7 +377,17 @@ public class AIAgentService {
     }
 
     /**
-     * Extract JSON action from cleaned content
+     * Extracts the JSON directive emitted by the agent. The method uses a permissive regex to
+     * locate the first object literal, then validates that the expected fields (tool, arguments,
+     * message) exist before converting arguments into a map structure.
+     *
+     * <p>The regex intentionally accepts extra prose before/after the JSON block so the agent can
+     * emit natural language reasoning without breaking the parser. Only when the minimum schema is
+     * present does the helper convert argument nodes into a {@link Map}; otherwise {@code null} is
+     * returned so the caller can fall back to a clarification response.</p>
+     *
+     * @param cleanContent assistant output with markdown stripped
+     * @return parsed {@link AgentAction} or {@code null} when the content is not valid JSON
      */
     private AgentAction extractJsonAction(String cleanContent) {
         Pattern jsonPattern = Pattern.compile("\\{[\\s\\S]*\\}");
@@ -341,7 +417,19 @@ public class AIAgentService {
     }
 
     /**
-     * Execute MCP tool
+     * Executes the requested MCP tool with the provided arguments and user-scoped context.
+     *
+     * <p>The arguments are converted into a {@link JsonNode} to match the MCP contract, and the user's
+     * email is forwarded as part of the execution context so tools can apply fine-grained access
+     * control. Unknown tools raise an {@link IllegalArgumentException} to make mis-configurations fail
+     * fast rather than silently returning empty responses.</p>
+     *
+     * @param toolName  key that must exist within the injected {@code mcpToolsMap}
+     * @param arguments arbitrary tool parameters serialized from the agent output
+     * @param user      authenticated user; the email is forwarded so tools can enforce authorization
+     * @return raw tool result returned by the MCP tool implementation (often a DTO or map)
+     * @throws IllegalArgumentException when the tool name is not registered
+     * @throws Exception                bubbled up from the underlying tool for callers to handle
      */
     private Object executeTool(String toolName, Map<String, Object> arguments, User user) throws Exception {
         McpTool tool = tools.get(toolName);
@@ -361,7 +449,15 @@ public class AIAgentService {
     }
     
     /**
-     * Load or create conversation
+     * Loads an existing conversation scoped to the supplied user or lazily creates a placeholder row
+     * when the client references a brand-new chat. Centralizing this logic prevents duplicate
+     * conversations when HTTP retries occur and ensures a consistent default title is applied until
+     * the UI overwrites it.
+     *
+     * @param chatId optional identifier supplied by the client; {@code null} triggers creation of a
+     *               new chat bound to the provided user
+     * @param user   owner of the conversation ensuring tenant-level partitioning
+     * @return persisted {@link AIConversation} instance ready for mutation
      */
     private AIConversation loadOrCreateConversation(String chatId, User user) {
         return conversationRepository.findByChatIdAndUser(chatId, user)
@@ -370,9 +466,32 @@ public class AIAgentService {
                     return conversationRepository.save(newConv);
                 });
     }
-    
     /**
-     * Create new conversation
+     * Immutable representation of the agent's next action including tool invocation parameters and
+     * optional user-facing message.
+     */
+    private static class AgentAction {
+         /** Name of the MCP tool to execute or {@code null} to indicate no tool call is required. */
+         final String tool;
+         /** Arguments to pass to the tool when {@link #tool} is populated. */
+         final Map<String, Object> arguments;
+         /** Assistant-facing text that should be rendered to the end user. */
+         final String message;
+
+         AgentAction(String tool, Map<String, Object> arguments, String message) {
+             this.tool = tool;
+             this.arguments = arguments;
+             this.message = message;
+         }
+     }
+
+    /**
+     * Creates a new conversation row for the supplied user and returns its generated identifier.
+     * Identifiers follow the {@code chat_<epochMillis>} pattern so they remain sortable and unique
+     * without hitting the database for a sequence value.
+     *
+     * @param user authenticated owner of the conversation
+     * @return generated chat identifier that clients should store and reuse on subsequent turns
      */
     @Transactional
     public String createNewConversation(User user) {
@@ -381,36 +500,28 @@ public class AIAgentService {
         conversationRepository.save(conversation);
         return chatId;
     }
-    
+
     /**
-     * Get conversation history for user
+     * Retrieves the most recent conversations for a user ordered by {@code updatedAt} descending and
+     * enforces a hard cap of 20 entries to keep dashboard payloads lightweight.
+     *
+     * @param user conversation owner
+     * @return list of conversations limited to the most recent 20 entries
      */
     public List<AIConversation> getConversationHistory(User user) {
         List<AIConversation> conversations = conversationRepository.findByUserOrderByUpdatedAtDesc(user);
-        // Limit to 20 most recent
         return conversations.size() > 20 ? conversations.subList(0, 20) : conversations;
     }
-    
+
     /**
-     * Delete conversation
+     * Permanently deletes a conversation owned by the requesting user. The transactional boundary
+     * ensures the delete cannot partially apply and guards against removing another user's chat.
+     *
+     * @param chatId chat identifier to delete
+     * @param user   owner requesting deletion; used to scope the repository delete
      */
     @Transactional
     public void deleteConversation(String chatId, User user) {
         conversationRepository.deleteByChatIdAndUser(chatId, user);
-    }
-    
-    /**
-     * Inner class for agent action
-     */
-    private static class AgentAction {
-        final String tool;
-        final Map<String, Object> arguments;
-        final String message;
-        
-        AgentAction(String tool, Map<String, Object> arguments, String message) {
-            this.tool = tool;
-            this.arguments = arguments;
-            this.message = message;
-        }
     }
 }

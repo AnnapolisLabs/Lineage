@@ -1,10 +1,15 @@
 package com.annapolislabs.lineage.dto.response;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
 /**
  * Response DTO for AI chat list item
  */
+@Setter
+@Getter
 public class AIChatListResponse {
 
     private String id;
@@ -21,35 +26,4 @@ public class AIChatListResponse {
         this.messageCount = messageCount;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public LocalDateTime getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public int getMessageCount() {
-        return messageCount;
-    }
-
-    public void setMessageCount(int messageCount) {
-        this.messageCount = messageCount;
-    }
 }
