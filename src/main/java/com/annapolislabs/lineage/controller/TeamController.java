@@ -1,6 +1,8 @@
 package com.annapolislabs.lineage.controller;
 
 import com.annapolislabs.lineage.service.TeamService;
+import com.annapolislabs.lineage.security.JwtTokenProvider;
+import com.annapolislabs.lineage.repository.UserRepository;
 import com.annapolislabs.lineage.entity.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -10,6 +12,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -34,8 +37,12 @@ import java.util.*;
 @Tag(name = "Team Management", description = "Team creation, member management, and collaboration APIs")
 public class TeamController {
 
+    @Autowired
+    private UserRepository userRepository;
     private final TeamService teamService;
 
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
     /**
      * Get all teams accessible to the current user
      */
@@ -395,14 +402,22 @@ public class TeamController {
             throw new SecurityException("User not authenticated");
         }
         
+        // Extract user ID from authentication details
         Object principal = authentication.getPrincipal();
-        if (principal instanceof String) {
+        if (principal instanceof org.springframework.security.core.userdetails.UserDetails) {
+            // Principal is UserDetails, extract email and look up user
+            String email = ((org.springframework.security.core.userdetails.UserDetails) principal).getUsername();
+            return userRepository.findByEmail(email)
+                .map(com.annapolislabs.lineage.entity.User::getId)
+                .orElseThrow(() -> new SecurityException("User not found in database"));
+        } else if (principal instanceof String) {
             try {
                 return UUID.fromString((String) principal);
             } catch (IllegalArgumentException e) {
                 throw new SecurityException("Invalid user ID in authentication context");
             }
         }
+        
         
         throw new SecurityException("Unable to extract user ID from authentication context");
     }

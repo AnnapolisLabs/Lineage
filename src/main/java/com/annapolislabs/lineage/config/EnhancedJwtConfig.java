@@ -273,9 +273,6 @@ public class EnhancedJwtConfig {
             case PROJECT_MANAGER -> 2;
             case DEVELOPER -> 1;
             case USER -> 1;
-            case VIEWER -> 1;
-            case EDITOR -> 1;
-            case ADMIN -> 3;
         };
     }
 

@@ -64,10 +64,10 @@ public class PermissionEvaluationService {
             // 1. Check cache first
             String cacheKey = generateCacheKey(userId, permissionKey, resourceId);
             PermissionCacheEntry cached = getFromCache(cacheKey);
-            if (cached != null && !cached.isExpired()) {
-                log.debug("Permission check cache hit for user {}: {}", userId, permissionKey);
-                return cached.isAllowed();
-            }
+//            if (cached != null && !cached.isExpired()) {
+//                log.debug("Permission check cache hit for user {}: {}", userId, permissionKey);
+//                return cached.isAllowed();
+//            }
 
             // 2. Validate inputs
             User user = userRepository.findById(userId)
@@ -226,20 +226,14 @@ public class PermissionEvaluationService {
         String action = parts[1];
         
         // Check against role hierarchy
-        switch (userRole) {
-            case OWNER:
-                return true; // Owner has all permissions
-            case ADMINISTRATOR:
-                return checkAdministratorPermissions(resource, action);
-            case USER:
-                return checkUserPermissions(resource, action);
-            case PROJECT_MANAGER:
-                return checkProjectManagerPermissions(resource, action);
-            case DEVELOPER:
-                return checkDeveloperPermissions(resource, action);
-            default:
-                return false;
-        }
+        return switch (userRole) {
+            case OWNER -> true; // Owner has all permissions
+            case ADMINISTRATOR -> checkAdministratorPermissions(resource, action);
+            case USER -> checkUserPermissions(resource, action);
+            case PROJECT_MANAGER -> checkProjectManagerPermissions(resource, action);
+            case DEVELOPER -> checkDeveloperPermissions(resource, action);
+            default -> false;
+        };
     }
 
     private boolean checkAdministratorPermissions(String resource, String action) {

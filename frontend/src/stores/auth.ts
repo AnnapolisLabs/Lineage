@@ -3,7 +3,21 @@ import { ref, computed } from 'vue'
 import { authService, type User, type LoginRequest } from '@/services/authService'
 
 export const useAuthStore = defineStore('auth', () => {
-  const user = ref<User | null>(null)
+  // Hydrate user from localStorage if available so that a logged-in user
+  // is immediately present on page load/navigation, before `/auth/me` resolves.
+  const storedUser = localStorage.getItem('auth_user')
+  let initialUser: User | null = null
+
+  if (storedUser) {
+    try {
+      initialUser = JSON.parse(storedUser) as User
+    } catch (e) {
+      console.warn('Failed to parse stored auth user, clearing it')
+      localStorage.removeItem('auth_user')
+    }
+  }
+
+  const user = ref<User | null>(initialUser)
   const token = ref<string | null>(localStorage.getItem('auth_token'))
   const loading = ref(false)
   const error = ref<string | null>(null)
@@ -39,7 +53,8 @@ export const useAuthStore = defineStore('auth', () => {
         lastLoginAt: response.user.lastLoginAt
       }
       
-      // Store user ID for AI service
+      // Store user data and ID for persistence/AI service
+      localStorage.setItem('auth_user', JSON.stringify(user.value))
       localStorage.setItem('user_id', response.user.id)
       return true
     } catch (err: any) {
@@ -57,6 +72,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       user.value = await authService.getCurrentUser()
       if (user.value) {
+        localStorage.setItem('auth_user', JSON.stringify(user.value))
         localStorage.setItem('user_id', user.value.id)
       }
     } catch (err: any) {
@@ -77,6 +93,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       user.value = await authService.getCurrentUser()
       if (user.value) {
+        localStorage.setItem('auth_user', JSON.stringify(user.value))
         localStorage.setItem('user_id', user.value.id)
       }
     } catch (err: any) {
@@ -91,6 +108,7 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = null
     token.value = null
     localStorage.removeItem('auth_token')
+    localStorage.removeItem('auth_user')
     localStorage.removeItem('user_id')
     authService.logout()
   }

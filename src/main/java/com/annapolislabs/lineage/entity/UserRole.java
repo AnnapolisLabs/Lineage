@@ -1,23 +1,20 @@
 package com.annapolislabs.lineage.entity;
 
 /**
- * Enhanced Role Types for the RBAC system
- * Includes legacy support while adding new hierarchical roles
+ * RBAC Role Types for the Lineage system
+ * Clean hierarchical role system with clear permission levels
  */
 public enum UserRole {
-    // Legacy values for backward compatibility
-    VIEWER("VIEWER", 1, false, false),
-    EDITOR("EDITOR", 1, false, false), 
-    ADMIN("ADMIN", 3, true, true),
+    // Standard user with basic permissions
+    USER("USER", 1, false, true),           // Standard user level 1
     
-    // New enhanced role system with hierarchy levels
+    // Enhanced role system with hierarchy levels
     PROJECT_MANAGER("PROJECT_MANAGER", 2, true, true),
     DEVELOPER("DEVELOPER", 1, false, false),
     
-    // New RBAC hierarchical roles
+    // Administrative roles
     OWNER("OWNER", 3, true, true),           // Super-user level 3
-    ADMINISTRATOR("ADMINISTRATOR", 2, true, true),  // Admin level 2  
-    USER("USER", 1, false, true);           // Standard user level 1
+    ADMINISTRATOR("ADMINISTRATOR", 2, true, true);  // Admin level 2
     
     private final String name;
     private final int hierarchyLevel;
@@ -59,24 +56,5 @@ public enum UserRole {
      */
     public boolean isAdministrative() {
         return hierarchyLevel >= 2;
-    }
-    
-    /**
-     * Map legacy roles to new RBAC roles for backward compatibility
-     */
-    public static UserRole mapLegacyRole(UserRole legacyRole) {
-        switch (legacyRole) {
-            case ADMIN:
-                return OWNER;  // Legacy admin becomes owner
-            case PROJECT_MANAGER:
-                return ADMINISTRATOR;  // Project manager becomes administrator
-            case EDITOR:
-            case DEVELOPER:
-                return USER;  // Both become standard users
-            case VIEWER:
-                return USER;  // Viewer becomes standard user
-            default:
-                return USER;  // Default to user
-        }
     }
 }

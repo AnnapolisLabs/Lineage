@@ -155,7 +155,7 @@ public class UserService {
         // Only admins can change global role
         if (request.getGlobalRole() != null && updatedBy != null) {
             User updater = getUserById(updatedBy);
-            if (updater.getGlobalRole() == UserRole.ADMIN) {
+            if (updater.getGlobalRole() == UserRole.ADMINISTRATOR) {
                 user.setGlobalRole(request.getGlobalRole());
             }
         }
