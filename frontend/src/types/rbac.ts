@@ -86,7 +86,27 @@ export interface TeamMember {
   status: 'ACTIVE' | 'INVITED' | 'PENDING'
 }
 
+// Core team role identifiers used across the application.
+//
+// NOTE: If you introduce project-specific / dynamic roles in the future,
+// this is the primary place to extend the model. UI components such as
+// team filters and member role dropdowns derive their options from the
+// exported constants below instead of hard-coding values.
 export type TeamRole = 'OWNER' | 'ADMIN' | 'MEMBER' | 'VIEWER'
+
+// Default list of role values used by UI components. Centralising this
+// makes it easy to adjust available roles or wire in a dynamic source
+// later without touching individual components.
+export const TEAM_ROLE_VALUES: TeamRole[] = ['OWNER', 'ADMIN', 'MEMBER', 'VIEWER']
+
+// Human-friendly labels for each role. Components should prefer these
+// labels instead of duplicating display strings locally.
+export const TEAM_ROLE_LABELS: Record<TeamRole, string> = {
+  OWNER: 'Owner',
+  ADMIN: 'Admin',
+  MEMBER: 'Member',
+  VIEWER: 'Viewer'
+}
 
 export interface InviteTeamMemberRequest {
   email: string

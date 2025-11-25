@@ -31,7 +31,7 @@ class CustomUserDetailsServiceTest {
 
     @BeforeEach
     void setUp() {
-        testUser = new User("test@example.com", "hashedPassword", "Test User", UserRole.EDITOR);
+        testUser = new User("test@example.com", "hashedPassword", "Test User", UserRole.DEVELOPER);
         testUser.setId(UUID.randomUUID());
     }
 
@@ -47,8 +47,9 @@ class CustomUserDetailsServiceTest {
         assertNotNull(userDetails);
         assertEquals("test@example.com", userDetails.getUsername());
         assertEquals("hashedPassword", userDetails.getPassword());
+        // With the updated RBAC model, a DEVELOPER maps to ROLE_DEVELOPER
         assertTrue(userDetails.getAuthorities().stream()
-                .anyMatch(auth -> auth.getAuthority().equals("ROLE_EDITOR")));
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_DEVELOPER")));
         verify(userRepository).findByEmail("test@example.com");
     }
 
@@ -67,7 +68,7 @@ class CustomUserDetailsServiceTest {
     @Test
     void loadUserByUsername_WithAdminRole_ReturnsCorrectAuthority() {
         // Arrange
-        User adminUser = new User("admin@example.com", "hashedPassword", "Admin User", UserRole.ADMIN);
+        User adminUser = new User("admin@example.com", "hashedPassword", "Admin User", UserRole.ADMINISTRATOR);
         when(userRepository.findByEmail("admin@example.com")).thenReturn(Optional.of(adminUser));
 
         // Act
@@ -75,7 +76,8 @@ class CustomUserDetailsServiceTest {
 
         // Assert
         assertNotNull(userDetails);
+        // ADMINISTRATOR role should surface as ROLE_ADMINISTRATOR authority
         assertTrue(userDetails.getAuthorities().stream()
-                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN")));
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMINISTRATOR")));
     }
 }

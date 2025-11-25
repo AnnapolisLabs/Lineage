@@ -1,6 +1,5 @@
 package com.annapolislabs.lineage.security;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -24,42 +24,63 @@ public class CsrfTokenService {
     private static final String CSRF_TOKEN_HEADER = "X-CSRF-TOKEN";
     private static final String CSRF_TOKEN_PARAMETER = "_csrf";
     private static final SecureRandom random = new SecureRandom();
+
+    /**
+     * Maximum lifetime for a CSRF token in milliseconds. Tokens older than this
+     * are treated as expired and rejected during validation. This TTL is
+     * intentionally short-lived and should roughly align with the authenticated
+     * session window.
+     */
+    private static final long TOKEN_TTL_MILLIS = 30 * 60 * 1000L; // 30 minutes
+
+    /**
+     * Value and creation timestamp for a single-use CSRF token. Storing the
+     * timestamp locally lets us enforce a hard upper bound on token lifetime
+     * even if the client never uses or refreshes it.
+     */
+    private static final class StoredToken {
+        final String value;
+        final long createdAtMillis;
+
+        StoredToken(String value, long createdAtMillis) {
+            this.value = value;
+            this.createdAtMillis = createdAtMillis;
+        }
+    }
+
+    // Store active CSRF tokens by identifier (tokenId -> StoredToken)
+    private final Map<String, StoredToken> activeTokens = new ConcurrentHashMap<>();
     
-    // Store active CSRF tokens by session/request identifier
-    private final Map<String, String> activeTokens = new ConcurrentHashMap<>();
-    
-    // Track the last generated token ID for retrieval
-    private volatile String lastGeneratedTokenId;
-    
+    /**
+     * Container for the generated token and its corresponding identifier so
+     * callers can safely obtain both values without relying on shared mutable
+     * state such as {@code lastGeneratedTokenId}. Returning this pair removes
+     * the race condition where concurrent callers could observe the wrong id
+     * for a given token value.
+     */
+    public record CsrfTokenPair(CsrfToken token, String tokenId) {}
+
     /**
      * Generates a new CSRF token/ID pair and caches it for one-time validation.
      *
-     * @return Spring Security token wrapper containing the header metadata and opaque value.
+     * @return token/value pair containing the Spring Security wrapper and the
+     * associated opaque identifier.
      */
-    public CsrfToken generateToken() {
+    public CsrfTokenPair generateTokenPair() {
         String tokenValue = generateSecureToken();
         String tokenId = generateTokenId();
-        
-        // Store the token for validation
-        activeTokens.put(tokenId, tokenValue);
-        
-        // Track the last generated token ID
-        lastGeneratedTokenId = tokenId;
-        
+
+        // Store the token for validation with its creation time
+        activeTokens.put(tokenId, new StoredToken(tokenValue, System.currentTimeMillis()));
+
         DefaultCsrfToken token = new DefaultCsrfToken(
             CSRF_TOKEN_HEADER,
             CSRF_TOKEN_PARAMETER,
             tokenValue
         );
-        
+
         logger.debug("Generated new CSRF token with ID: {}", tokenId);
-        return token;
-    }
-    /**
-     * @return identifier associated with the most recently minted token so callers can pair it with the header value.
-     */
-    public String getLastGeneratedTokenId() {
-        return lastGeneratedTokenId;
+        return new CsrfTokenPair(token, tokenId);
     }
     
     /**
@@ -76,8 +97,22 @@ public class CsrfTokenService {
             return false;
         }
         
-        String storedToken = activeTokens.get(tokenId);
-        boolean isValid = storedToken != null && storedToken.equals(tokenValue);
+        StoredToken stored = activeTokens.get(tokenId);
+
+        if (stored == null) {
+            logger.warn("CSRF token validation failed for token ID: {} (no entry)", tokenId);
+            return false;
+        }
+
+        long ageMillis = System.currentTimeMillis() - stored.createdAtMillis;
+        if (ageMillis > TOKEN_TTL_MILLIS) {
+            // Drop expired token and treat as invalid
+            activeTokens.remove(tokenId);
+            logger.warn("CSRF token validation failed for token ID: {} (expired after {} ms)", tokenId, ageMillis);
+            return false;
+        }
+
+        boolean isValid = stored.value.equals(tokenValue);
         
         if (isValid) {
             logger.debug("CSRF token validation successful for token ID: {}", tokenId);
@@ -104,14 +139,34 @@ public class CsrfTokenService {
     }
     
      /**
-     * Performs opportunistic cleanup when the token cache grows beyond a safe threshold to avoid memory leaks.
+     * Performs opportunistic cleanup when the token cache grows beyond a safe threshold to avoid memory leaks. This
+     * method also eagerly removes entries that have exceeded their TTL, even if the cache size is below the
+     * threshold, to keep the in-memory store healthy over time.
      */
     public void cleanupExpiredTokens() {
-        // In a real implementation, you might want to implement token expiration
-        // For now, we'll implement a simple cleanup strategy
-        if (activeTokens.size() > 1000) { // Prevent memory leaks
+        long now = System.currentTimeMillis();
+
+        // Remove explicit expirations first
+        Iterator<Map.Entry<String, StoredToken>> iterator = activeTokens.entrySet().iterator();
+        int expiredCount = 0;
+
+        while (iterator.hasNext()) {
+            Map.Entry<String, StoredToken> entry = iterator.next();
+            if (now - entry.getValue().createdAtMillis > TOKEN_TTL_MILLIS) {
+                iterator.remove();
+                expiredCount++;
+            }
+        }
+
+        if (expiredCount > 0) {
+            logger.debug("Cleaned up {} expired CSRF tokens", expiredCount);
+        }
+
+        // Safety valve: if we still have an unexpectedly large map, clear it
+        if (activeTokens.size() > 1000) { // Prevent memory leaks in pathological cases
+            int sizeBeforeClear = activeTokens.size();
             activeTokens.clear();
-            logger.info("Cleaned up CSRF tokens due to size limit");
+            logger.info("Cleaned up CSRF tokens due to size limit ({} -> 0)", sizeBeforeClear);
         }
     }
     

@@ -48,7 +48,7 @@ class ProjectControllerTest {
 
     @BeforeEach
     void setUp() {
-        testUser = new User("test@example.com", "hashedPassword", "Test User", UserRole.ADMIN);
+        testUser = new User("test@example.com", "hashedPassword", "Test User", UserRole.ADMINISTRATOR);
         testUser.setId(UUID.randomUUID());
         testProject = new Project("Test Project", "Description", "TEST", testUser);
         testProject.setId(UUID.randomUUID());

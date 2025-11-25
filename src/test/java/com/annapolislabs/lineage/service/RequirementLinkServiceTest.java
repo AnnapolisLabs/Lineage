@@ -48,7 +48,7 @@ class RequirementLinkServiceTest {
 
     @BeforeEach
     void setUp() {
-        testUser = new User("test@example.com", "password", "Test User", UserRole.VIEWER);
+        testUser = new User("test@example.com", "password", "Test User", UserRole.USER);
         testUser.setId(UUID.randomUUID());
 
         testProject = new Project("PRJ", "Test Project", "Description", testUser);

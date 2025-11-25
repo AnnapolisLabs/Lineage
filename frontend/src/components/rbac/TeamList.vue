@@ -37,11 +37,13 @@
         v-model="filterRole"
         class="px-4 py-2 bg-annapolis-charcoal/50 border border-annapolis-teal/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-annapolis-teal focus:border-transparent transition-all"
       >
-        <option value="">All Roles</option>
-        <option value="OWNER">Owner</option>
-        <option value="ADMIN">Admin</option>
-        <option value="MEMBER">Member</option>
-        <option value="VIEWER">Viewer</option>
+        <option
+          v-for="option in ROLE_FILTER_OPTIONS"
+          :key="option.value || 'ALL'"
+          :value="option.value"
+        >
+          {{ option.label }}
+        </option>
       </select>
     </div>
 
@@ -146,7 +148,8 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import type { Team, TeamMember, CreateTeamRequest, InviteTeamMemberRequest, Project } from '@/types/rbac'
+import type { Team, TeamMember, CreateTeamRequest, InviteTeamMemberRequest, Project, TeamRole } from '@/types/rbac'
+import { TEAM_ROLE_VALUES, TEAM_ROLE_LABELS } from '@/types/rbac'
 import { useAuthStore } from '@/stores/auth'
 import { teamService } from '@/services/teamService'
 import TeamCard from './TeamCard.vue'
@@ -184,6 +187,17 @@ const filterRole = ref('')
 // Team members state
 const teamMembers = ref<TeamMember[]>([])
 const membersLoading = ref(false)
+
+// Static role filter options derived from shared role definitions. This
+// avoids hard-coding role values/labels in the template so that future
+// dynamic role sources can plug in here instead.
+const ROLE_FILTER_OPTIONS: { value: '' | TeamRole; label: string }[] = [
+  { value: '', label: 'All Roles' },
+  ...TEAM_ROLE_VALUES.map((role) => ({
+    value: role,
+    label: TEAM_ROLE_LABELS[role]
+  }))
+]
 
 // Computed
 const currentUserId = computed(() => authStore.user?.id || '')
