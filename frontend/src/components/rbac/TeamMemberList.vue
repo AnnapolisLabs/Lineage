@@ -106,26 +106,35 @@
 </template>
 
 <script setup lang="ts">
-import type { TeamMember } from '@/types/rbac'
+import type { TeamMember, TeamRole } from '@/types/rbac'
 import RoleBadge from '@/components/rbac/RoleBadge.vue'
 
 interface Props {
-  members: TeamMember[]
+  // Members list is optional at the prop level but will default to
+  // an empty array so the template can safely use `members.length`.
+  members?: TeamMember[]
+
+  // Loading can be omitted and will default to `false`.
   loading?: boolean
-  canManageMembers?: boolean
-  currentUserId?: string
+
+  // Permission-related props are required and must be provided by
+  // the parent based on real auth/permission checks. We do NOT
+  // supply defaults here to avoid silently treating the user as
+  // having no permissions when the parent forgets to wire them.
+  canManageMembers: boolean
+  currentUserId: string
 }
 
-const { members, loading, canManageMembers, currentUserId } = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   members: () => [],
-  loading: false,
-  canManageMembers: false,
-  currentUserId: ''
+  loading: false
 })
+
+const { members, loading, canManageMembers, currentUserId } = props
 
 const emit = defineEmits<{
   'invite-member': []
-  'update-role': [member: TeamMember, role: string]
+  'update-role': [member: TeamMember, role: TeamRole]
   'remove-member': [member: TeamMember]
 }>()
 
@@ -154,7 +163,7 @@ function getInitials(nameOrEmail: string): string {
 
 function handleRoleChange(member: TeamMember, event: Event) {
   const target = event.target as HTMLSelectElement
-  const newRole = target.value
+  const newRole = target.value as TeamRole
   
   if (newRole !== member.role) {
     emit('update-role', member, newRole)

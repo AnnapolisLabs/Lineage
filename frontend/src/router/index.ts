@@ -33,7 +33,10 @@ const router = createRouter({
     {
       path: '/admin',
       component: () => import('@/layouts/AdminLayout.vue'),
-      meta: { requiresAuth: true, requiresRole: ['ADMIN'] },
+      // The backend uses OWNER and ADMINISTRATOR as the top global roles.
+      // Both are considered administrative in the backend role model, so
+      // allow either to access the admin area.
+      meta: { requiresAuth: true, requiresRole: ['ADMINISTRATOR', 'OWNER'] },
       children: [
         {
           path: '',

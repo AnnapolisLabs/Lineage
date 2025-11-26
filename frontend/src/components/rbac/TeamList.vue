@@ -9,11 +9,21 @@
         </p>
       </div>
       <div class="flex gap-3">
+        <!--
+          Only render the primary "Create Team" button when the user actually
+          has permission. This avoids the confusing behaviour where the button
+          appears disabled (greyed out) but can still be clicked to open the
+          modal and create teams.
+
+          The tooltip messaging is handled purely via the browser's title
+          attribute, so when the button is not rendered there is no implied
+          permission hint.
+        -->
         <button
-          @click="showCreateModal = true"
+          v-if="canCreateTeam"
+          @click="handleOpenCreateTeam"
           class="inline-flex items-center px-4 py-2 bg-annapolis-teal hover:bg-annapolis-teal/90 text-white font-medium rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
-          :class="{ 'opacity-50 cursor-not-allowed': !canCreateTeam }"
-          :title="canCreateTeam ? 'Create a new team' : 'You need admin or editor permissions to create teams'"
+          title="Create a new team"
         >
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -114,7 +124,7 @@
             :loading="membersLoading"
             :canManageMembers="canManageTeam(selectedTeam.id)"
             :currentUserId="currentUserId"
-            @invite-member="handleInviteMember"
+            @invite-member="handleInviteMemberFromSidebar"
             @update-role="handleUpdateMemberRole"
             @remove-member="handleRemoveMember"
           />
@@ -234,15 +244,69 @@ const filteredTeams = computed(() => {
 })
 
 // Methods
-function getUserTeamRole(teamId: string): string {
-  // This would need to be implemented based on actual team member data
-  // For now, return a default role
-  return 'MEMBER'
+function handleOpenCreateTeam() {
+  // Safety guard: in case this is ever triggered while permissions are
+  // still resolving, prevent opening the modal when the user lacks
+  // create permissions.
+  if (!canCreateTeam.value) return
+  showCreateModal.value = true
+}
+
+function getUserTeamRole(teamId: string): TeamRole {
+  const userId = currentUserId.value
+
+  if (!userId) {
+    // Not signed in or user not yet resolved – treat as viewer.
+    return 'VIEWER'
+  }
+
+  // If we know the team, treat its creator as the OWNER even before
+  // member records have been loaded. This ensures the role badge on
+  // each TeamCard correctly reflects that the creator "owns" the team
+  // without requiring an extra members API call.
+  const team = teams.value.find((t) => t.id === teamId)
+  if (team && team.createdBy === userId) {
+    return 'OWNER'
+  }
+
+  // When we have members loaded for the currently selected team, prefer
+  // that data so roles such as ADMIN / MEMBER are shown accurately.
+  if (selectedTeam.value && selectedTeam.value.id === teamId) {
+    const member = teamMembers.value.find(
+      (m) => m.teamId === teamId && m.userId === userId && m.status === 'ACTIVE'
+    )
+
+    if (member) {
+      return member.role
+    }
+  }
+
+  // Safe default: treat unknown membership as a basic viewer.
+  return 'VIEWER'
 }
 
 function canManageTeam(teamId: string): boolean {
-  // Check if user has permission to manage this team
-  return canCreateTeam.value // Simplified for now
+  // A user can manage a team if:
+  // - They have global permissions (admin/editor), or
+  // - They are the creator/owner of that specific team.
+  const userId = currentUserId.value
+
+  if (!userId) {
+    return false
+  }
+
+  // Global permission check (admins/editors)
+  if (canCreateTeam.value) {
+    return true
+  }
+
+  // Team‑level permission: treat the team creator as a manager
+  const team = teams.value.find((t) => t.id === teamId)
+  if (team && team.createdBy === userId) {
+    return true
+  }
+
+  return false
 }
 
 function canInviteToTeam(teamId: string): boolean {
@@ -270,6 +334,15 @@ function handleViewMembers(team: Team) {
 function handleInviteMember(team: Team) {
   selectedTeam.value = team
   showInviteModal.value = true
+}
+
+// Wrapper for the TeamMemberList "invite-member" event.
+// TeamMemberList emits this event without any payload (signature () => void),
+// while the primary handler expects a Team argument. This function bridges
+// that gap by using the currently selectedTeam when present.
+function handleInviteMemberFromSidebar() {
+  if (!selectedTeam.value) return
+  handleInviteMember(selectedTeam.value)
 }
 
 function closeMembersSidebar() {
@@ -307,7 +380,7 @@ async function handleInviteMemberSubmit(data: InviteTeamMemberRequest, teamId: s
   }
 }
 
-async function handleUpdateMemberRole(member: TeamMember, role: string) {
+async function handleUpdateMemberRole(member: TeamMember, role: TeamRole) {
   if (!selectedTeam.value) return
 
   try {
@@ -315,7 +388,7 @@ async function handleUpdateMemberRole(member: TeamMember, role: string) {
     // Update local state
     const index = teamMembers.value.findIndex(m => m.id === member.id)
     if (index !== -1) {
-      teamMembers.value[index].role = role as any
+      teamMembers.value[index].role = role
     }
   } catch (error) {
     console.error('Failed to update member role:', error)

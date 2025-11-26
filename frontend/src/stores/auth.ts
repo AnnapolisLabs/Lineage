@@ -23,8 +23,30 @@ export const useAuthStore = defineStore('auth', () => {
   const error = ref<string | null>(null)
 
   const isAuthenticated = computed(() => !!token.value)
-  const isAdmin = computed(() => user.value?.globalRole === 'ADMIN')
-  const isEditor = computed(() => user.value?.globalRole === 'DEVELOPER' || user.value?.globalRole === 'ADMIN')
+
+  // Backend role model (see UserRole enum on the backend):
+  // - OWNER is the top "super-user" role (hierarchy level 3)
+  // - ADMINISTRATOR is the standard system admin role (level 2)
+  // - PROJECT_MANAGER is also an administrative/system role (level 2)
+  // All roles with hierarchy level >= 2 are considered administrative on the
+  // backend (UserRole.isAdministrative()), so the frontend should treat
+  // OWNER, ADMINISTRATOR and PROJECT_MANAGER as admins/editors for global
+  // management capabilities such as creating teams.
+  const isAdmin = computed(
+    () =>
+      user.value?.globalRole === 'ADMINISTRATOR' ||
+      user.value?.globalRole === 'OWNER' ||
+      user.value?.globalRole === 'PROJECT_MANAGER'
+  )
+
+  // Editors include developer-level users as well as all administrative roles.
+  const isEditor = computed(
+    () =>
+      user.value?.globalRole === 'DEVELOPER' ||
+      user.value?.globalRole === 'ADMINISTRATOR' ||
+      user.value?.globalRole === 'OWNER' ||
+      user.value?.globalRole === 'PROJECT_MANAGER'
+  )
 
   async function login(credentials: LoginRequest) {
     loading.value = true
@@ -56,6 +78,14 @@ export const useAuthStore = defineStore('auth', () => {
       // Store user data and ID for persistence/AI service
       localStorage.setItem('auth_user', JSON.stringify(user.value))
       localStorage.setItem('user_id', response.user.id)
+
+      // Touch role-based computed flags once on successful login so any
+      // UI that depends on them (e.g. canCreateTeam via isAdmin/isEditor)
+      // reacts immediately. This ensures the computed getters run after
+      // the user/globalRole are populated, not only when logout clears
+      // the user.
+      void isAdmin.value
+      void isEditor.value
       return true
     } catch (err: any) {
       const errorMsg = err.response?.data?.message || 'Login failed'
