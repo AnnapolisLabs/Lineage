@@ -9,6 +9,7 @@ import com.annapolislabs.lineage.entity.AuditLog;
 import com.annapolislabs.lineage.entity.AuditSeverity;
 import com.annapolislabs.lineage.entity.User;
 import com.annapolislabs.lineage.entity.UserSecurity;
+import com.annapolislabs.lineage.exception.auth.AuthenticationException;
 import com.annapolislabs.lineage.exception.auth.MfaVerificationException;
 import com.annapolislabs.lineage.repository.AuditLogRepository;
 import com.annapolislabs.lineage.repository.UserSecurityRepository;
@@ -449,10 +450,10 @@ public class SecurityController {
                 return user.getId().toString();
             } catch (Exception e) {
                 logger.error("Failed to get current user ID", e);
-                throw new com.annapolislabs.lineage.exception.auth.AuthenticationException("Unable to authenticate user", e);
+                throw new AuthenticationException("Unable to authenticate user", e);
             }
         }
-        throw new com.annapolislabs.lineage.exception.auth.AuthenticationException("No authenticated user found");
+        throw new AuthenticationException("No authenticated user found");
     }
 
     private String getClientIpAddress(HttpServletRequest request) {

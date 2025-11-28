@@ -153,7 +153,7 @@
                     </button>
 
                     <button
-                      v-else
+                      v-else-if="user.status === 'SUSPENDED'"
                       @click="unlockUserAccount(user)"
                       class="btn-icon btn-success"
                       title="Unlock account"
@@ -161,6 +161,30 @@
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                         <path d="M7 11V7a5 5 0 0 1 9.9-1"/>
+                      </svg>
+                    </button>
+
+                    <button
+                      v-else-if="user.status === 'DEACTIVATED'"
+                      @click="reactivateUserAccount(user)"
+                      class="btn-icon btn-success"
+                      title="Reactivate account"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 9.9-1"/>
+                      </svg>
+                    </button>
+
+                    <button
+                      @click="openSetPasswordModal(user)"
+                      class="btn-icon btn-warning"
+                      title="Set password"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="7" cy="17" r="3"/>
+                        <path d="M10 17h10"/>
+                        <path d="M7 14V7a5 5 0 0 1 10 0v4"/>
                       </svg>
                     </button>
 
@@ -314,6 +338,62 @@
       </div>
     </div>
 
+    <!-- Set Password Modal -->
+    <div
+      v-if="showPasswordModal"
+      class="modal-overlay"
+      @click="closeSetPasswordModal"
+    >
+      <div class="modal-content" @click.stop>
+        <div class="modal-header">
+          <h3>Set Password for {{ passwordTargetUser?.name || passwordTargetUser?.email }}</h3>
+          <button @click="closeSetPasswordModal" class="close-button">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <form @submit.prevent="handleSetPassword" class="user-form">
+          <div class="form-group">
+            <label for="newPassword" class="form-label">New Password *</label>
+            <input
+              id="newPassword"
+              v-model="passwordForm.newPassword"
+              type="password"
+              class="form-input"
+              required
+            />
+            <p class="helper-text">Must be at least 12 characters and meet password policy.</p>
+          </div>
+
+          <div class="form-group">
+            <label for="confirmPassword" class="form-label">Confirm Password *</label>
+            <input
+              id="confirmPassword"
+              v-model="passwordForm.confirmPassword"
+              type="password"
+              class="form-input"
+              required
+            />
+          </div>
+
+          <p v-if="passwordError" class="error-text">{{ passwordError }}</p>
+          <p v-if="passwordSuccess" class="success-text">{{ passwordSuccess }}</p>
+
+          <div class="modal-actions">
+            <button type="button" @click="closeSetPasswordModal" class="btn-secondary">
+              Cancel
+            </button>
+            <button type="submit" class="btn-primary" :disabled="adminStore.isLoading">
+              {{ adminStore.isLoading ? 'Setting...' : 'Set Password' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <!-- Edit User Modal -->
     <div
       v-if="showEditModal"
@@ -415,6 +495,14 @@ const searchQuery = ref('')
 const showCreateModal = ref(false)
 const showEditModal = ref(false)
 const editingUser = ref<AdminUser | null>(null)
+const showPasswordModal = ref(false)
+const passwordTargetUser = ref<AdminUser | null>(null)
+const passwordForm = ref({
+  newPassword: '',
+  confirmPassword: ''
+})
+const passwordError = ref('')
+const passwordSuccess = ref('')
 
 const newUser = ref({
   firstName: '',
@@ -512,6 +600,50 @@ async function handleUpdateUser() {
   }
 }
 
+function openSetPasswordModal(user: AdminUser) {
+  passwordTargetUser.value = user
+  passwordForm.value = { newPassword: '', confirmPassword: '' }
+  passwordError.value = ''
+  passwordSuccess.value = ''
+  showPasswordModal.value = true
+}
+
+function closeSetPasswordModal() {
+  showPasswordModal.value = false
+  passwordTargetUser.value = null
+  passwordForm.value = { newPassword: '', confirmPassword: '' }
+  passwordError.value = ''
+  passwordSuccess.value = ''
+}
+
+async function handleSetPassword() {
+  if (!passwordTargetUser.value) return
+
+  const { newPassword, confirmPassword } = passwordForm.value
+  passwordError.value = ''
+  passwordSuccess.value = ''
+
+  if (newPassword !== confirmPassword) {
+    passwordError.value = 'Passwords do not match.'
+    return
+  }
+
+  if (newPassword.length < 12) {
+    passwordError.value = 'Password must be at least 12 characters long.'
+    return
+  }
+
+  try {
+    await adminStore.setUserPassword(passwordTargetUser.value.id, newPassword)
+    passwordSuccess.value = 'Password updated successfully.'
+  } catch (error) {
+    // Store already logged the error; show generic message
+    if (!passwordError.value) {
+      passwordError.value = 'Failed to set password. Please check policy requirements.'
+    }
+  }
+}
+
 async function lockUserAccount(user: AdminUser) {
   if (confirm(`Are you sure you want to lock the account for ${user.name}?`)) {
     try {
@@ -529,6 +661,15 @@ async function unlockUserAccount(user: AdminUser) {
   } catch (error) {
     // Error is handled by the store
     console.error('Failed to unlock user account:', error)
+  }
+}
+
+async function reactivateUserAccount(user: AdminUser) {
+  try {
+    await adminStore.reactivateUserAccount(user.id)
+  } catch (error) {
+    // Error is handled by the store
+    console.error('Failed to reactivate user account:', error)
   }
 }
 

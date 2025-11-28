@@ -71,6 +71,10 @@ export interface AuditLogResponse {
   totalPages: number
 }
 
+export interface AdminSetPasswordRequest {
+  newPassword: string
+}
+
 export const adminService = {
   // User management
   async getUsers(page: number = 0, size: number = 20, search?: string): Promise<UserListResponse> {
@@ -107,11 +111,18 @@ export const adminService = {
     await api.post(`/admin/users/${userId}/unlock`)
   },
 
+  async reactivateUserAccount(userId: string): Promise<void> {
+    await api.post(`/admin/users/${userId}/reactivate`)
+  },
+
   async createUser(userData: CreateUserRequest): Promise<AdminUser> {
     const response = await api.post<AdminUser>('/admin/create-user', userData)
     return response.data
   },
 
+  async setUserPassword(userId: string, payload: AdminSetPasswordRequest): Promise<void> {
+    await api.post(`/admin/users/${userId}/password`, payload)
+  },
   // System statistics
   async getSystemStatistics(): Promise<SystemStatistics> {
     const response = await api.get<SystemStatistics>('/admin/statistics')
