@@ -43,9 +43,10 @@ public class CsrfTokenController {
             HttpServletResponse response) {
         
         try {
-            // Generate token and capture both token value and tokenId
-            CsrfToken token = csrfTokenService.generateToken();
-            String tokenId = csrfTokenService.getLastGeneratedTokenId();
+            // Generate token and capture both token value and tokenId atomically
+            CsrfTokenService.CsrfTokenPair pair = csrfTokenService.generateTokenPair();
+            CsrfToken token = pair.token();
+            String tokenId = pair.tokenId();
             
             // Add token to response headers
             csrfTokenService.addTokenToResponse(response, token);

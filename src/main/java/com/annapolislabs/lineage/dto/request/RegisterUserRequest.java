@@ -30,6 +30,6 @@ public class RegisterUserRequest {
     @Size(max = 20, message = "Phone number must not exceed 20 characters")
     private String phoneNumber;
     
-    private UserRole globalRole = UserRole.VIEWER;
+    private UserRole globalRole = UserRole.USER;
 
 }

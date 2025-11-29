@@ -105,91 +105,183 @@
 
         <!-- Main Content -->
         <div class="flex-1 space-y-6">
-        <!-- Actions Bar -->
+        <!-- Tab Navigation -->
         <div class="flex justify-between items-center">
-          <div class="flex gap-2">
-            <input
-              v-model="searchQuery"
-              type="text"
-              placeholder="Search requirements..."
-              class="px-4 py-2 bg-annapolis-charcoal/50 border border-annapolis-teal/30 rounded-lg text-white placeholder-annapolis-gray-400 focus:outline-none focus:ring-2 focus:ring-annapolis-teal focus:border-transparent transition-all"
-              @input="handleSearch"
-            />
-            <select
-              v-model="filterStatus"
-              class="px-4 py-2 bg-annapolis-charcoal/50 border border-annapolis-teal/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-annapolis-teal focus:border-transparent transition-all"
-              @change="handleSearch"
-            >
-              <option value="">All Status</option>
-              <option value="DRAFT">Draft</option>
-              <option value="REVIEW">Review</option>
-              <option value="APPROVED">Approved</option>
-              <option value="DEPRECATED">Deprecated</option>
-            </select>
-            <select
-              v-model="filterPriority"
-              class="px-4 py-2 bg-annapolis-charcoal/50 border border-annapolis-teal/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-annapolis-teal focus:border-transparent transition-all"
-              @change="handleSearch"
-            >
-              <option value="">All Priority</option>
-              <option value="LOW">Low</option>
-              <option value="MEDIUM">Medium</option>
-              <option value="HIGH">High</option>
-              <option value="CRITICAL">Critical</option>
-            </select>
-            <select
-              v-model="filterLevel"
-              class="px-4 py-2 bg-annapolis-charcoal/50 border border-annapolis-teal/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-annapolis-teal focus:border-transparent transition-all"
-              @change="handleSearch"
-            >
-              <option value="">All Levels</option>
-              <option
-                v-for="(prefix, level) in project?.levelPrefixes"
-                :key="level"
-                :value="level"
-              >
-                L{{ level }} - {{ prefix }}
-              </option>
-            </select>
-          </div>
-          <div class="flex space-x-2">
+          <div class="flex space-x-1 bg-annapolis-charcoal/50 p-1 rounded-lg border border-annapolis-teal/20">
             <button
-              @click="showExportMenu = !showExportMenu"
-              class="relative px-4 py-2 bg-annapolis-charcoal/70 text-annapolis-gray-300 rounded-lg hover:bg-annapolis-charcoal hover:text-annapolis-teal border border-annapolis-teal/20 transition-all duration-300"
+              @click="activeTab = 'requirements'"
+              :class="[
+                'px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200',
+                activeTab === 'requirements'
+                  ? 'bg-annapolis-teal text-white shadow-lg'
+                  : 'text-annapolis-gray-300 hover:text-annapolis-teal hover:bg-annapolis-teal/10'
+              ]"
             >
-              Export ▾
-              <div
-                v-if="showExportMenu"
-                class="absolute right-0 mt-2 w-48 bg-annapolis-charcoal rounded-lg shadow-lg z-10 border border-annapolis-teal/30"
-              >
-                <button
-                  @click="handleExport('csv')"
-                  class="block w-full text-left px-4 py-2 text-sm text-annapolis-gray-300 hover:bg-annapolis-teal/20 hover:text-annapolis-teal first:rounded-t-lg transition-colors"
-                >
-                  Export as CSV
-                </button>
-                <button
-                  @click="handleExport('json')"
-                  class="block w-full text-left px-4 py-2 text-sm text-annapolis-gray-300 hover:bg-annapolis-teal/20 hover:text-annapolis-teal transition-colors"
-                >
-                  Export as JSON
-                </button>
-                <button
-                  @click="handleExport('markdown')"
-                  class="block w-full text-left px-4 py-2 text-sm text-annapolis-gray-300 hover:bg-annapolis-teal/20 hover:text-annapolis-teal last:rounded-b-lg transition-colors"
-                >
-                  Export as Markdown
-                </button>
-              </div>
+              Requirements
             </button>
             <button
-              @click="openCreateModal()"
-              class="px-8 py-2 bg-annapolis-teal hover:bg-annapolis-teal/90 text-white font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
+              @click="activeTab = 'teams'"
+              :class="[
+                'px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 flex items-center gap-2',
+                activeTab === 'teams'
+                  ? 'bg-annapolis-teal text-white shadow-lg'
+                  : 'text-annapolis-gray-300 hover:text-annapolis-teal hover:bg-annapolis-teal/10'
+              ]"
             >
-              + New Requirement
+              Teams
+              <span v-if="teamCount > 0" class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-annapolis-teal/20 text-annapolis-teal">
+                {{ teamCount }}
+              </span>
+            </button>
+            <button
+              @click="activeTab = 'tasks'"
+              :class="[
+                'px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 flex items-center gap-2',
+                activeTab === 'tasks'
+                  ? 'bg-annapolis-teal text-white shadow-lg'
+                  : 'text-annapolis-gray-300 hover:text-annapolis-teal hover:bg-annapolis-teal/10'
+              ]"
+            >
+              Tasks
+              <span v-if="taskCount > 0" class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-annapolis-teal/20 text-annapolis-teal">
+                {{ taskCount }}
+              </span>
+            </button>
+            <button
+              @click="activeTab = 'reviews'"
+              :class="[
+                'px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 flex items-center gap-2',
+                activeTab === 'reviews'
+                  ? 'bg-annapolis-teal text-white shadow-lg'
+                  : 'text-annapolis-gray-300 hover:text-annapolis-teal hover:bg-annapolis-teal/10'
+              ]"
+            >
+              Reviews
+              <span v-if="reviewCount > 0" class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-annapolis-teal/20 text-annapolis-teal">
+                {{ reviewCount }}
+              </span>
+            </button>
+          </div>
+          <div class="flex items-center gap-3">
+            <PermissionGate permission="project.manage" :resourceId="projectId">
+              <button
+                @click="router.push(`/projects/${projectId}/teams`)"
+                class="px-4 py-2 text-sm font-medium text-annapolis-gray-300 hover:text-annapolis-teal transition-colors duration-300 flex items-center gap-2"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                Manage Teams
+              </button>
+            </PermissionGate>
+            <button
+              @click="router.push(`/projects/${projectId}/settings`)"
+              class="px-4 py-2 text-sm font-medium text-annapolis-gray-300 hover:text-annapolis-teal transition-colors duration-300 flex items-center gap-2"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              Settings
+            </button>
+            <button
+              @click="handleLogout"
+              class="px-4 py-2 text-sm font-medium text-annapolis-gray-300 hover:text-annapolis-teal transition-colors duration-300"
+            >
+              Logout
             </button>
           </div>
         </div>
+
+        <!-- Requirements Tab Content -->
+        <div v-show="activeTab === 'requirements'">
+          <!-- Actions Bar -->
+          <div class="flex justify-between items-center">
+            <div class="flex gap-2">
+              <input
+                v-model="searchQuery"
+                type="text"
+                placeholder="Search requirements..."
+                class="px-4 py-2 bg-annapolis-charcoal/50 border border-annapolis-teal/30 rounded-lg text-white placeholder-annapolis-gray-400 focus:outline-none focus:ring-2 focus:ring-annapolis-teal focus:border-transparent transition-all"
+                @input="handleSearch"
+              />
+              <select
+                v-model="filterStatus"
+                class="px-4 py-2 bg-annapolis-charcoal/50 border border-annapolis-teal/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-annapolis-teal focus:border-transparent transition-all"
+                @change="handleSearch"
+              >
+                <option value="">All Status</option>
+                <option value="DRAFT">Draft</option>
+                <option value="REVIEW">Review</option>
+                <option value="APPROVED">Approved</option>
+                <option value="DEPRECATED">Deprecated</option>
+              </select>
+              <select
+                v-model="filterPriority"
+                class="px-4 py-2 bg-annapolis-charcoal/50 border border-annapolis-teal/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-annapolis-teal focus:border-transparent transition-all"
+                @change="handleSearch"
+              >
+                <option value="">All Priority</option>
+                <option value="LOW">Low</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="HIGH">High</option>
+                <option value="CRITICAL">Critical</option>
+              </select>
+              <select
+                v-model="filterLevel"
+                class="px-4 py-2 bg-annapolis-charcoal/50 border border-annapolis-teal/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-annapolis-teal focus:border-transparent transition-all"
+                @change="handleSearch"
+              >
+                <option value="">All Levels</option>
+                <option
+                  v-for="(prefix, level) in project?.levelPrefixes"
+                  :key="level"
+                  :value="level"
+                >
+                  L{{ level }} - {{ prefix }}
+                </option>
+              </select>
+            </div>
+            <div class="flex space-x-2">
+              <button
+                @click="showExportMenu = !showExportMenu"
+                class="relative px-4 py-2 bg-annapolis-charcoal/70 text-annapolis-gray-300 rounded-lg hover:bg-annapolis-charcoal hover:text-annapolis-teal border border-annapolis-teal/20 transition-all duration-300"
+              >
+                Export ▾
+                <div
+                  v-if="showExportMenu"
+                  class="absolute right-0 mt-2 w-48 bg-annapolis-charcoal rounded-lg shadow-lg z-10 border border-annapolis-teal/30"
+                >
+                  <button
+                    @click="handleExport('csv')"
+                    class="block w-full text-left px-4 py-2 text-sm text-annapolis-gray-300 hover:bg-annapolis-teal/20 hover:text-annapolis-teal first:rounded-t-lg transition-colors"
+                  >
+                    Export as CSV
+                  </button>
+                  <button
+                    @click="handleExport('json')"
+                    class="block w-full text-left px-4 py-2 text-sm text-annapolis-gray-300 hover:bg-annapolis-teal/20 hover:text-annapolis-teal transition-colors"
+                  >
+                    Export as JSON
+                  </button>
+                  <button
+                    @click="handleExport('markdown')"
+                    class="block w-full text-left px-4 py-2 text-sm text-annapolis-gray-300 hover:bg-annapolis-teal/20 hover:text-annapolis-teal last:rounded-b-lg transition-colors"
+                  >
+                    Export as Markdown
+                  </button>
+                </div>
+              </button>
+              <PermissionGate permission="project.manage" :resourceId="projectId">
+                <button
+                  @click="openCreateModal()"
+                  class="px-8 py-2 bg-annapolis-teal hover:bg-annapolis-teal/90 text-white font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
+                >
+                  + New Requirement
+                </button>
+              </PermissionGate>
+            </div>
+          </div>
 
         <!-- Requirements List -->
         <div v-if="requirements.length === 0" class="bg-annapolis-charcoal/50 backdrop-blur-sm rounded-lg shadow-lg border border-annapolis-teal/20 text-center py-16">
@@ -198,15 +290,17 @@
           </svg>
           <h3 class="text-lg font-medium text-white mb-2">No requirements yet</h3>
           <p class="text-annapolis-gray-300 mb-6">Get started by creating your first requirement</p>
-          <button
-            @click="openCreateModal()"
-            class="inline-flex items-center px-8 py-3 bg-annapolis-teal hover:bg-annapolis-teal/90 text-white font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
-          >
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
-            Create Requirement
-          </button>
+          <PermissionGate permission="project.manage" :resourceId="projectId">
+            <button
+              @click="openCreateModal()"
+              class="inline-flex items-center px-8 py-3 bg-annapolis-teal hover:bg-annapolis-teal/90 text-white font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
+            >
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+              Create Requirement
+            </button>
+          </PermissionGate>
         </div>
 
         <div v-else class="grid gap-4">
@@ -325,6 +419,58 @@
               </div>
             </div>
           </div>
+        </div>
+        </div>
+
+        <!-- Teams Tab Content -->
+        <div v-show="activeTab === 'teams'">
+          <TeamList
+            :projectId="projectId"
+            :projects="projects"
+            @team-created="handleTeamCreated"
+            @team-updated="handleTeamUpdated"
+            @team-deleted="handleTeamDeleted"
+          />
+        </div>
+
+        <!-- Tasks Tab Content -->
+        <div v-show="activeTab === 'tasks'" class="text-center py-16">
+          <svg class="mx-auto h-16 w-16 text-annapolis-teal mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+          </svg>
+          <h2 class="text-2xl font-bold text-white mb-4">Task Management</h2>
+          <p class="text-annapolis-gray-300 mb-8 max-w-md mx-auto">
+            Task assignment and management features are coming soon. Create teams to organize your project members and collaborate effectively.
+          </p>
+          <button
+            @click="activeTab = 'teams'"
+            class="inline-flex items-center px-6 py-3 bg-annapolis-teal hover:bg-annapolis-teal/90 text-white font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
+          >
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            Manage Teams
+          </button>
+        </div>
+
+        <!-- Reviews Tab Content -->
+        <div v-show="activeTab === 'reviews'" class="text-center py-16">
+          <svg class="mx-auto h-16 w-16 text-annapolis-teal mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <h2 class="text-2xl font-bold text-white mb-4">Peer Reviews</h2>
+          <p class="text-annapolis-gray-300 mb-8 max-w-md mx-auto">
+            Peer review functionality for requirements and code reviews is coming soon. Set up teams to enable collaborative review workflows.
+          </p>
+          <button
+            @click="activeTab = 'teams'"
+            class="inline-flex items-center px-6 py-3 bg-annapolis-teal hover:bg-annapolis-teal/90 text-white font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
+          >
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            Setup Teams First
+          </button>
         </div>
         </div>
       </div>
@@ -450,16 +596,32 @@ import { exportData } from '@/services/api'
 import RequirementTreeView from '@/components/RequirementTreeView.vue'
 import { compareReqIds } from '@/utils/requirementSorting'
 
+// RBAC imports
+import TeamList from '@/components/rbac/TeamList.vue'
+import PermissionGate from '@/components/rbac/PermissionGate.vue'
+import { useTeamStore } from '@/stores/team'
+import { useRbacStore } from '@/stores/rbac'
+
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
+const teamStore = useTeamStore()
+const rbacStore = useRbacStore()
 
 const projectId = computed(() => route.params.id as string)
 const project = ref<Project | null>(null)
 const allRequirements = ref<Requirement[]>([])
 const allRequirementLinks = ref<any[]>([])
 const requirements = ref<Requirement[]>([])
+const projects = ref<Project[]>([])
 const loading = ref(true)
+
+const activeTab = ref('requirements')
+
+// RBAC state
+const teamCount = computed(() => teamStore.teams.length)
+const taskCount = ref(0) // Will be implemented when task service is ready
+const reviewCount = ref(0) // Will be implemented when review service is ready
 
 const searchQuery = ref(route.query.search as string || '')
 const filterStatus = ref(route.query.status as string || '')
@@ -500,6 +662,16 @@ async function loadData() {
     project.value = await projectService.getById(projectId.value)
     allRequirements.value = await requirementService.getByProject(projectId.value)
     requirements.value = allRequirements.value
+    
+    // Load projects for team management
+    projects.value = await projectService.getAll()
+    
+    // Load teams for this project
+    try {
+      await teamStore.fetchTeams({ project_id: projectId.value, size: 100 })
+    } catch (teamError) {
+      console.warn('Failed to load teams:', teamError)
+    }
 
     // Load all requirement links for tree view
     const linkPromises = allRequirements.value.map(req =>
@@ -649,6 +821,22 @@ function navigateToRequirement(reqId: string) {
 function handleLogout() {
   authStore.logout()
   router.push('/login')
+}
+
+// Team management handlers
+function handleTeamCreated(team: any) {
+  console.log('Team created:', team)
+  // Update team count or refresh teams
+}
+
+function handleTeamUpdated(team: any) {
+  console.log('Team updated:', team)
+  // Update team count or refresh teams
+}
+
+function handleTeamDeleted(teamId: string) {
+  console.log('Team deleted:', teamId)
+  // Update team count or refresh teams
 }
 
 async function handleExport(format: 'csv' | 'json' | 'markdown') {

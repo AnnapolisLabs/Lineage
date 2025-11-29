@@ -82,7 +82,7 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "global_role", nullable = false, length = 20)
-    private UserRole globalRole = UserRole.VIEWER;
+    private UserRole globalRole = UserRole.USER;
 
     // Email Verification
     @Column(name = "email_verified", nullable = false)
@@ -243,17 +243,13 @@ public class User {
         this.status = status;
     }
 
+    // Backward compatibility methods for existing code
+    public UserRole getGlobalRole() {
+        return globalRole;
+    }
+
     public void setGlobalRole(UserRole globalRole) {
         this.globalRole = globalRole;
-    }
-
-    // Backward compatibility methods for existing code
-    public UserRole getRole() {
-        return getGlobalRole();
-    }
-
-    public void setRole(UserRole role) {
-        setGlobalRole(role);
     }
 
     public void setEmailVerified(boolean emailVerified) {
