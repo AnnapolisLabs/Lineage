@@ -3,14 +3,50 @@ import { ref, computed } from 'vue'
 import { authService, type User, type LoginRequest } from '@/services/authService'
 
 export const useAuthStore = defineStore('auth', () => {
-  const user = ref<User | null>(null)
+  // Hydrate user from localStorage if available so that a logged-in user
+  // is immediately present on page load/navigation, before `/auth/me` resolves.
+  const storedUser = localStorage.getItem('auth_user')
+  let initialUser: User | null = null
+
+  if (storedUser) {
+    try {
+      initialUser = JSON.parse(storedUser) as User
+    } catch (e) {
+      console.warn('Failed to parse stored auth user, clearing it')
+      localStorage.removeItem('auth_user')
+    }
+  }
+
+  const user = ref<User | null>(initialUser)
   const token = ref<string | null>(localStorage.getItem('auth_token'))
   const loading = ref(false)
   const error = ref<string | null>(null)
 
   const isAuthenticated = computed(() => !!token.value)
-  const isAdmin = computed(() => user.value?.globalRole === 'ADMIN')
-  const isEditor = computed(() => user.value?.globalRole === 'DEVELOPER' || user.value?.globalRole === 'ADMIN')
+
+  // Backend role model (see UserRole enum on the backend):
+  // - OWNER is the top "super-user" role (hierarchy level 3)
+  // - ADMINISTRATOR is the standard system admin role (level 2)
+  // - PROJECT_MANAGER is also an administrative/system role (level 2)
+  // All roles with hierarchy level >= 2 are considered administrative on the
+  // backend (UserRole.isAdministrative()), so the frontend should treat
+  // OWNER, ADMINISTRATOR and PROJECT_MANAGER as admins/editors for global
+  // management capabilities such as creating teams.
+  const isAdmin = computed(
+    () =>
+      user.value?.globalRole === 'ADMINISTRATOR' ||
+      user.value?.globalRole === 'OWNER' ||
+      user.value?.globalRole === 'PROJECT_MANAGER'
+  )
+
+  // Editors include developer-level users as well as all administrative roles.
+  const isEditor = computed(
+    () =>
+      user.value?.globalRole === 'DEVELOPER' ||
+      user.value?.globalRole === 'ADMINISTRATOR' ||
+      user.value?.globalRole === 'OWNER' ||
+      user.value?.globalRole === 'PROJECT_MANAGER'
+  )
 
   async function login(credentials: LoginRequest) {
     loading.value = true
@@ -39,8 +75,17 @@ export const useAuthStore = defineStore('auth', () => {
         lastLoginAt: response.user.lastLoginAt
       }
       
-      // Store user ID for AI service
+      // Store user data and ID for persistence/AI service
+      localStorage.setItem('auth_user', JSON.stringify(user.value))
       localStorage.setItem('user_id', response.user.id)
+
+      // Touch role-based computed flags once on successful login so any
+      // UI that depends on them (e.g. canCreateTeam via isAdmin/isEditor)
+      // reacts immediately. This ensures the computed getters run after
+      // the user/globalRole are populated, not only when logout clears
+      // the user.
+      void isAdmin.value
+      void isEditor.value
       return true
     } catch (err: any) {
       const errorMsg = err.response?.data?.message || 'Login failed'
@@ -57,6 +102,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       user.value = await authService.getCurrentUser()
       if (user.value) {
+        localStorage.setItem('auth_user', JSON.stringify(user.value))
         localStorage.setItem('user_id', user.value.id)
       }
     } catch (err: any) {
@@ -77,6 +123,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       user.value = await authService.getCurrentUser()
       if (user.value) {
+        localStorage.setItem('auth_user', JSON.stringify(user.value))
         localStorage.setItem('user_id', user.value.id)
       }
     } catch (err: any) {
@@ -91,6 +138,7 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = null
     token.value = null
     localStorage.removeItem('auth_token')
+    localStorage.removeItem('auth_user')
     localStorage.removeItem('user_id')
     authService.logout()
   }

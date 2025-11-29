@@ -121,4 +121,9 @@ public interface AuditLogRepository extends JpaRepository<AuditLog, UUID> {
     
     @Query("SELECT al.ipAddress, COUNT(al) FROM AuditLog al WHERE al.action = 'LOGIN_FAILED' AND al.createdAt >= :since GROUP BY al.ipAddress HAVING COUNT(al) >= :threshold ORDER BY COUNT(al) DESC")
     List<Object[]> findSuspiciousIpActivity(@Param("since") LocalDateTime since, @Param("threshold") long threshold);
+    
+    /**
+     * Count audit logs created after a specific date
+     */
+    long countByCreatedAtAfter(LocalDateTime since);
 }

@@ -39,7 +39,11 @@ import java.util.List;
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
-    private static final String ADMIN = "ADMIN";
+    // Role constants must align with UserRole enum names so that
+    // JwtTokenProvider's "ROLE_" + user.getGlobalRole().name() mapping
+    // matches Spring Security's hasRole/hasAnyRole checks.
+    private static final String OWNER = "OWNER";
+    private static final String ADMINISTRATOR = "ADMINISTRATOR";
     private static final String PROJECT_MANAGER = "PROJECT_MANAGER";
     private static final String USERS_API_PATH = "/api/users/**";
     
@@ -86,26 +90,26 @@ public class SecurityConfig {
                     .requestMatchers("/api/csrf/**").permitAll()
                     .requestMatchers("/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                     .requestMatchers("/error").permitAll()
-                    .requestMatchers("/h2-console/**").hasRole(ADMIN)
+                    .requestMatchers("/h2-console/**").hasAnyRole(OWNER, ADMINISTRATOR)
                     .requestMatchers("/actuator/health", "/actuator/info").permitAll()
                     
                     // Static resources
                     .requestMatchers("/", "/index.html", "/assets/**", "/vite.svg", "/favicon.ico").permitAll()
                     
-                    // Admin endpoints
-                    .requestMatchers("/api/admin/**").hasRole(ADMIN)
-                    .requestMatchers(HttpMethod.GET, "/api/admin/users").hasRole(ADMIN)
-                    .requestMatchers(HttpMethod.POST, "/api/admin/users").hasAnyRole(ADMIN, PROJECT_MANAGER)
-                    .requestMatchers(HttpMethod.PUT, "/api/admin/users/**").hasRole(ADMIN)
-                    .requestMatchers(HttpMethod.DELETE, "/api/admin/users/**").hasRole(ADMIN)
+                    // Admin endpoints - accessible to OWNER and ADMINISTRATOR roles
+                    .requestMatchers("/api/admin/**").hasAnyRole(OWNER, ADMINISTRATOR)
+                    .requestMatchers(HttpMethod.GET, "/api/admin/users").hasAnyRole(OWNER, ADMINISTRATOR)
+                    .requestMatchers(HttpMethod.POST, "/api/admin/users").hasAnyRole(OWNER, ADMINISTRATOR, PROJECT_MANAGER)
+                    .requestMatchers(HttpMethod.PUT, "/api/admin/users/**").hasAnyRole(OWNER, ADMINISTRATOR)
+                    .requestMatchers(HttpMethod.DELETE, "/api/admin/users/**").hasAnyRole(OWNER, ADMINISTRATOR)
                     
                     // User management endpoints
                     .requestMatchers(HttpMethod.GET, "/api/users/profile").authenticated()
                     .requestMatchers(HttpMethod.PUT, "/api/users/profile").authenticated()
-                    .requestMatchers(HttpMethod.GET, USERS_API_PATH).hasAnyRole(ADMIN, PROJECT_MANAGER)
-                    .requestMatchers(HttpMethod.POST, USERS_API_PATH).hasAnyRole(ADMIN, PROJECT_MANAGER)
-                    .requestMatchers(HttpMethod.PUT, USERS_API_PATH).hasAnyRole(ADMIN, PROJECT_MANAGER)
-                    .requestMatchers(HttpMethod.DELETE, USERS_API_PATH).hasRole(ADMIN)
+                    .requestMatchers(HttpMethod.GET, USERS_API_PATH).hasAnyRole(OWNER, ADMINISTRATOR, PROJECT_MANAGER)
+                    .requestMatchers(HttpMethod.POST, USERS_API_PATH).hasAnyRole(OWNER, ADMINISTRATOR, PROJECT_MANAGER)
+                    .requestMatchers(HttpMethod.PUT, USERS_API_PATH).hasAnyRole(OWNER, ADMINISTRATOR, PROJECT_MANAGER)
+                    .requestMatchers(HttpMethod.DELETE, USERS_API_PATH).hasAnyRole(OWNER, ADMINISTRATOR)
                     
                     // Security endpoints
                     .requestMatchers("/api/security/**").authenticated()

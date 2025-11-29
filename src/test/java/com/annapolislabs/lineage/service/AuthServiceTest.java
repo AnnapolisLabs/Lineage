@@ -63,7 +63,7 @@ class AuthServiceTest {
 
     @BeforeEach
     void setUp() {
-        testUser = new User("test@example.com", "password", "Test User", UserRole.VIEWER);
+        testUser = new User("test@example.com", "password", "Test User", UserRole.USER);
         testUser.setId(UUID.randomUUID());
         testUser.setStatus(UserStatus.ACTIVE);
         testUser.setEmailVerified(true);
@@ -172,7 +172,7 @@ class AuthServiceTest {
     @Test
     void login_WithAdminRole() {
         // Arrange
-        User adminUser = new User("admin@example.com", "password", "Admin User", UserRole.ADMIN);
+        User adminUser = new User("admin@example.com", "password", "Admin User", UserRole.ADMINISTRATOR);
         adminUser.setId(UUID.randomUUID());
         adminUser.setStatus(UserStatus.ACTIVE);
         adminUser.setEmailVerified(true);
@@ -199,7 +199,8 @@ class AuthServiceTest {
         // Assert
         assertNotNull(response);
         assertNotNull(response.getUser());
-        assertEquals("ADMIN", response.getUser().getGlobalRole().name());
+        // Updated RBAC model exposes ADMINISTRATOR as the global role name
+        assertEquals("ADMINISTRATOR", response.getUser().getGlobalRole().name());
         assertEquals("admin-access-token", response.getToken());
         assertEquals("admin-refresh-token", response.getRefreshToken());
     }

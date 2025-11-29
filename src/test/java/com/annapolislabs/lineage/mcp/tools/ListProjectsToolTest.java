@@ -33,7 +33,7 @@ class ListProjectsToolTest {
         objectMapper = new ObjectMapper();
         listProjectsTool = new ListProjectsTool(projectService, objectMapper);
         
-        testUser = new User("test@example.com", "hashedPassword", "Test User", UserRole.ADMIN);
+        testUser = new User("test@example.com", "hashedPassword", "Test User", UserRole.ADMINISTRATOR);
         testUser.setId(UUID.randomUUID());
     }
 

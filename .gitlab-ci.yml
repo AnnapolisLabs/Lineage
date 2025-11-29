@@ -147,7 +147,16 @@ sync:github:
   image: bitnami/git:latest
   script:
     - git remote add github https://${GITHUB_TOKEN}@github.com/AnnapolisLabs/Lineage.git || git remote set-url github https://${GITHUB_TOKEN}@github.com/AnnapolisLabs/Lineage.git
-    - git push github HEAD:refs/heads/main --force
+    - git fetch --unshallow || true
+    - git push github --force-with-lease HEAD:refs/heads/main
+    - |
+      # Optionally push all local branches to ensure complete sync
+      for branch in $(git branch -r --format="%(refname:short)" | sed 's/^origin\///' | grep -v HEAD); do
+        if git show-ref --verify --quiet refs/heads/$branch; then
+          echo "Force pushing branch: $branch"
+          git push github --force-with-lease refs/heads/$branch:refs/heads/$branch
+        fi
+      done
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
       when: on_success

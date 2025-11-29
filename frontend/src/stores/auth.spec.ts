@@ -33,7 +33,9 @@ describe('useAuthStore', () => {
     const store = useAuthStore()
     expect(store.isAdmin).toBe(false)
 
-    store.user = { id: '1', email: 'test@test.com', name: 'Test', globalRole: 'ADMIN', status: 'ACTIVE', emailVerified: true, createdAt: '2023-01-01', updatedAt: '2023-01-01', preferences: {} }
+    // Backend uses ADMINISTRATOR for the highest global role; the auth
+    // store mirrors that, so the test user must use ADMINISTRATOR too.
+    store.user = { id: '1', email: 'test@test.com', name: 'Test', globalRole: 'ADMINISTRATOR', status: 'ACTIVE', emailVerified: true, createdAt: '2023-01-01', updatedAt: '2023-01-01', preferences: {} }
     expect(store.isAdmin).toBe(true)
   })
 
@@ -44,7 +46,9 @@ describe('useAuthStore', () => {
     store.user = { id: '1', email: 'test@test.com', name: 'Test', globalRole: 'DEVELOPER', status: 'ACTIVE', emailVerified: true, createdAt: '2023-01-01', updatedAt: '2023-01-01', preferences: {} }
     expect(store.isEditor).toBe(true)
 
-    store.user = { id: '1', email: 'test@test.com', name: 'Test', globalRole: 'ADMIN', status: 'ACTIVE', emailVerified: true, createdAt: '2023-01-01', updatedAt: '2023-01-01', preferences: {} }
+    // ADMINISTRATOR should also be treated as editor-level for
+    // canCreateTeam and other global management checks.
+    store.user = { id: '1', email: 'test@test.com', name: 'Test', globalRole: 'ADMINISTRATOR', status: 'ACTIVE', emailVerified: true, createdAt: '2023-01-01', updatedAt: '2023-01-01', preferences: {} }
     expect(store.isEditor).toBe(true)
   })
 

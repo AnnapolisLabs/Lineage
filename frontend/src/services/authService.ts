@@ -51,6 +51,18 @@ export interface User {
   lastLoginAt?: string
 }
 
+// The /auth/me endpoint returns a wrapper object that contains meta
+// information alongside the actual user payload under a `user` field.
+// We model that explicitly so getCurrentUser can reliably unwrap and
+// return the inner User object.
+interface MeResponse {
+  user: User
+  // other meta fields are present but not currently used by the
+  // frontend; they can be added here as needed without affecting
+  // existing consumers.
+  [key: string]: unknown
+}
+
 export const authService = {
   async login(credentials: LoginRequest): Promise<AuthResponse> {
     const response = await api.post<AuthResponse>('/auth/login', credentials)
@@ -58,8 +70,12 @@ export const authService = {
   },
 
   async getCurrentUser(): Promise<User> {
-    const response = await api.get<User>('/auth/me')
-    return response.data
+    // /auth/me returns a wrapper object with the real user data nested
+    // under `user`. Unwrap it here so the rest of the app always works
+    // with a plain `User` instance and helpers like isAdmin/isEditor can
+    // safely read `user.globalRole`.
+    const response = await api.get<MeResponse>('/auth/me')
+    return response.data.user
   },
 
   logout() {

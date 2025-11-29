@@ -137,6 +137,20 @@ export const useAdminStore = defineStore('admin', () => {
     error.value = null
     try {
       await adminService.unlockUserAccount(userId)
+    } catch (err: any) {
+      error.value = err.response?.data?.message || 'Failed to unlock user account'
+      console.error('User unlock error:', error.value)
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function reactivateUserAccount(userId: string) {
+    loading.value = true
+    error.value = null
+    try {
+      await adminService.reactivateUserAccount(userId)
 
       // Update user status in the list
       const user = users.value.find(u => u.id === userId)
@@ -148,8 +162,8 @@ export const useAdminStore = defineStore('admin', () => {
         selectedUser.value.status = 'ACTIVE'
       }
     } catch (err: any) {
-      error.value = err.response?.data?.message || 'Failed to unlock user account'
-      console.error('User unlock error:', error.value)
+      error.value = err.response?.data?.message || 'Failed to reactivate user account'
+      console.error('User reactivate error:', error.value)
       throw err
     } finally {
       loading.value = false
@@ -170,6 +184,20 @@ export const useAdminStore = defineStore('admin', () => {
     } catch (err: any) {
       error.value = err.response?.data?.message || 'Failed to create user'
       console.error('User create error:', error.value)
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function setUserPassword(userId: string, newPassword: string) {
+    loading.value = true
+    error.value = null
+    try {
+      await adminService.setUserPassword(userId, { newPassword })
+    } catch (err: any) {
+      error.value = err.response?.data?.message || 'Failed to set user password'
+      console.error('User password set error:', error.value)
       throw err
     } finally {
       loading.value = false
@@ -250,7 +278,9 @@ export const useAdminStore = defineStore('admin', () => {
     deleteUser,
     lockUserAccount,
     unlockUserAccount,
+    reactivateUserAccount,
     createUser,
+    setUserPassword,
     fetchSystemStatistics,
     fetchAuditLogs,
     clearSelectedUser,

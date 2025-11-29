@@ -1,8 +1,10 @@
 package com.annapolislabs.lineage.service;
 
+import com.annapolislabs.lineage.dto.request.AdminCreateUserRequest;
+import com.annapolislabs.lineage.dto.request.AdminSetPasswordRequest;
+import com.annapolislabs.lineage.dto.request.ChangePasswordRequest;
 import com.annapolislabs.lineage.dto.request.RegisterUserRequest;
 import com.annapolislabs.lineage.dto.request.UpdateUserRequest;
-import com.annapolislabs.lineage.dto.request.ChangePasswordRequest;
 import com.annapolislabs.lineage.dto.response.UserProfileResponse;
 import com.annapolislabs.lineage.entity.User;
 import com.annapolislabs.lineage.entity.UserRole;
@@ -111,6 +113,68 @@ public class UserService {
         logger.info("User registered successfully with ID: {}", savedUser.getId());
         return convertToUserProfileResponse(savedUser);
     }
+
+    /**
+     * Creates a new user account from the administrative console.
+     *
+     * <p>This flow is similar to {@link #registerUser(RegisterUserRequest)} but
+     * does not require the admin to supply a password. Instead a secure random
+     * password is generated and the account is placed into
+     * {@link UserStatus#PENDING_VERIFICATION}. Optionally, an invitation /
+     * verification email is sent to the new user.</p>
+     *
+     * @param request   admin create-user payload
+     * @param createdBy admin performing the operation (for audit fields)
+     * @return {@link UserProfileResponse} for the created user
+     */
+    public UserProfileResponse adminCreateUser(AdminCreateUserRequest request, UUID createdBy) {
+        logger.info("Admin {} creating new user with email: {}", createdBy, request.getEmail());
+
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new UserAlreadyExistsException("User with email " + request.getEmail() + " already exists");
+        }
+
+        // Generate a strong random password that satisfies policy. We reuse
+        // validatePassword to ensure the generated password is acceptable.
+        String rawPassword = generateAdminInitialPassword();
+        validatePassword(rawPassword);
+
+        User user = new User();
+        user.setEmail(request.getEmail().toLowerCase());
+        user.setPasswordHash(passwordEncoder.encode(rawPassword));
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setGlobalRole(request.getGlobalRole());
+        user.setStatus(UserStatus.PENDING_VERIFICATION);
+        user.setEmailVerified(false);
+        user.setCreatedBy(createdBy);
+
+        String verificationToken = generateSecureToken();
+        user.setEmailVerificationToken(verificationToken);
+        user.setEmailVerificationExpiry(LocalDateTime.now().plusHours(24));
+
+        User savedUser = userRepository.save(user);
+
+        if (request.isSendInvitation()) {
+            try {
+                emailService.sendEmailVerificationEmail(savedUser.getEmail(), verificationToken);
+            } catch (Exception e) {
+                logger.error("Failed to send admin invitation email to {}", savedUser.getEmail(), e);
+            }
+        }
+
+        securityAuditService.logSecurityEvent(
+                createdBy != null ? createdBy.toString() : savedUser.getId().toString(),
+                "ADMIN_USER_CREATED",
+                "USER",
+                savedUser.getId().toString(),
+                com.annapolislabs.lineage.entity.AuditSeverity.INFO,
+                java.util.Map.of("email", savedUser.getEmail(), "role", savedUser.getGlobalRole().name())
+        );
+
+        logger.info("Admin user creation successful for ID: {}", savedUser.getId());
+        return convertToUserProfileResponse(savedUser);
+    }
     
     /**
      * Updates mutable portions of a user's profile while enforcing admin-only role
@@ -155,7 +219,7 @@ public class UserService {
         // Only admins can change global role
         if (request.getGlobalRole() != null && updatedBy != null) {
             User updater = getUserById(updatedBy);
-            if (updater.getGlobalRole() == UserRole.ADMIN) {
+            if (updater.getGlobalRole() == UserRole.ADMINISTRATOR) {
                 user.setGlobalRole(request.getGlobalRole());
             }
         }
@@ -215,6 +279,41 @@ public class UserService {
             java.util.Map.of("clientIp", clientIp != null ? clientIp : "unknown"));
         
         logger.info("Password changed successfully for user ID: {}", userId);
+    }
+
+    /**
+     * Allows an administrator to directly set or reset a user's password without
+     * requiring the old password. This is intended for support and compliance
+     * workflows and is restricted to admin callers at the controller layer.
+     *
+     * <p>The new password is validated using the same policy as end-user
+     * password changes and will clear any lockout state on the account.</p>
+     *
+     * @param userId      identifier of the account whose password is being set
+     * @param newPassword clear-text new password to apply
+     * @param adminId     admin performing the operation for audit trails
+     */
+    public void adminSetPassword(UUID userId, String newPassword, UUID adminId) {
+        logger.warn("Admin {} is setting password for user ID: {}", adminId, userId);
+
+        validatePassword(newPassword);
+
+        User user = getUserById(userId);
+        user.setPasswordHash(passwordEncoder.encode(newPassword));
+        user.setFailedLoginAttempts(0);
+        user.setLockedUntil(null);
+        user.setUpdatedBy(adminId);
+
+        userRepository.save(user);
+
+        securityAuditService.logAccountSecurityEvent(
+                adminId != null ? adminId.toString() : userId.toString(),
+                "PASSWORD_RESET_ADMIN",
+                com.annapolislabs.lineage.entity.AuditSeverity.WARNING,
+                java.util.Map.of("targetUserId", userId.toString())
+        );
+
+        logger.info("Admin password set completed for user ID: {} by admin: {}", userId, adminId);
     }
     
     /**
@@ -391,6 +490,55 @@ public class UserService {
         
         logger.info("User suspended successfully: {}", userId);
     }
+
+    /**
+     * Performs a hard delete / purge operation on a user account for legal compliance.
+     *
+     * <p>This method anonymizes personally identifiable information on the user record
+     * (email, name, phone, IPs, tokens) while preserving referential integrity and
+     * historic audit trails wherever possible.
+     *
+     * @param userId identifier of the account being purged
+     * @param purgedBy operator performing the purge for audit tracking
+     */
+    public void purgeUser(UUID userId, UUID purgedBy) {
+        logger.warn("Purging user data for ID: {} initiated by: {}", userId, purgedBy);
+
+        User user = getUserById(userId);
+
+        // Scrub personally identifiable information
+        String anonymizedId = "anon-" + userId;
+        user.setEmail(anonymizedId + "@deleted.local");
+        user.setFirstName("Deleted");
+        user.setLastName("User");
+        user.setName("Deleted User");
+        user.setPhoneNumber(null);
+        user.setAvatarUrl(null);
+        user.setBio(null);
+        user.setPreferences(null);
+
+        // Reset security-sensitive fields
+        user.setEmailVerified(false);
+        user.setEmailVerificationToken(null);
+        user.setEmailVerificationExpiry(null);
+        user.setPasswordResetToken(null);
+        user.setPasswordResetExpiry(null);
+        user.setFailedLoginAttempts(0);
+        user.setLockedUntil(null);
+        user.setLastLoginAt(null);
+        user.setLastLoginIp(null);
+
+        // Mark account as deactivated
+        user.setStatus(UserStatus.DEACTIVATED);
+        user.setUpdatedBy(purgedBy);
+
+        userRepository.save(user);
+
+        securityAuditService.logDataAccessEvent(purgedBy.toString(), "USER_PURGED", "USER", userId.toString(),
+            com.annapolislabs.lineage.entity.AuditSeverity.CRITICAL, java.util.Map.of());
+
+        logger.warn("User data purged (anonymized) successfully for ID: {}", userId);
+    }
     
     /**
      * Computes aggregate user metrics (total, active, verified, newly created within 30 days)
@@ -440,6 +588,46 @@ public class UserService {
         user.resetFailedLoginAttempts();
         userRepository.save(user);
     }
+
+    /**
+     * Explicitly locks a user account until manually unlocked by an administrator.
+     * This is separate from automatic lockouts triggered by failed logins.
+     *
+     * @param userId identifier of the account to lock
+     * @param lockedBy admin performing the lock action
+     */
+    public void lockUser(UUID userId, UUID lockedBy) {
+        logger.warn("Locking user account ID: {} by admin: {}", userId, lockedBy);
+
+        User user = getUserById(userId);
+        user.lockAccount(java.time.Duration.ofDays(3650)); // effectively indefinite until unlocked
+        user.setUpdatedBy(lockedBy);
+        userRepository.save(user);
+
+        securityAuditService.logAccountSecurityEvent(lockedBy.toString(), "ACCOUNT_LOCKED_ADMIN",
+            com.annapolislabs.lineage.entity.AuditSeverity.WARNING,
+            java.util.Map.of("targetUserId", userId.toString()));
+    }
+
+    /**
+     * Unlocks a previously locked user account and clears failed login counters.
+     *
+     * @param userId identifier of the account to unlock
+     * @param unlockedBy admin performing the unlock
+     */
+    public void unlockUser(UUID userId, UUID unlockedBy) {
+        logger.info("Unlocking user account ID: {} by admin: {}", userId, unlockedBy);
+
+        User user = getUserById(userId);
+        // Clear lock state and failed attempts
+        user.resetFailedLoginAttempts();
+        user.setUpdatedBy(unlockedBy);
+        userRepository.save(user);
+
+        securityAuditService.logAccountSecurityEvent(unlockedBy.toString(), "ACCOUNT_UNLOCKED_ADMIN",
+            com.annapolislabs.lineage.entity.AuditSeverity.INFO,
+            java.util.Map.of("targetUserId", userId.toString()));
+    }
     
     /**
      * Validates password strength enforcing length and character diversity requirements.
@@ -477,14 +665,7 @@ public class UserService {
             throw new IllegalArgumentException("Password must contain at least one special character (@$!%*?&)");
         }
     }
-/**
-     * Generates a URL-safe random token leveraging {@link java.security.SecureRandom}
-     * for verification and reset flows.
-     *
-     * @return encoded token suitable for links/emails
-     */
-
-/**
+    /**
      * Generates a URL-safe random token leveraging {@link java.security.SecureRandom}
      * for verification and reset flows.
      *
@@ -493,6 +674,21 @@ public class UserService {
     private String generateSecureToken() {
         return java.util.Base64.getUrlEncoder().withoutPadding()
             .encodeToString(java.security.SecureRandom.getSeed(32));
+    }
+
+    /**
+     * Generates a strong initial password for admin-created users. The password
+     * is random and intended to be changed by the user after first login.
+     */
+    private String generateAdminInitialPassword() {
+        // 16 characters from a rich character set; validatePassword will enforce policy
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@$!%*?&";
+        java.security.SecureRandom random = new java.security.SecureRandom();
+        StringBuilder sb = new StringBuilder(16);
+        for (int i = 0; i < 16; i++) {
+            sb.append(chars.charAt(random.nextInt(chars.length())));
+        }
+        return sb.toString();
     }
     /**
      * Converts a {@link User} entity into a {@link UserProfileResponse} DTO to centralize

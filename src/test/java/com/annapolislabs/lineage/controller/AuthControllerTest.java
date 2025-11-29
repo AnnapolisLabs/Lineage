@@ -51,7 +51,7 @@ class AuthControllerTest {
 
     @BeforeEach
     void setUp() {
-        testUser = new User("test@example.com", "hash", "Test User", UserRole.ADMIN);
+        testUser = new User("test@example.com", "hash", "Test User", UserRole.ADMINISTRATOR);
         testUser.setId(UUID.randomUUID());
         testUser.setStatus(UserStatus.ACTIVE);
         testUser.setEmailVerified(true);

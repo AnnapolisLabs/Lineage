@@ -38,7 +38,7 @@ class RequirementControllerTest {
 
     @BeforeEach
     void setUp() {
-        testUser = new User("test@example.com", "hashedPassword", "Test User", UserRole.EDITOR);
+        testUser = new User("test@example.com", "hashedPassword", "Test User", UserRole.DEVELOPER);
         testUser.setId(UUID.randomUUID());
 
         testProject = new Project("Test Project", "Description", "TEST", testUser);

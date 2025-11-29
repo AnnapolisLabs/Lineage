@@ -65,7 +65,7 @@ public class DataLoader implements CommandLineRunner {
         logger.info("DataLoader: Checking for existing admin user...");
 
         // If any admin already exists, do nothing (idempotent behavior)
-        if (userRepository.existsByGlobalRole(UserRole.ADMIN)) {
+        if (userRepository.existsByGlobalRole(UserRole.ADMINISTRATOR)) {
             logger.info("DataLoader: Admin user already exists. Skipping initial admin creation.");
             return;
         }
@@ -94,7 +94,7 @@ public class DataLoader implements CommandLineRunner {
 
             // Elevate to admin and ensure account is immediately usable
             User adminUser = userService.getUserById(profile.getId());
-            adminUser.setGlobalRole(UserRole.ADMIN);
+            adminUser.setGlobalRole(UserRole.ADMINISTRATOR);
             adminUser.setStatus(UserStatus.ACTIVE);
             adminUser.setEmailVerified(true);
             adminUser.setEmailVerificationToken(null);
