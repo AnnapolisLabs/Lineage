@@ -1,71 +1,74 @@
-import { ref, computed } from 'vue'
+import { ref, type Ref } from 'vue'
 import { rbacService } from '@/services/rbacService'
-import { useAuthStore } from '@/stores/auth'
+
+type PermissionCacheEntry = {
+  timestamp: number
+  authorized: boolean
+}
 
 // Permission cache to avoid repeated API calls
-const permissionCache = new Map<string, { timestamp: number; authorized: boolean }>()
+const permissionCache = new Map<string, PermissionCacheEntry>()
 const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
+
+const buildCacheKey = (permission: string, resourceId: string) => `${permission}:${resourceId}`
+
+function getValidCacheEntry(permission: string, resourceId: string): PermissionCacheEntry | null {
+  const key = buildCacheKey(permission, resourceId)
+  const cached = permissionCache.get(key)
+
+  if (!cached) {
+    return null
+  }
+
+  const isExpired = Date.now() - cached.timestamp > CACHE_DURATION
+  if (isExpired) {
+    permissionCache.delete(key)
+    return null
+  }
+
+  return cached
+}
+
+function clearCache() {
+  permissionCache.clear()
+}
+
+function isCached(permission: string, resourceId: string): boolean {
+  return getValidCacheEntry(permission, resourceId) !== null
+}
+
+function getCachedPermission(permission: string, resourceId: string): boolean | null {
+  const cached = getValidCacheEntry(permission, resourceId)
+  return cached ? cached.authorized : null
+}
+
+function setCachedPermission(permission: string, resourceId: string, authorized: boolean) {
+  const key = buildCacheKey(permission, resourceId)
+  permissionCache.set(key, {
+    timestamp: Date.now(),
+    authorized
+  })
+}
 
 interface UsePermissionsReturn {
   hasPermission: (permission: string, resourceId: string) => Promise<boolean>
   hasPermissions: (permissions: string[], resourceId: string) => Promise<Record<string, boolean>>
-  loading: ref<boolean>
-  error: ref<string | null>
+  loading: Ref<boolean>
+  error: Ref<string | null>
   clearCache: () => void
 }
 
 export function usePermissions(): UsePermissionsReturn {
-  const authStore = useAuthStore()
   const loading = ref(false)
   const error = ref<string | null>(null)
 
-  function clearCache() {
-    permissionCache.clear()
-  }
-
-  function isCached(permission: string, resourceId: string): boolean {
-    const key = `${permission}:${resourceId}`
-    const cached = permissionCache.get(key)
-    
-    if (!cached) return false
-    
-    const isExpired = Date.now() - cached.timestamp > CACHE_DURATION
-    if (isExpired) {
-      permissionCache.delete(key)
-      return false
-    }
-    
-    return true
-  }
-
-  function getCachedPermission(permission: string, resourceId: string): boolean | null {
-    const key = `${permission}:${resourceId}`
-    const cached = permissionCache.get(key)
-    
-    if (!cached) return null
-    
-    const isExpired = Date.now() - cached.timestamp > CACHE_DURATION
-    if (isExpired) {
-      permissionCache.delete(key)
-      return null
-    }
-    
-    return cached.authorized
-  }
-
-  function setCachedPermission(permission: string, resourceId: string, authorized: boolean) {
-    const key = `${permission}:${resourceId}`
-    permissionCache.set(key, {
-      timestamp: Date.now(),
-      authorized
-    })
-  }
-
   async function hasPermission(permission: string, resourceId: string): Promise<boolean> {
     // Check cache first
-    const cached = getCachedPermission(permission, resourceId)
-    if (cached !== null) {
-      return cached
+    if (isCached(permission, resourceId)) {
+      const cached = getCachedPermission(permission, resourceId)
+      if (cached !== null) {
+        return cached
+      }
     }
 
     loading.value = true
@@ -92,11 +95,12 @@ export function usePermissions(): UsePermissionsReturn {
     // Check cache first
     for (const permission of permissions) {
       const cached = getCachedPermission(permission, resourceId)
-      if (cached !== null) {
-        result[permission] = cached
-      } else {
+      if (cached === null) {
         uncachedPermissions.push(permission)
+        continue
       }
+
+      result[permission] = cached
     }
 
     // If all permissions are cached, return early

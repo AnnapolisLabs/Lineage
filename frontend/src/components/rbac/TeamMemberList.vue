@@ -152,7 +152,7 @@ function getInitials(nameOrEmail: string): string {
   const parts = nameOrEmail.split(' ').filter(Boolean)
   if (parts.length >= 2) {
     const firstInitial = parts[0]?.charAt(0) ?? ''
-    const lastInitial = parts[parts.length - 1]?.charAt(0) ?? ''
+    const lastInitial = parts.at(-1)?.charAt(0) ?? ''
     const initials = (firstInitial + lastInitial).toUpperCase()
 
     if (initials.trim().length > 0) {

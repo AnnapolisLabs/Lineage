@@ -536,7 +536,7 @@ function downloadTemplate() {
   a.download = 'project-import-template.json'
   document.body.appendChild(a)
   a.click()
-  document.body.removeChild(a)
+  a.remove()
   URL.revokeObjectURL(url)
 }
 

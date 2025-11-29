@@ -1,13 +1,31 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { rbacService } from '@/services/rbacService'
-import { usePermissions } from '@/composables/usePermissions'
 import type { UserPermission } from '@/types/rbac'
 
 interface PermissionCache {
   [resourceId: string]: {
     permissions: Record<string, boolean>
     timestamp: number
+  }
+}
+
+type BatchPermissionsEvaluator = (
+  permissionsList: string[],
+  resourceId: string
+) => Promise<Record<string, boolean>>
+
+const createHasAllPermissionsEvaluator = (evaluateBatch: BatchPermissionsEvaluator) => {
+  return async (permissionsList: string[], resourceId: string): Promise<boolean> => {
+    const results = await evaluateBatch(permissionsList, resourceId)
+    return permissionsList.every(permission => results[permission] === true)
+  }
+}
+
+const createHasAnyPermissionEvaluator = (evaluateBatch: BatchPermissionsEvaluator) => {
+  return async (permissionsList: string[], resourceId: string): Promise<boolean> => {
+    const results = await evaluateBatch(permissionsList, resourceId)
+    return permissionsList.some(permission => results[permission] === true)
   }
 }
 
@@ -32,7 +50,11 @@ export const useRbacStore = defineStore('rbac', () => {
       return null
     }
 
-    return cache.permissions[permission] || false
+    // Check if the permission exists in the cache
+    if (permission in cache.permissions) {
+      return cache.permissions[permission]
+    }
+    return null
   }
 
   const setCachedPermission = (permission: string, resourceId: string, authorized: boolean) => {
@@ -123,7 +145,7 @@ export const useRbacStore = defineStore('rbac', () => {
       })
 
       // Cache results and add to final result
-      batchResults.forEach(result => {
+      for (const result of batchResults) {
         setCachedPermission(result.permission, resourceId, result.authorized)
         results[result.permission] = result.authorized
 
@@ -138,17 +160,17 @@ export const useRbacStore = defineStore('rbac', () => {
         } else {
           permissions.value[resourceId].push(result)
         }
-      })
+      }
 
       // Add cached results to final result
-      permissionsList.forEach(permission => {
+      for (const permission of permissionsList) {
         if (results[permission] === undefined) {
           const cached = hasCachedPermission(permission, resourceId)
           if (cached !== null) {
             results[permission] = cached
           }
         }
-      })
+      }
 
       return results
     } catch (err: any) {
@@ -157,9 +179,9 @@ export const useRbacStore = defineStore('rbac', () => {
       console.error('Batch permission check error:', errorMsg)
       
       // Default to false for uncached permissions
-      uncachedPermissions.forEach(permission => {
+      for (const permission of uncachedPermissions) {
         results[permission] = false
-      })
+      }
       
       return results
     } finally {
@@ -175,9 +197,9 @@ export const useRbacStore = defineStore('rbac', () => {
       const userPermissions = await rbacService.getUserPermissions(userId, resourceId)
       
       // Cache all permissions
-      userPermissions.forEach(permission => {
+      for (const permission of userPermissions) {
         setCachedPermission(permission.permission, permission.resource_id, permission.authorized)
-      })
+      }
 
       permissions.value[resourceId] = userPermissions
       return userPermissions
@@ -223,26 +245,20 @@ export const useRbacStore = defineStore('rbac', () => {
     return permissions.value[resourceId] || []
   }
 
-  // Helper method to check multiple permissions with AND logic
-  async function hasAllPermissions(permissionsList: string[], resourceId: string): Promise<boolean> {
-    const results = await this.batchCheckPermissions(permissionsList, resourceId)
-    return permissionsList.every(permission => results[permission] === true)
-  }
-
-  // Helper method to check multiple permissions with OR logic
-  async function hasAnyPermission(permissionsList: string[], resourceId: string): Promise<boolean> {
-    const results = await this.batchCheckPermissions(permissionsList, resourceId)
-    return permissionsList.some(permission => results[permission] === true)
-  }
+  // Helper methods to check multiple permissions
+  const hasAllPermissions = createHasAllPermissionsEvaluator(batchCheckPermissions)
+  const hasAnyPermission = createHasAnyPermissionEvaluator(batchCheckPermissions)
 
   return {
     // State
     permissions,
     loading,
     error,
+    permissionCache,
 
     // Getters
     hasCachedPermission,
+    setCachedPermission,
 
     // Actions
     checkPermission,

@@ -79,7 +79,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import type { Team } from '@/types/rbac'
 import RoleBadge from '@/components/rbac/RoleBadge.vue'
 

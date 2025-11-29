@@ -94,8 +94,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import type { Team, TeamRole, InviteTeamMemberRequest } from '@/types/rbac'
+import { ref } from 'vue'
+import type { Team, InviteTeamMemberRequest } from '@/types/rbac'
 
 interface Props {
   modelValue: boolean

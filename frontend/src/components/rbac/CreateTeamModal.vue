@@ -64,7 +64,7 @@
             <div class="space-y-4">
               <div class="flex items-center justify-between">
                 <div>
-                  <label class="text-sm font-medium text-annapolis-gray-300">Require Peer Review</label>
+                  <p class="text-sm font-medium text-annapolis-gray-300">Require Peer Review</p>
                   <p class="text-xs text-annapolis-gray-400">Team members must complete peer reviews before task completion</p>
                 </div>
                 <button
@@ -127,7 +127,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, watch } from 'vue'
 import type { CreateTeamRequest, Project } from '@/types/rbac'
 
 interface Props {
