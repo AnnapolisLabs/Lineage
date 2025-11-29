@@ -541,7 +541,7 @@ function getInitials(user: AdminUser): string {
 
 function formatRole(role?: string): string {
   if (!role) return 'User'
-  return role.replaceAll('_', ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase())
+  return role.replaceAll('_', ' ').toLowerCase().replaceAll(/\b\w/g, l => l.toUpperCase())
 }
 
 function formatDate(dateString?: string): string {
