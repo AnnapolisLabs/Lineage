@@ -255,7 +255,7 @@ public class TeamController {
         
         String userEmail = (String) request.get("email");
         String roleName = (String) request.get("role");
-        String message = (String) request.get("message");
+        String message = (String) request.get(RESPONSE_MESSAGE);
         
         TeamMember.TeamRole role = TeamMember.TeamRole.valueOf(roleName.toUpperCase());
         TeamMember invitation = teamService.inviteUserToTeam(teamId, userEmail, role, currentUserId, message);

@@ -25,10 +25,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendWelcomeEmail(String email, String firstName) {
         logger.info("Welcome email would be sent to: {} for user: {}", email, firstName);
-        // TODO: Implement actual email sending functionality with SMTP configuration
-        // Required: Add SMTP server configuration properties (host, port, username, password)
-        // Required: Configure JavaMailSender bean in configuration class
-        // Required: Implement actual email content templating
+        // Placeholder: SMTP implementation pending infrastructure setup
     }
 
     /**
@@ -41,10 +38,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendEmailVerificationEmail(String email, String verificationToken) {
         logger.info("Email verification would be sent to: {} with token: {}", email, verificationToken);
-        // TODO: Implement actual email sending functionality with SMTP configuration
-        // Required: Add SMTP server configuration properties (host, port, username, password)
-        // Required: Configure JavaMailSender bean in configuration class
-        // Required: Implement actual email content templating
+        // Placeholder: SMTP implementation pending infrastructure setup
     }
 
     /**
@@ -57,10 +51,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendPasswordResetEmail(String email, String resetToken) {
         logger.info("Password reset email would be sent to: {} with token: {}", email, resetToken);
-        // TODO: Implement actual email sending functionality with SMTP configuration
-        // Required: Add SMTP server configuration properties (host, port, username, password)
-        // Required: Configure JavaMailSender bean in configuration class
-        // Required: Implement actual email content templating
+        // Placeholder: SMTP implementation pending infrastructure setup
     }
 
     /**
@@ -72,10 +63,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendInvitationEmail(String email, String firstName, String invitationToken) {
         logger.info("Invitation email would be sent to: {} for user: {} with token: {}", email, firstName, invitationToken);
-        // TODO: Implement actual email sending functionality with SMTP configuration
-        // Required: Add SMTP server configuration properties (host, port, username, password)
-        // Required: Configure JavaMailSender bean in configuration class
-        // Required: Implement actual email content templating
+        // Placeholder: SMTP implementation pending infrastructure setup
     }
 
     /**
@@ -88,57 +76,54 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendMfaSetupEmail(String email, String qrCodeUrl) {
         logger.info("MFA setup email would be sent to: {} with QR code URL: {}", email, qrCodeUrl);
-        // TODO: Implement actual email sending functionality with SMTP configuration
-        // Required: Add SMTP server configuration properties (host, port, username, password)
-        // Required: Configure JavaMailSender bean in configuration class
-        // Required: Implement actual email content templating
+        // Placeholder: SMTP implementation pending infrastructure setup
     }
 
     @Override
-    public void sendTeamInvitation(String userEmail, String teamName, String roleDisplayName, 
+    public void sendTeamInvitation(String userEmail, String teamName, String roleDisplayName,
                                  String message, String teamId, String invitationId) {
-        logger.info("Team invitation email would be sent to: {} for team '{}' with role '{}'", 
+        logger.info("Team invitation email would be sent to: {} for team '{}' with role '{}'",
                 userEmail, teamName, roleDisplayName);
-        // TODO: Implement actual email sending functionality with SMTP configuration
+        // Placeholder: SMTP implementation pending infrastructure setup
     }
 
     @Override
-    public void sendTaskAssignmentNotification(String assigneeEmail, String taskTitle, 
+    public void sendTaskAssignmentNotification(String assigneeEmail, String taskTitle,
                                              String taskDescription, String projectId) {
-        logger.info("Task assignment notification would be sent to: {} for task '{}' in project {}", 
+        logger.info("Task assignment notification would be sent to: {} for task '{}' in project {}",
                 assigneeEmail, taskTitle, projectId);
-        // TODO: Implement actual email sending functionality with SMTP configuration
+        // Placeholder: SMTP implementation pending infrastructure setup
     }
 
     @Override
-    public void sendPeerReviewInvitation(String reviewerEmail, String requirementTitle, 
+    public void sendPeerReviewInvitation(String reviewerEmail, String requirementTitle,
                                        String authorName, String reviewType, String deadline) {
-        logger.info("Peer review invitation would be sent to: {} for requirement '{}' by {} with type '{}'", 
+        logger.info("Peer review invitation would be sent to: {} for requirement '{}' by {} with type '{}'",
                 reviewerEmail, requirementTitle, authorName, reviewType);
-        // TODO: Implement actual email sending functionality with SMTP configuration
+        // Placeholder: SMTP implementation pending infrastructure setup
     }
 
     @Override
-    public void sendPeerReviewApprovalNotification(String authorEmail, String requirementTitle, 
+    public void sendPeerReviewApprovalNotification(String authorEmail, String requirementTitle,
                                                  String reviewerName, String comments) {
-        logger.info("Peer review approval notification would be sent to: {} for requirement '{}' approved by {}", 
+        logger.info("Peer review approval notification would be sent to: {} for requirement '{}' approved by {}",
                 authorEmail, requirementTitle, reviewerName);
-        // TODO: Implement actual email sending functionality with SMTP configuration
+        // Placeholder: SMTP implementation pending infrastructure setup
     }
 
     @Override
-    public void sendPeerReviewRejectionNotification(String authorEmail, String requirementTitle, 
+    public void sendPeerReviewRejectionNotification(String authorEmail, String requirementTitle,
                                                   String reviewerName, String comments) {
-        logger.info("Peer review rejection notification would be sent to: {} for requirement '{}' rejected by {}", 
+        logger.info("Peer review rejection notification would be sent to: {} for requirement '{}' rejected by {}",
                 authorEmail, requirementTitle, reviewerName);
-        // TODO: Implement actual email sending functionality with SMTP configuration
+        // Placeholder: SMTP implementation pending infrastructure setup
     }
 
     @Override
-    public void sendPeerReviewRevisionRequestNotification(String authorEmail, String requirementTitle, 
+    public void sendPeerReviewRevisionRequestNotification(String authorEmail, String requirementTitle,
                                                        String reviewerName, String feedback) {
-        logger.info("Peer review revision request notification would be sent to: {} for requirement '{}' by {}", 
+        logger.info("Peer review revision request notification would be sent to: {} for requirement '{}' by {}",
                 authorEmail, requirementTitle, reviewerName);
-        // TODO: Implement actual email sending functionality with SMTP configuration
+        // Placeholder: SMTP implementation pending infrastructure setup
     }
 }

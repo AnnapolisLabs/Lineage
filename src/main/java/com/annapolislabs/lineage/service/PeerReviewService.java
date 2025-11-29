@@ -329,7 +329,7 @@ public class PeerReviewService {
         log.info("Setting ratings for peer review {} by user {}", reviewId, requestingUserId);
 
         PeerReview review = peerReviewRepository.findById(reviewId)
-                .orElseThrow(() -> new IllegalArgumentException("Peer review not found: " + reviewId));
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_PEER_REVIEW_NOT_FOUND + reviewId));
 
         // Only reviewer can set ratings
         if (!review.getReviewerId().equals(requestingUserId)) {

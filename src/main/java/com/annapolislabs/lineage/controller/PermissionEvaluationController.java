@@ -95,7 +95,7 @@ public class PermissionEvaluationController {
 
         @SuppressWarnings("unchecked")
         Set<String> permissions = (Set<String>) request.get("permissions");
-        UUID resourceId = request.get("resource_id") != null ? UUID.fromString(request.get("resource_id").toString()) : null;
+        UUID resourceId = request.get(RESPONSE_RESOURCE_ID) != null ? UUID.fromString(request.get(RESPONSE_RESOURCE_ID).toString()) : null;
 
         long startTime = System.currentTimeMillis();
         Map<String, Boolean> results = permissionEvaluationService.evaluatePermissions(

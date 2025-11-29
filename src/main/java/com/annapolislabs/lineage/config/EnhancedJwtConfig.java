@@ -1,6 +1,7 @@
 package com.annapolislabs.lineage.config;
 
 import com.annapolislabs.lineage.entity.UserRole;
+import com.annapolislabs.lineage.exception.auth.InvalidTokenException;
 import com.annapolislabs.lineage.service.PermissionEvaluationService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -222,7 +223,7 @@ public class EnhancedJwtConfig {
             );
         } catch (Exception e) {
             log.error("Failed to refresh token: {}", e.getMessage());
-            throw new RuntimeException("Token refresh failed", e);
+            throw new InvalidTokenException("Token refresh failed: " + e.getMessage());
         }
     }
 

@@ -637,7 +637,7 @@ async function handleSetPassword() {
     await adminStore.setUserPassword(passwordTargetUser.value.id, newPassword)
     passwordSuccess.value = 'Password updated successfully.'
   } catch (error) {
-    // Store already logged the error; show generic message
+    console.error('Failed to set password:', error)
     if (!passwordError.value) {
       passwordError.value = 'Failed to set password. Please check policy requirements.'
     }
