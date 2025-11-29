@@ -35,6 +35,8 @@ import java.util.stream.Collectors;
 @Tag(name = "Task Management", description = "Task assignment, tracking, and completion APIs")
 public class TaskAssignmentController {
 
+    private static final String RESPONSE_MESSAGE = "message";
+    
     private final TaskAssignmentService taskAssignmentService;
 
     /**
@@ -221,7 +223,7 @@ public class TaskAssignmentController {
         taskAssignmentService.startTask(taskId, currentUserId);
         
         Map<String, String> response = new HashMap<>();
-        response.put("message", "Task started successfully");
+        response.put(RESPONSE_MESSAGE, "Task started successfully");
         
         log.info("Task started successfully: {}", taskId);
         return ResponseEntity.ok(response);
@@ -256,7 +258,7 @@ public class TaskAssignmentController {
         taskAssignmentService.completeTask(taskId, completionNotes, currentUserId);
         
         Map<String, String> response = new HashMap<>();
-        response.put("message", "Task completed successfully");
+        response.put(RESPONSE_MESSAGE, "Task completed successfully");
         
         log.info("Task completed successfully: {}", taskId);
         return ResponseEntity.ok(response);
@@ -291,7 +293,7 @@ public class TaskAssignmentController {
         taskAssignmentService.cancelTask(taskId, reason, currentUserId);
         
         Map<String, String> response = new HashMap<>();
-        response.put("message", "Task cancelled successfully");
+        response.put(RESPONSE_MESSAGE, "Task cancelled successfully");
         
         log.info("Task cancelled successfully: {}", taskId);
         return ResponseEntity.ok(response);
@@ -326,7 +328,7 @@ public class TaskAssignmentController {
         taskAssignmentService.reassignTask(taskId, newAssigneeId, currentUserId);
         
         Map<String, String> response = new HashMap<>();
-        response.put("message", "Task reassigned successfully");
+        response.put(RESPONSE_MESSAGE, "Task reassigned successfully");
         
         log.info("Task reassigned successfully: {} to {}", taskId, newAssigneeId);
         return ResponseEntity.ok(response);
@@ -361,7 +363,7 @@ public class TaskAssignmentController {
         taskAssignmentService.addTagToTask(taskId, tag, currentUserId);
         
         Map<String, String> response = new HashMap<>();
-        response.put("message", "Tag added successfully");
+        response.put(RESPONSE_MESSAGE, "Tag added successfully");
         response.put("tag", tag);
         
         log.info("Tag '{}' added to task {}", tag, taskId);
@@ -397,7 +399,7 @@ public class TaskAssignmentController {
         taskAssignmentService.addBlockerToTask(taskId, blocker, currentUserId);
         
         Map<String, String> response = new HashMap<>();
-        response.put("message", "Blocker added successfully");
+        response.put(RESPONSE_MESSAGE, "Blocker added successfully");
         response.put("blocker", blocker);
         
         log.info("Blocker '{}' added to task {}", blocker, taskId);
@@ -503,9 +505,9 @@ public class TaskAssignmentController {
         }
         
         Object principal = authentication.getPrincipal();
-        if (principal instanceof String) {
+        if (principal instanceof String principalString) {
             try {
-                return UUID.fromString((String) principal);
+                return UUID.fromString(principalString);
             } catch (IllegalArgumentException e) {
                 throw new SecurityException("Invalid user ID in authentication context");
             }

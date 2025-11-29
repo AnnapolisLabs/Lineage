@@ -197,7 +197,7 @@ public class SecurityAuditService {
         systemDetails.put(EVENT_TYPE, SYSTEM);
         systemDetails.put(TIMESTAMP, LocalDateTime.now());
         
-        logSecurityEvent(null, action, "SYSTEM", "SYSTEM", severity, systemDetails);
+        logSecurityEvent(null, action, SYSTEM, SYSTEM, severity, systemDetails);
         
         securityLogger.error("System Event: {} | Action: {} | Severity: {} | Details: {}", 
                 LocalDateTime.now(), action, severity, details);
@@ -315,11 +315,10 @@ public class SecurityAuditService {
         // Check if this is part of a pattern (multiple failed attempts, etc.)
         // In a real implementation, this might trigger account lockout or additional monitoring
         
-        securityLogger.warn("Suspicious Activity Alert: User {} performed action {} from IP {}", 
+        securityLogger.warn("Suspicious Activity Alert: User {} performed action {} from IP {}",
                 userId, action, getClientIpAddress());
         
-        // Could integrate with automated response systems here
-        // Example: ResponseService.handleSuspiciousActivity(userId);
+        // Could integrate with automated response systems here for suspicious activity handling
     }
 
     public void logEvent(String eventType, UUID requestingUserId, String task, UUID taskId, Map<String, Object> details) {

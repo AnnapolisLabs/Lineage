@@ -18,14 +18,14 @@ type BatchPermissionsEvaluator = (
 const createHasAllPermissionsEvaluator = (evaluateBatch: BatchPermissionsEvaluator) => {
   return async (permissionsList: string[], resourceId: string): Promise<boolean> => {
     const results = await evaluateBatch(permissionsList, resourceId)
-    return permissionsList.every(permission => results[permission] === true)
+    return permissionsList.every(permission => results[permission])
   }
 }
 
 const createHasAnyPermissionEvaluator = (evaluateBatch: BatchPermissionsEvaluator) => {
   return async (permissionsList: string[], resourceId: string): Promise<boolean> => {
     const results = await evaluateBatch(permissionsList, resourceId)
-    return permissionsList.some(permission => results[permission] === true)
+    return permissionsList.some(permission => results[permission])
   }
 }
 
@@ -52,18 +52,16 @@ export const useRbacStore = defineStore('rbac', () => {
 
     // Check if the permission exists in the cache
     if (permission in cache.permissions) {
-      return cache.permissions[permission]
+      return cache.permissions[permission] ?? null
     }
     return null
   }
 
   const setCachedPermission = (permission: string, resourceId: string, authorized: boolean) => {
-    if (!permissionCache.value[resourceId]) {
-      permissionCache.value[resourceId] = {
-        permissions: {},
-        timestamp: Date.now()
-      }
-    }
+      permissionCache.value[resourceId] ??= {
+          permissions: {},
+          timestamp: Date.now()
+      };
     permissionCache.value[resourceId].permissions[permission] = authorized
     permissionCache.value[resourceId].timestamp = Date.now()
   }
@@ -87,9 +85,7 @@ export const useRbacStore = defineStore('rbac', () => {
       setCachedPermission(permission, resourceId, authorized)
 
       // Store in permissions map
-      if (!permissions.value[resourceId]) {
-        permissions.value[resourceId] = []
-      }
+        permissions.value[resourceId] ??= [];
 
       const existingIndex = permissions.value[resourceId].findIndex(p => p.permission === permission)
       const permissionEntry: UserPermission = {
@@ -116,21 +112,38 @@ export const useRbacStore = defineStore('rbac', () => {
     }
   }
 
-  async function batchCheckPermissions(permissionsList: string[], resourceId: string): Promise<Record<string, boolean>> {
+  function getCachedPermissionsFromList(permissionsList: string[], resourceId: string): { results: Record<string, boolean>, uncached: string[] } {
     const results: Record<string, boolean> = {}
-    const uncachedPermissions: string[] = []
+    const uncached: string[] = []
 
-    // Check cache for each permission
     for (const permission of permissionsList) {
       const cached = hasCachedPermission(permission, resourceId)
-      if (cached !== null) {
-        results[permission] = cached
+      if (cached === null) {
+        uncached.push(permission)
       } else {
-        uncachedPermissions.push(permission)
+        results[permission] = cached
       }
     }
 
-    // If all permissions are cached, return early
+    return { results, uncached }
+  }
+
+  function storePermissionResult(result: UserPermission, resourceId: string): void {
+    setCachedPermission(result.permission, resourceId, result.authorized)
+
+      permissions.value[resourceId] ??= [];
+
+    const existingIndex = permissions.value[resourceId].findIndex(p => p.permission === result.permission)
+    if (existingIndex >= 0) {
+      permissions.value[resourceId][existingIndex] = result
+    } else {
+      permissions.value[resourceId].push(result)
+    }
+  }
+
+  async function batchCheckPermissions(permissionsList: string[], resourceId: string): Promise<Record<string, boolean>> {
+    const { results, uncached: uncachedPermissions } = getCachedPermissionsFromList(permissionsList, resourceId)
+
     if (uncachedPermissions.length === 0) {
       return results
     }
@@ -144,32 +157,9 @@ export const useRbacStore = defineStore('rbac', () => {
         resource_id: resourceId
       })
 
-      // Cache results and add to final result
       for (const result of batchResults) {
-        setCachedPermission(result.permission, resourceId, result.authorized)
+        storePermissionResult(result, resourceId)
         results[result.permission] = result.authorized
-
-        // Store in permissions map
-        if (!permissions.value[resourceId]) {
-          permissions.value[resourceId] = []
-        }
-
-        const existingIndex = permissions.value[resourceId].findIndex(p => p.permission === result.permission)
-        if (existingIndex >= 0) {
-          permissions.value[resourceId][existingIndex] = result
-        } else {
-          permissions.value[resourceId].push(result)
-        }
-      }
-
-      // Add cached results to final result
-      for (const permission of permissionsList) {
-        if (results[permission] === undefined) {
-          const cached = hasCachedPermission(permission, resourceId)
-          if (cached !== null) {
-            results[permission] = cached
-          }
-        }
       }
 
       return results
@@ -178,7 +168,6 @@ export const useRbacStore = defineStore('rbac', () => {
       error.value = errorMsg
       console.error('Batch permission check error:', errorMsg)
       
-      // Default to false for uncached permissions
       for (const permission of uncachedPermissions) {
         results[permission] = false
       }

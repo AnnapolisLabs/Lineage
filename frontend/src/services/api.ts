@@ -238,12 +238,17 @@ function handleUserActivity() {
 
 // Attach global listeners once at module load. This is safe for an SPA
 // because the module is loaded a single time and reused across views.
-const eventTarget =
-  typeof globalThis.addEventListener === "function"
-    ? globalThis
-    : typeof globalThis.window !== "undefined"
-      ? globalThis.window
-      : null;
+function getEventTarget(): typeof globalThis | Window | null {
+  if (typeof globalThis.addEventListener === "function") {
+    return globalThis;
+  }
+  if (globalThis.window !== undefined) {
+    return globalThis.window;
+  }
+  return null;
+}
+
+const eventTarget = getEventTarget();
 
 if (eventTarget) {
   eventTarget.addEventListener("click", handleUserActivity);

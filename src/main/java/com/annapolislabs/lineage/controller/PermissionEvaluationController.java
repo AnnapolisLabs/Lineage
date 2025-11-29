@@ -30,8 +30,12 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Tag(name = "Permission Evaluation", description = "Permission checking and evaluation APIs")
 public class PermissionEvaluationController {
+    
+    private static final String RESPONSE_USER_ID = "user_id";
+    private static final String RESPONSE_RESOURCE_ID = "resource_id";
+    private static final String RESPONSE_ERROR = "error";
+    
     private final UserRepository userRepository;
-
     private final PermissionEvaluationService permissionEvaluationService;
     private final RoleManagementService roleManagementService;
 
@@ -59,9 +63,9 @@ public class PermissionEvaluationController {
         boolean hasPermission = permissionEvaluationService.hasPermission(userId, permission, resourceId);
 
         Map<String, Object> response = new HashMap<>();
-        response.put("user_id", userId);
+        response.put(RESPONSE_USER_ID, userId);
         response.put("permission", permission);
-        response.put("resource_id", resourceId);
+        response.put(RESPONSE_RESOURCE_ID, resourceId);
         response.put("authorized", hasPermission);
         response.put("timestamp", System.currentTimeMillis());
 
@@ -99,12 +103,12 @@ public class PermissionEvaluationController {
         long duration = System.currentTimeMillis() - startTime;
 
         Map<String, Object> response = new HashMap<>();
-        response.put("user_id", userId);
-        response.put("resource_id", resourceId);
+        response.put(RESPONSE_USER_ID, userId);
+        response.put(RESPONSE_RESOURCE_ID, resourceId);
         response.put("results", results);
         response.put("evaluation_duration_ms", duration);
         response.put("total_evaluations", permissions.size());
-        response.put("successful_evaluations", results.values().stream().mapToLong(v -> v ? 1 : 0).sum());
+        response.put("successful_evaluations", results.values().stream().mapToLong(v -> Boolean.TRUE.equals(v) ? 1 : 0).sum());
 
         log.debug("Batch permission evaluation for user {}: {} permissions in {}ms",
                 userId, permissions.size(), duration);
@@ -135,8 +139,8 @@ public class PermissionEvaluationController {
         Set<String> permissions = permissionEvaluationService.getEffectivePermissions(targetUserId, resourceId);
 
         Map<String, Object> response = new HashMap<>();
-        response.put("user_id", targetUserId);
-        response.put("resource_id", resourceId);
+        response.put(RESPONSE_USER_ID, targetUserId);
+        response.put(RESPONSE_RESOURCE_ID, resourceId);
         response.put("permissions", permissions);
         response.put("permission_count", permissions.size());
 
@@ -172,7 +176,7 @@ public class PermissionEvaluationController {
             boolean hasRoleOrHigher = permissionEvaluationService.hasRoleOrHigher(targetUserId, role);
 
             Map<String, Object> response = new HashMap<>();
-            response.put("user_id", targetUserId);
+            response.put(RESPONSE_USER_ID, targetUserId);
             response.put("required_role", requiredRole);
             response.put("has_role_or_higher", hasRoleOrHigher);
 
@@ -180,7 +184,7 @@ public class PermissionEvaluationController {
 
         } catch (IllegalArgumentException e) {
             Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("error", "Invalid role: " + requiredRole);
+            errorResponse.put(RESPONSE_ERROR, "Invalid role: " + requiredRole);
             return ResponseEntity.badRequest().body(errorResponse);
         }
     }
@@ -205,7 +209,7 @@ public class PermissionEvaluationController {
         // Check if user can clear caches (admin users)
         UUID currentUserId = getCurrentUserId();
         if (!permissionEvaluationService.hasPermission(currentUserId, "system.configure", null)) {
-            return ResponseEntity.status(403).body(Map.of("error", "Insufficient permissions to clear caches"));
+            return ResponseEntity.status(403).body(Map.of(RESPONSE_ERROR, "Insufficient permissions to clear caches"));
         }
 
         permissionEvaluationService.clearUserCache(userId);
@@ -230,7 +234,7 @@ public class PermissionEvaluationController {
         UUID currentUserId = getCurrentUserId();
 
         if (!permissionEvaluationService.hasPermission(currentUserId, "audit.read", null)) {
-            return ResponseEntity.status(403).body(Map.of("error", "Insufficient permissions to view statistics"));
+            return ResponseEntity.status(403).body(Map.of(RESPONSE_ERROR, "Insufficient permissions to view statistics"));
         }
 
         Map<String, Object> statistics = roleManagementService.getPermissionStatistics(currentUserId);
@@ -255,12 +259,11 @@ public class PermissionEvaluationController {
         // Test basic permission evaluation
         try {
             // This should always return false for non-existent user
-            boolean testResult = permissionEvaluationService.hasPermission(
-                    UUID.randomUUID(), "test.permission", null);
+            permissionEvaluationService.hasPermission(UUID.randomUUID(), "test.permission", null);
             response.put("test_evaluation", "passed");
         } catch (Exception e) {
             response.put("test_evaluation", "failed");
-            response.put("error", e.getMessage());
+            response.put(RESPONSE_ERROR, e.getMessage());
         }
 
         return ResponseEntity.ok(response);
@@ -277,15 +280,15 @@ public class PermissionEvaluationController {
 
         // Extract user ID from authentication details
         Object principal = authentication.getPrincipal();
-        if (principal instanceof org.springframework.security.core.userdetails.UserDetails) {
+        if (principal instanceof org.springframework.security.core.userdetails.UserDetails userDetails) {
             // Principal is UserDetails, extract email and look up user
-            String email = ((org.springframework.security.core.userdetails.UserDetails) principal).getUsername();
+            String email = userDetails.getUsername();
             return userRepository.findByEmail(email)
                     .map(com.annapolislabs.lineage.entity.User::getId)
                     .orElseThrow(() -> new SecurityException("User not found in database"));
-        } else if (principal instanceof String) {
+        } else if (principal instanceof String principalString) {
             try {
-                return UUID.fromString((String) principal);
+                return UUID.fromString(principalString);
             } catch (IllegalArgumentException e) {
                 throw new SecurityException("Invalid user ID in authentication context");
             }

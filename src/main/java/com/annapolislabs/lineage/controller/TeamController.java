@@ -37,6 +37,8 @@ import java.util.*;
 @Tag(name = "Team Management", description = "Team creation, member management, and collaboration APIs")
 public class TeamController {
 
+    private static final String RESPONSE_MESSAGE = "message";
+    
     @Autowired
     private UserRepository userRepository;
     private final TeamService teamService;
@@ -284,7 +286,7 @@ public class TeamController {
         teamService.acceptInvitation(invitationId, currentUserId);
         
         Map<String, String> response = new HashMap<>();
-        response.put("message", "Team invitation accepted successfully");
+        response.put(RESPONSE_MESSAGE, "Team invitation accepted successfully");
         
         return ResponseEntity.ok(response);
     }
@@ -350,7 +352,7 @@ public class TeamController {
         teamService.updateMemberRole(teamId, userId, newRole, currentUserId);
         
         Map<String, String> response = new HashMap<>();
-        response.put("message", "Member role updated successfully");
+        response.put(RESPONSE_MESSAGE, "Member role updated successfully");
         response.put("new_role", newRole.name());
         
         log.info("Member role updated successfully: {} -> {} in team {}", userId, newRole, teamId);
@@ -404,15 +406,15 @@ public class TeamController {
         
         // Extract user ID from authentication details
         Object principal = authentication.getPrincipal();
-        if (principal instanceof org.springframework.security.core.userdetails.UserDetails) {
+        if (principal instanceof org.springframework.security.core.userdetails.UserDetails userDetails) {
             // Principal is UserDetails, extract email and look up user
-            String email = ((org.springframework.security.core.userdetails.UserDetails) principal).getUsername();
+            String email = userDetails.getUsername();
             return userRepository.findByEmail(email)
                 .map(com.annapolislabs.lineage.entity.User::getId)
                 .orElseThrow(() -> new SecurityException("User not found in database"));
-        } else if (principal instanceof String) {
+        } else if (principal instanceof String principalString) {
             try {
-                return UUID.fromString((String) principal);
+                return UUID.fromString(principalString);
             } catch (IllegalArgumentException e) {
                 throw new SecurityException("Invalid user ID in authentication context");
             }

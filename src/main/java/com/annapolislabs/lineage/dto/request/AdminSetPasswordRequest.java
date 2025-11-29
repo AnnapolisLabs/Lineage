@@ -16,7 +16,9 @@ public class AdminSetPasswordRequest {
     @Size(min = 12, max = 128, message = "Password must be between 12 and 128 characters")
     private String newPassword;
 
+    /** Default constructor required for Jackson deserialization. */
     public AdminSetPasswordRequest() {
+        // Empty constructor for JSON deserialization
     }
 
     public String getNewPassword() {

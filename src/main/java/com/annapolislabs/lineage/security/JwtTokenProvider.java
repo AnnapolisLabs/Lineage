@@ -123,9 +123,7 @@ public class JwtTokenProvider {
                     .build()
                     .parseSignedClaims(token);
             
-            // Check if token is blacklisted (optional enhancement)
-            String jti = claims.getPayload().getId();
-            // You would implement blacklist checking here if needed
+            // Blacklist checking could be implemented here using claims.getPayload().getId() if needed
             
             return !claims.getPayload().getExpiration().before(new Date());
         } catch (JwtException | IllegalArgumentException e) {

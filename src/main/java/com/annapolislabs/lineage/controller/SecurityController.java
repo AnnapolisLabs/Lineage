@@ -270,15 +270,6 @@ public class SecurityController {
         }
     }
 
-    private String extractTokenFromRequest() {
-        // This would be extracted from the JWT filter in practice
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getCredentials() != null) {
-            return authentication.getCredentials().toString();
-        }
-        return null;
-    }
-
     /**
      * DELETE /api/security/sessions/{sessionId} revokes a session token as part of session management.
      *

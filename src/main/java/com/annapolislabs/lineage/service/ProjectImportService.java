@@ -106,11 +106,9 @@ public class ProjectImportService {
 
         Map<String, Requirement> created = new HashMap<>();
         Set<String> visiting = new HashSet<>();
-        List<Requirement> importedEntities = new ArrayList<>();
 
         for (ImportedRequirement importedRequirement : imported.values()) {
-            Requirement requirement = createRequirement(project, importedRequirement, imported, created, visiting, currentUser);
-            importedEntities.add(requirement);
+            createRequirement(project, importedRequirement, imported, created, visiting, currentUser);
         }
 
         ProjectResponse projectResponse = new ProjectResponse(project);

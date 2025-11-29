@@ -23,6 +23,10 @@ import java.util.stream.Collectors;
 @Service
 public class RoleManagementService {
 
+    private static final String PERMISSION_ROLE_READ = "role.read";
+    private static final String PERMISSION_USER_MANAGE = "user.manage";
+    private static final String ERROR_ROLE_NOT_FOUND = "Role not found: ";
+
     @Autowired
     private PermissionDefinitionRepository permissionDefinitionRepository;
 
@@ -42,7 +46,7 @@ public class RoleManagementService {
         log.debug("Getting all roles by user {}", requestingUserId);
 
         // Check if user has permission to view roles
-        if (!permissionEvaluationService.hasPermission(requestingUserId, "role.read", null)) {
+        if (!permissionEvaluationService.hasPermission(requestingUserId, PERMISSION_ROLE_READ, null)) {
             throw new SecurityException("User does not have permission to view roles");
         }
 
@@ -56,12 +60,12 @@ public class RoleManagementService {
         log.debug("Getting role {} by user {}", roleId, requestingUserId);
 
         // Check if user has permission to view roles
-        if (!permissionEvaluationService.hasPermission(requestingUserId, "role.read", null)) {
+        if (!permissionEvaluationService.hasPermission(requestingUserId, PERMISSION_ROLE_READ, null)) {
             throw new SecurityException("User does not have permission to view roles");
         }
 
         return permissionDefinitionRepository.findById(roleId)
-                .orElseThrow(() -> new IllegalArgumentException("Role not found: " + roleId));
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_ROLE_NOT_FOUND + roleId));
     }
 
     /**
@@ -135,7 +139,7 @@ public class RoleManagementService {
         }
 
         PermissionDefinition role = permissionDefinitionRepository.findById(roleId)
-                .orElseThrow(() -> new IllegalArgumentException("Role not found: " + roleId));
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_ROLE_NOT_FOUND + roleId));
 
         // Cannot update system roles
         if (role.isSystem()) {
@@ -180,7 +184,7 @@ public class RoleManagementService {
         }
 
         PermissionDefinition role = permissionDefinitionRepository.findById(roleId)
-                .orElseThrow(() -> new IllegalArgumentException("Role not found: " + roleId));
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_ROLE_NOT_FOUND + roleId));
 
         // Cannot delete system roles
         if (role.isSystem()) {
@@ -219,7 +223,7 @@ public class RoleManagementService {
         }
 
         // Check if requesting user has permission to grant permissions
-        if (!permissionEvaluationService.hasPermission(requestingUserId, "user.manage", resourceId)) {
+        if (!permissionEvaluationService.hasPermission(requestingUserId, PERMISSION_USER_MANAGE, resourceId)) {
             throw new SecurityException("User does not have permission to grant permissions");
         }
 
@@ -271,7 +275,7 @@ public class RoleManagementService {
         }
 
         // Check if requesting user has permission to revoke permissions
-        if (!permissionEvaluationService.hasPermission(requestingUserId, "user.manage", resourceId)) {
+        if (!permissionEvaluationService.hasPermission(requestingUserId, PERMISSION_USER_MANAGE, resourceId)) {
             throw new SecurityException("User does not have permission to revoke permissions");
         }
 
@@ -304,8 +308,8 @@ public class RoleManagementService {
         log.debug("Getting permissions for user {} by user {}", userId, requestingUserId);
 
         // Users can view their own permissions, or admins can view any user's permissions
-        if (!userId.equals(requestingUserId) && 
-            !permissionEvaluationService.hasPermission(requestingUserId, "user.manage", null)) {
+        if (!userId.equals(requestingUserId) &&
+            !permissionEvaluationService.hasPermission(requestingUserId, PERMISSION_USER_MANAGE, null)) {
             throw new SecurityException("User does not have permission to view these permissions");
         }
 
@@ -336,7 +340,7 @@ public class RoleManagementService {
         log.debug("Searching permissions with term '{}' by user {}", searchTerm, requestingUserId);
 
         // Check if user has permission to search permissions
-        if (!permissionEvaluationService.hasPermission(requestingUserId, "role.read", null)) {
+        if (!permissionEvaluationService.hasPermission(requestingUserId, PERMISSION_ROLE_READ, null)) {
             throw new SecurityException("User does not have permission to search permissions");
         }
 
@@ -403,7 +407,7 @@ public class RoleManagementService {
                 permissionKeys.size(), userId, requestingUserId);
 
         // Check if user has permission to evaluate permissions
-        if (!permissionEvaluationService.hasPermission(requestingUserId, "user.manage", resourceId)) {
+        if (!permissionEvaluationService.hasPermission(requestingUserId, PERMISSION_USER_MANAGE, resourceId)) {
             throw new SecurityException("User does not have permission to evaluate permissions");
         }
 

@@ -46,6 +46,16 @@ public class SecurityConfig {
     private static final String ADMINISTRATOR = "ADMINISTRATOR";
     private static final String PROJECT_MANAGER = "PROJECT_MANAGER";
     private static final String USERS_API_PATH = "/api/users/**";
+    private static final String ACCESS_DENIED_ERROR_TEMPLATE = """
+            {
+                "error": {
+                    "code": "ACCESS_DENIED",
+                    "message": "Insufficient permissions to access this resource",
+                    "path": "%s",
+                    "timestamp": "%s"
+                }
+            }
+            """;
     
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
@@ -141,16 +151,8 @@ public class SecurityConfig {
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                     .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                     .accessDeniedHandler((request, response, accessDeniedException) -> {
-                        String errorResponse = """
-                            {
-                                "error": {
-                                    "code": "ACCESS_DENIED",
-                                    "message": "Insufficient permissions to access this resource",
-                                    "path": "%s",
-                                    "timestamp": "%s"
-                                }
-                            }
-                            """.formatted(request.getRequestURI(), java.time.Instant.now().toString());
+                        String errorResponse = ACCESS_DENIED_ERROR_TEMPLATE.formatted(
+                            request.getRequestURI(), java.time.Instant.now().toString());
                         response.setStatus(403);
                         response.setContentType("application/json");
                         response.getWriter().write(errorResponse);

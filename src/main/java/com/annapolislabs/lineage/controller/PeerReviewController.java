@@ -34,6 +34,9 @@ import java.util.*;
 @Tag(name = "Peer Review", description = "Peer review creation, approval, and workflow APIs")
 public class PeerReviewController {
 
+    private static final String RESPONSE_MESSAGE = "message";
+    private static final String REQUEST_COMMENTS = "comments";
+    
     private final PeerReviewService peerReviewService;
 
     /**
@@ -195,7 +198,7 @@ public class PeerReviewController {
         peerReviewService.startReview(reviewId, currentUserId);
         
         Map<String, String> response = new HashMap<>();
-        response.put("message", "Peer review started successfully");
+        response.put(RESPONSE_MESSAGE, "Peer review started successfully");
         
         log.info("Peer review started successfully: {}", reviewId);
         return ResponseEntity.ok(response);
@@ -225,12 +228,12 @@ public class PeerReviewController {
         
         UUID currentUserId = getCurrentUserId();
         
-        String comments = (String) request.get("comments");
+        String comments = (String) request.get(REQUEST_COMMENTS);
         
         peerReviewService.approveReview(reviewId, comments, currentUserId);
         
         Map<String, String> response = new HashMap<>();
-        response.put("message", "Peer review approved successfully");
+        response.put(RESPONSE_MESSAGE, "Peer review approved successfully");
         
         log.info("Peer review approved successfully: {}", reviewId);
         return ResponseEntity.ok(response);
@@ -260,12 +263,12 @@ public class PeerReviewController {
         
         UUID currentUserId = getCurrentUserId();
         
-        String comments = (String) request.get("comments");
+        String comments = (String) request.get(REQUEST_COMMENTS);
         
         peerReviewService.rejectReview(reviewId, comments, currentUserId);
         
         Map<String, String> response = new HashMap<>();
-        response.put("message", "Peer review rejected successfully");
+        response.put(RESPONSE_MESSAGE, "Peer review rejected successfully");
         
         log.info("Peer review rejected successfully: {}", reviewId);
         return ResponseEntity.ok(response);
@@ -295,12 +298,12 @@ public class PeerReviewController {
         
         UUID currentUserId = getCurrentUserId();
         
-        String comments = (String) request.get("comments");
+        String comments = (String) request.get(REQUEST_COMMENTS);
         
         peerReviewService.requestRevision(reviewId, comments, currentUserId);
         
         Map<String, String> response = new HashMap<>();
-        response.put("message", "Peer review revision requested successfully");
+        response.put(RESPONSE_MESSAGE, "Peer review revision requested successfully");
         
         log.info("Peer review revision requested successfully: {}", reviewId);
         return ResponseEntity.ok(response);
@@ -336,7 +339,7 @@ public class PeerReviewController {
         peerReviewService.setRatings(reviewId, effortRating, qualityRating, currentUserId);
         
         Map<String, String> response = new HashMap<>();
-        response.put("message", "Ratings set successfully");
+        response.put(RESPONSE_MESSAGE, "Ratings set successfully");
         response.put("effort_rating", effortRating.toString());
         response.put("quality_rating", qualityRating.toString());
         
@@ -479,9 +482,9 @@ public class PeerReviewController {
         }
         
         Object principal = authentication.getPrincipal();
-        if (principal instanceof String) {
+        if (principal instanceof String principalString) {
             try {
-                return UUID.fromString((String) principal);
+                return UUID.fromString(principalString);
             } catch (IllegalArgumentException e) {
                 throw new SecurityException("Invalid user ID in authentication context");
             }
