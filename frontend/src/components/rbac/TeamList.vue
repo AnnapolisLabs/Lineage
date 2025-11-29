@@ -428,8 +428,8 @@ async function loadTeams() {
 async function loadTeamMembers(teamId: string) {
   try {
     membersLoading.value = true
-    const response = await teamService.getTeamMembers(teamId, { size: 100 })
-    teamMembers.value = response.content
+    const members = await teamService.getTeamMembers(teamId, { size: 100 })
+    teamMembers.value = members
   } catch (error) {
     console.error('Failed to load team members:', error)
   } finally {

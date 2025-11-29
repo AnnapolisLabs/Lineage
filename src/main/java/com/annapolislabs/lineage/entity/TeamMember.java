@@ -37,6 +37,17 @@ public class TeamMember {
     @Column(name = "user_id", nullable = false)
     private UUID userId;
 
+    /**
+     * Transient reference to the associated user.
+     *
+     * This field is not persisted in the team_members table – it is
+     * populated on demand in service layer methods (e.g. when returning
+     * team members via the API) so that API consumers can access
+     * denormalised user details alongside membership data.
+     */
+    @Transient
+    private User user;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
     private TeamRole role = TeamRole.MEMBER;

@@ -6,7 +6,7 @@
   >
     <div class="bg-annapolis-charcoal rounded-lg px-8 py-6 w-full max-w-lg shadow-2xl border border-annapolis-teal/30">
       <div class="flex justify-between items-center mb-6">
-        <h3 class="text-xl font-semibold text-white">Invite Team Member</h3>
+        <h3 class="text-xl font-semibold text-white">Add Team Member</h3>
         <button
           @click="$emit('update:modelValue', false)"
           class="text-annapolis-gray-400 hover:text-white transition-colors"
@@ -81,11 +81,11 @@
             :disabled="loading || !formData.email || !formData.role"
             class="px-8 py-2 bg-annapolis-teal hover:bg-annapolis-teal/90 disabled:bg-annapolis-gray-600 text-white font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg disabled:transform-none disabled:cursor-not-allowed"
           >
-            <span v-if="loading" class="flex items-center gap-2">
-              <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-              Sending...
+          <span v-if="loading" class="flex items-center gap-2">
+            <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              Adding...
             </span>
-            <span v-else>Send Invitation</span>
+            <span v-else>Add Member</span>
           </button>
         </div>
       </form>

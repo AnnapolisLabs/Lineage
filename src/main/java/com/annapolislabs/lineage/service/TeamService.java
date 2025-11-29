@@ -347,7 +347,34 @@ public class TeamService {
             throw new SecurityException("User does not have permission to view team members");
         }
 
-        return teamMemberRepository.findByTeamIdAndStatusActive(teamId);
+        // Load active team members
+        List<TeamMember> members = teamMemberRepository.findByTeamIdAndStatusActive(teamId);
+
+        if (members.isEmpty()) {
+            return members;
+        }
+
+        // Hydrate transient `user` field so API consumers receive
+        // embedded user details (name, email, etc.) along with
+        // membership metadata. This keeps the database schema
+        // normalised (only userId is stored on TeamMember) while
+        // still providing a convenient denormalised view over HTTP.
+        Set<UUID> userIds = members.stream()
+                .map(TeamMember::getUserId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        if (!userIds.isEmpty()) {
+            Map<UUID, User> usersById = userRepository.findAllById(userIds).stream()
+                    .collect(Collectors.toMap(User::getId, u -> u));
+
+            for (TeamMember member : members) {
+                User user = usersById.get(member.getUserId());
+                member.setUser(user);
+            }
+        }
+
+        return members;
     }
 
     /**

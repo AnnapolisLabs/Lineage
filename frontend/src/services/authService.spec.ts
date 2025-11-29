@@ -41,9 +41,17 @@ describe('authService', () => {
         id: 'user-1',
         email: 'test@example.com',
         name: 'Test User',
-        role: 'USER'
+        globalRole: 'USER',
+        status: 'ACTIVE',
+        emailVerified: true,
+        createdAt: '2025-01-01T00:00:00Z',
+        updatedAt: '2025-01-01T00:00:00Z',
+        preferences: {}
       }
-      vi.mocked(api.get).mockResolvedValue({ data: mockUser } as any)
+
+      // /auth/me returns a wrapper object with the real user nested
+      // under `user`, which authService.getCurrentUser unwraps.
+      vi.mocked(api.get).mockResolvedValue({ data: { user: mockUser } } as any)
 
       const result = await authService.getCurrentUser()
 

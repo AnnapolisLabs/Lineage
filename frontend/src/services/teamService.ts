@@ -54,8 +54,8 @@ export const teamService = {
     await api.post(`/v1/teams/invitations/${invitationId}/accept`)
   },
 
-  async getTeamMembers(teamId: string, params?: TeamMemberListParams): Promise<PaginatedResponse<TeamMember>> {
-    const response = await api.get<PaginatedResponse<TeamMember>>(`/v1/teams/${teamId}/members`, { params })
+  async getTeamMembers(teamId: string, params?: TeamMemberListParams): Promise<TeamMember[]> {
+    const response = await api.get<TeamMember[]>(`/v1/teams/${teamId}/members`, { params })
     return response.data
   },
 

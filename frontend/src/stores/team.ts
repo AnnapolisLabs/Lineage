@@ -181,9 +181,10 @@ export const useTeamStore = defineStore('team', () => {
         error.value = null
 
         try {
-            const response = await teamService.getTeamMembers(teamId, params)
-            teamMembers.value = response.content
-            return response
+            // Backend returns a plain array of TeamMember, not a paginated response
+            const members = await teamService.getTeamMembers(teamId, params)
+            teamMembers.value = members
+            return members
         } catch (err: any) {
             const errorMsg = err.response?.data?.message || 'Failed to fetch team members'
             error.value = errorMsg

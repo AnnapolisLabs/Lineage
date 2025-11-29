@@ -79,7 +79,11 @@ export interface TeamMember {
   id: string
   teamId: string
   userId: string
-  user: User
+  // Backend enriches TeamMember responses with a transient `user` object
+  // (loaded from `userId`) when returning team members via the API.
+  // However, for resilience we treat this as optional on the frontend
+  // because some edge cases or legacy data may omit it.
+  user?: User
   role: TeamRole
   joinedAt: string
   invitedBy: string

@@ -16,7 +16,7 @@
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
           </svg>
-          Invite Member
+          Add Member
         </button>
       </div>
 
@@ -30,7 +30,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
         </svg>
         <h4 class="text-lg font-medium text-white mb-2">No team members</h4>
-        <p class="text-annapolis-gray-400 mb-4">Get started by inviting your first team member</p>
+        <p class="text-annapolis-gray-400 mb-4">Get started by adding your first team member</p>
         <button
           v-if="canManageMembers"
           @click="emit('invite-member')"
@@ -39,7 +39,7 @@
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
           </svg>
-          Invite First Member
+          Add First Member
         </button>
       </div>
 
@@ -53,14 +53,14 @@
             <div class="flex-shrink-0">
               <div class="w-10 h-10 rounded-full bg-annapolis-teal/20 flex items-center justify-center">
                 <span class="text-annapolis-teal font-semibold text-sm">
-                  {{ getInitials(member.user.name || member.user.email) }}
+                  {{ getInitials(member.user?.name || member.user?.email || 'Unknown') }}
                 </span>
               </div>
             </div>
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2">
                 <p class="text-sm font-medium text-white truncate">
-                  {{ member.user.name || 'Unnamed User' }}
+                  {{ member.user?.name || member.user?.email || 'Unnamed User' }}
                 </p>
                 <span
                   v-if="member.status === 'PENDING'"
@@ -69,7 +69,7 @@
                   Pending
                 </span>
               </div>
-              <p class="text-xs text-annapolis-gray-400 truncate">{{ member.user.email }}</p>
+              <p class="text-xs text-annapolis-gray-400 truncate">{{ member.user?.email || 'No email available' }}</p>
             </div>
           </div>
 
@@ -106,6 +106,7 @@
 </template>
 
 <script setup lang="ts">
+import { toRefs } from 'vue'
 import type { TeamMember, TeamRole } from '@/types/rbac'
 import RoleBadge from '@/components/rbac/RoleBadge.vue'
 
@@ -130,7 +131,8 @@ const props = withDefaults(defineProps<Props>(), {
   loading: false
 })
 
-const { members, loading, canManageMembers, currentUserId } = props
+// Use toRefs to keep props reactive when destructuring
+const { members, loading, canManageMembers, currentUserId } = toRefs(props)
 
 const emit = defineEmits<{
   'invite-member': []
@@ -171,7 +173,8 @@ function handleRoleChange(member: TeamMember, event: Event) {
 }
 
 function handleRemoveMember(member: TeamMember) {
-  if (confirm(`Remove ${member.user.name || member.user.email} from the team?`)) {
+  const displayName = member.user?.name || member.user?.email || 'this member'
+  if (confirm(`Remove ${displayName} from the team?`)) {
     emit('remove-member', member)
   }
 }
