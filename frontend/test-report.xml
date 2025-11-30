@@ -1,56 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testExecutions version="1">
   <file path="src/App.spec.ts">
-    <testCase name="App.vue - should render router view" duration="74" />
-    <testCase name="App.vue - should show AIAssistant when authenticated" duration="16" />
-    <testCase name="App.vue - should have auth store available" duration="7" />
+    <testCase name="App.vue - should render router view" duration="32" />
+    <testCase name="App.vue - should show AIAssistant when authenticated" duration="10" />
+    <testCase name="App.vue - should have auth store available" duration="6" />
   </file>
   <file path="src/components/AIAssistant.spec.ts">
-    <testCase name="AIAssistant.vue - should render AI assistant" duration="36" />
-    <testCase name="AIAssistant.vue - should have toggle functionality" duration="10" />
-    <testCase name="AIAssistant.vue - should send message" duration="8" />
-    <testCase name="AIAssistant.vue - should create new conversation" duration="4" />
-    <testCase name="AIAssistant.vue - should load chat list" duration="4" />
-    <testCase name="AIAssistant.vue - should delete conversation" duration="4" />
+    <testCase name="AIAssistant.vue - should render AI assistant" duration="22" />
+    <testCase name="AIAssistant.vue - should have toggle functionality" duration="9" />
+    <testCase name="AIAssistant.vue - should send message" duration="5" />
+    <testCase name="AIAssistant.vue - should create new conversation" duration="3" />
+    <testCase name="AIAssistant.vue - should load chat list" duration="3" />
+    <testCase name="AIAssistant.vue - should delete conversation" duration="3" />
   </file>
   <file path="src/components/HelloWorld.spec.ts">
-    <testCase name="HelloWorld.vue - should render component" duration="30" />
-    <testCase name="HelloWorld.vue - should display the message prop" duration="5" />
+    <testCase name="HelloWorld.vue - should render component" duration="18" />
+    <testCase name="HelloWorld.vue - should display the message prop" duration="4" />
   </file>
   <file path="src/components/RequirementTreeView.spec.ts">
-    <testCase name="RequirementTreeView.vue - should render tree view" duration="19" />
+    <testCase name="RequirementTreeView.vue - should render tree view" duration="18" />
     <testCase name="RequirementTreeView.vue - should accept requirements prop" duration="6" />
-    <testCase name="RequirementTreeView.vue - should handle empty requirements" duration="5" />
+    <testCase name="RequirementTreeView.vue - should handle empty requirements" duration="2" />
   </file>
   <file path="src/components/requirements/PriorityBadge.spec.ts">
-    <testCase name="PriorityBadge.vue - should render priority badge" duration="28" />
-    <testCase name="PriorityBadge.vue - should apply correct classes for CRITICAL priority" duration="9" />
+    <testCase name="PriorityBadge.vue - should render priority badge" duration="20" />
+    <testCase name="PriorityBadge.vue - should apply correct classes for CRITICAL priority" duration="13" />
     <testCase name="PriorityBadge.vue - should apply correct classes for HIGH priority" duration="4" />
     <testCase name="PriorityBadge.vue - should apply correct classes for MEDIUM priority" duration="4" />
   </file>
   <file path="src/components/requirements/RequirementCard.spec.ts">
-    <testCase name="RequirementCard.vue - should render requirement card" duration="29" />
-    <testCase name="RequirementCard.vue - should display requirement ID" duration="5" />
+    <testCase name="RequirementCard.vue - should render requirement card" duration="21" />
+    <testCase name="RequirementCard.vue - should display requirement ID" duration="4" />
   </file>
   <file path="src/components/requirements/RequirementForm.spec.ts">
-    <testCase name="RequirementForm.vue - should render requirement form" duration="53" />
+    <testCase name="RequirementForm.vue - should render requirement form" duration="41" />
     <testCase name="RequirementForm.vue - should accept props" duration="7" />
-    <testCase name="RequirementForm.vue - should handle basic rendering" duration="14" />
+    <testCase name="RequirementForm.vue - should handle basic rendering" duration="9" />
   </file>
   <file path="src/components/requirements/RequirementHistory.spec.ts">
     <testCase name="RequirementHistory.vue - should render requirement history" duration="66" />
-    <testCase name="RequirementHistory.vue - should display history items" duration="21" />
-    <testCase name="RequirementHistory.vue - should show empty state when no history" duration="18" />
+    <testCase name="RequirementHistory.vue - should display history items" duration="7" />
+    <testCase name="RequirementHistory.vue - should show empty state when no history" duration="9" />
   </file>
   <file path="src/components/requirements/RequirementModal.spec.ts">
-    <testCase name="RequirementModal.vue - should render modal" duration="14" />
+    <testCase name="RequirementModal.vue - should render modal" duration="13" />
     <testCase name="RequirementModal.vue - should emit close event" duration="2" />
   </file>
   <file path="src/components/requirements/StatusBadge.spec.ts">
-    <testCase name="StatusBadge.vue - should render status badge" duration="25" />
-    <testCase name="StatusBadge.vue - should apply correct classes for APPROVED status" duration="9" />
-    <testCase name="StatusBadge.vue - should apply correct classes for REVIEW status" duration="3" />
-    <testCase name="StatusBadge.vue - should apply correct classes for DEPRECATED status" duration="3" />
+    <testCase name="StatusBadge.vue - should render status badge" duration="28" />
+    <testCase name="StatusBadge.vue - should apply correct classes for APPROVED status" duration="7" />
+    <testCase name="StatusBadge.vue - should apply correct classes for REVIEW status" duration="4" />
+    <testCase name="StatusBadge.vue - should apply correct classes for DEPRECATED status" duration="2" />
   </file>
   <file path="src/composables/useRequirementStyles.spec.ts">
     <testCase name="useRequirementStyles - getStatusClasses - should return approved classes for APPROVED status" duration="1" />
@@ -65,13 +65,13 @@
     <testCase name="useRequirementStyles - getPriorityClasses - should include base classes for all priorities" duration="0" />
   </file>
   <file path="src/services/aiService.spec.ts">
-    <testCase name="AIService - sendMessage - should send message successfully" duration="5" />
+    <testCase name="AIService - sendMessage - should send message successfully" duration="7" />
     <testCase name="AIService - sendMessage - should throw error on failed request" duration="2" />
     <testCase name="AIService - createNewConversation - should create new conversation successfully" duration="1" />
-    <testCase name="AIService - createNewConversation - should throw error on failed request" duration="1" />
+    <testCase name="AIService - createNewConversation - should throw error on failed request" duration="0" />
     <testCase name="AIService - getChatList - should get chat list successfully" duration="1" />
     <testCase name="AIService - getChatList - should throw error on failed request" duration="0" />
-    <testCase name="AIService - deleteConversation - should delete conversation successfully" duration="1" />
+    <testCase name="AIService - deleteConversation - should delete conversation successfully" duration="0" />
     <testCase name="AIService - deleteConversation - should throw error on failed request" duration="0" />
   </file>
   <file path="src/services/authService.spec.ts">
@@ -80,23 +80,50 @@
     <testCase name="authService - logout - should remove auth token from localStorage" duration="0" />
   </file>
   <file path="src/services/projectService.spec.ts">
-    <testCase name="projectService - getAll - should get all projects" duration="3" />
+    <testCase name="projectService - getAll - should get all projects" duration="2" />
     <testCase name="projectService - getById - should get project by id" duration="0" />
     <testCase name="projectService - create - should create project" duration="1" />
     <testCase name="projectService - update - should update project" duration="0" />
     <testCase name="projectService - delete - should delete project" duration="0" />
   </file>
   <file path="src/services/requirementService.spec.ts">
-    <testCase name="requirementService - getByProject - should get requirements by project id" duration="3" />
+    <testCase name="requirementService - getByProject - should get requirements by project id" duration="4" />
     <testCase name="requirementService - getById - should get requirement by id" duration="0" />
     <testCase name="requirementService - create - should create requirement" duration="1" />
-    <testCase name="requirementService - update - should update requirement" duration="1" />
+    <testCase name="requirementService - update - should update requirement" duration="0" />
     <testCase name="requirementService - delete - should delete requirement" duration="0" />
     <testCase name="requirementService - getHistory - should get requirement history" duration="0" />
-    <testCase name="requirementService - search - should search requirements" duration="1" />
+    <testCase name="requirementService - search - should search requirements" duration="0" />
     <testCase name="requirementService - getLinks - should get requirement links" duration="0" />
     <testCase name="requirementService - createLink - should create requirement link" duration="0" />
     <testCase name="requirementService - deleteLink - should delete requirement link" duration="0" />
+  </file>
+  <file path="src/stores/admin.spec.ts">
+    <testCase name="useAdminStore - should initialize with default state" duration="5" />
+    <testCase name="useAdminStore - should compute hasUsers correctly" duration="1" />
+    <testCase name="useAdminStore - should compute isLoading correctly" duration="1" />
+    <testCase name="useAdminStore - should compute hasError correctly" duration="1" />
+    <testCase name="useAdminStore - fetchUsers - should fetch users successfully" duration="3" />
+    <testCase name="useAdminStore - fetchUsers - should handle fetch error" duration="2" />
+    <testCase name="useAdminStore - fetchUsers - should update search query" duration="3" />
+    <testCase name="useAdminStore - fetchUserById - should fetch user by id successfully" duration="1" />
+    <testCase name="useAdminStore - fetchUserById - should handle fetch error" duration="3" />
+    <testCase name="useAdminStore - updateUser - should update user successfully" duration="1" />
+    <testCase name="useAdminStore - updateUser - should update selectedUser if it matches" duration="1" />
+    <testCase name="useAdminStore - updateUser - should handle update error" duration="1" />
+    <testCase name="useAdminStore - deleteUser - should delete user successfully" duration="1" />
+    <testCase name="useAdminStore - deleteUser - should clear selectedUser if it matches deleted user" duration="1" />
+    <testCase name="useAdminStore - deleteUser - should handle delete error" duration="1" />
+    <testCase name="useAdminStore - lockUserAccount - should lock user account successfully" duration="1" />
+    <testCase name="useAdminStore - lockUserAccount - should handle lock error" duration="1" />
+    <testCase name="useAdminStore - createUser - should create user successfully" duration="1" />
+    <testCase name="useAdminStore - createUser - should handle create error" duration="1" />
+    <testCase name="useAdminStore - fetchSystemStatistics - should fetch system statistics successfully" duration="1" />
+    <testCase name="useAdminStore - fetchSystemStatistics - should handle statistics fetch error" duration="1" />
+    <testCase name="useAdminStore - fetchAuditLogs - should fetch audit logs successfully" duration="1" />
+    <testCase name="useAdminStore - fetchAuditLogs - should handle audit logs fetch error" duration="0" />
+    <testCase name="useAdminStore - clearSelectedUser - should clear selected user" duration="0" />
+    <testCase name="useAdminStore - clearError - should clear error" duration="0" />
   </file>
   <file path="src/stores/auth.spec.ts">
     <testCase name="useAuthStore - should initialize with null user and token from localStorage" duration="4" />
@@ -104,71 +131,194 @@
     <testCase name="useAuthStore - should compute isAdmin correctly" duration="1" />
     <testCase name="useAuthStore - should compute isEditor correctly" duration="1" />
     <testCase name="useAuthStore - login - should login successfully" duration="2" />
-    <testCase name="useAuthStore - login - should handle login error" duration="1" />
+    <testCase name="useAuthStore - login - should handle login error" duration="2" />
     <testCase name="useAuthStore - fetchCurrentUser - should fetch current user when token exists" duration="1" />
     <testCase name="useAuthStore - fetchCurrentUser - should not fetch user when no token" duration="1" />
     <testCase name="useAuthStore - fetchCurrentUser - should logout on fetch error" duration="1" />
     <testCase name="useAuthStore - validateToken - should validate token and set user" duration="1" />
-    <testCase name="useAuthStore - validateToken - should logout on validation error" duration="0" />
+    <testCase name="useAuthStore - validateToken - should logout on validation error" duration="1" />
     <testCase name="useAuthStore - validateToken - should not validate when no token" duration="0" />
     <testCase name="useAuthStore - logout - should clear user and token" duration="0" />
   </file>
+  <file path="src/stores/profile.spec.ts">
+    <testCase name="useProfileStore - should initialize with default state" duration="3" />
+    <testCase name="useProfileStore - should compute isProfileLoaded correctly" duration="1" />
+    <testCase name="useProfileStore - fullName - should return full name when firstName and lastName exist" duration="0" />
+    <testCase name="useProfileStore - fullName - should return name when firstName and lastName are not available" duration="0" />
+    <testCase name="useProfileStore - fullName - should return empty string when profile is null" duration="0" />
+    <testCase name="useProfileStore - displayName - should return fullName when available" duration="0" />
+    <testCase name="useProfileStore - displayName - should return name when fullName is not available" duration="0" />
+    <testCase name="useProfileStore - displayName - should return email when no name is available" duration="0" />
+    <testCase name="useProfileStore - displayName - should return empty string when profile is null" duration="0" />
+    <testCase name="useProfileStore - fetchProfile - should fetch profile successfully" duration="1" />
+    <testCase name="useProfileStore - fetchProfile - should handle fetch error" duration="1" />
+    <testCase name="useProfileStore - updateProfile - should update profile successfully" duration="0" />
+    <testCase name="useProfileStore - updateProfile - should handle update error" duration="0" />
+    <testCase name="useProfileStore - updatePreferences - should update preferences successfully" duration="0" />
+    <testCase name="useProfileStore - updatePreferences - should handle preferences update error" duration="0" />
+    <testCase name="useProfileStore - uploadAvatar - should upload avatar successfully" duration="1" />
+    <testCase name="useProfileStore - uploadAvatar - should handle upload error" duration="0" />
+    <testCase name="useProfileStore - changePassword - should change password successfully" duration="0" />
+    <testCase name="useProfileStore - changePassword - should handle password change error" duration="0" />
+    <testCase name="useProfileStore - deleteAvatar - should delete avatar successfully" duration="0" />
+    <testCase name="useProfileStore - deleteAvatar - should handle delete avatar error" duration="0" />
+    <testCase name="useProfileStore - clearProfile - should clear profile data" duration="0" />
+  </file>
   <file path="src/stores/projects.spec.ts">
-    <testCase name="useProjectStore - fetchProjects - should fetch projects successfully" duration="4" />
-    <testCase name="useProjectStore - fetchProjects - should handle fetch error" duration="0" />
-    <testCase name="useProjectStore - fetchProject - should fetch single project successfully" duration="0" />
+    <testCase name="useProjectStore - fetchProjects - should fetch projects successfully" duration="5" />
+    <testCase name="useProjectStore - fetchProjects - should handle fetch error" duration="1" />
+    <testCase name="useProjectStore - fetchProject - should fetch single project successfully" duration="1" />
     <testCase name="useProjectStore - fetchProject - should handle fetch error" duration="0" />
-    <testCase name="useProjectStore - createProject - should create project successfully" duration="0" />
+    <testCase name="useProjectStore - createProject - should create project successfully" duration="1" />
     <testCase name="useProjectStore - createProject - should handle create error" duration="0" />
-    <testCase name="useProjectStore - updateProject - should update project successfully" duration="0" />
+    <testCase name="useProjectStore - updateProject - should update project successfully" duration="1" />
     <testCase name="useProjectStore - updateProject - should update currentProject if it matches" duration="0" />
     <testCase name="useProjectStore - updateProject - should handle update error" duration="0" />
     <testCase name="useProjectStore - deleteProject - should delete project successfully" duration="1" />
     <testCase name="useProjectStore - deleteProject - should clear currentProject if it matches deleted project" duration="0" />
-    <testCase name="useProjectStore - deleteProject - should handle delete error" duration="0" />
+    <testCase name="useProjectStore - deleteProject - should handle delete error" duration="1" />
+  </file>
+  <file path="src/stores/rbac.spec.ts">
+    <testCase name="useRbacStore - should initialize with default state" duration="7" />
+    <testCase name="useRbacStore - hasCachedPermission - should return null when no cache exists" duration="2" />
+    <testCase name="useRbacStore - hasCachedPermission - should return cached permission when cache exists and is not expired" duration="1" />
+    <testCase name="useRbacStore - hasCachedPermission - should return null when permission is not in cache" duration="1" />
+    <testCase name="useRbacStore - hasCachedPermission - should return null and clear expired cache" duration="1" />
+    <testCase name="useRbacStore - setCachedPermission - should set cached permission" duration="1" />
+    <testCase name="useRbacStore - setCachedPermission - should update existing cached permission" duration="1" />
+    <testCase name="useRbacStore - checkPermission - should return cached permission when available" duration="1" />
+    <testCase name="useRbacStore - checkPermission - should check permission and cache result" duration="2" />
+    <testCase name="useRbacStore - checkPermission - should handle permission check error" duration="2" />
+    <testCase name="useRbacStore - checkPermission - should update existing permission in permissions map" duration="1" />
+    <testCase name="useRbacStore - batchCheckPermissions - should return all cached permissions when all are cached" duration="1" />
+    <testCase name="useRbacStore - batchCheckPermissions - should mix cached and uncached permissions" duration="1" />
+    <testCase name="useRbacStore - batchCheckPermissions - should handle batch check error" duration="1" />
+    <testCase name="useRbacStore - batchCheckPermissions - should cache all batch results" duration="0" />
+    <testCase name="useRbacStore - getUserPermissions - should get user permissions successfully" duration="1" />
+    <testCase name="useRbacStore - getUserPermissions - should handle get permissions error" duration="0" />
+    <testCase name="useRbacStore - checkRoleHierarchy - should check role hierarchy successfully" duration="0" />
+    <testCase name="useRbacStore - checkRoleHierarchy - should handle role hierarchy check error" duration="1" />
+    <testCase name="useRbacStore - clearCache - should clear all cached permissions" duration="0" />
+    <testCase name="useRbacStore - clearResourceCache - should clear cache for specific resource" duration="0" />
+    <testCase name="useRbacStore - clearError - should clear error" duration="0" />
+    <testCase name="useRbacStore - getPermissionsForResource - should return permissions for resource" duration="0" />
+    <testCase name="useRbacStore - getPermissionsForResource - should return empty array when no permissions for resource" duration="0" />
+    <testCase name="useRbacStore - hasAllPermissions - should return true when user has all permissions" duration="0" />
+    <testCase name="useRbacStore - hasAllPermissions - should return false when user missing any permission" duration="0" />
+    <testCase name="useRbacStore - hasAnyPermission - should return true when user has at least one permission" duration="0" />
+    <testCase name="useRbacStore - hasAnyPermission - should return false when user has no permissions" duration="1" />
+  </file>
+  <file path="src/stores/security.spec.ts">
+    <testCase name="useSecurityStore - should initialize with default state" duration="4" />
+    <testCase name="useSecurityStore - isMfaEnabled - should return false when mfaSetup is null" duration="1" />
+    <testCase name="useSecurityStore - isMfaEnabled - should return true when mfaSetup is enabled" duration="0" />
+    <testCase name="useSecurityStore - isMfaEnabled - should return false when mfaSetup is not enabled" duration="0" />
+    <testCase name="useSecurityStore - isMfaSetupComplete - should return false when mfaSetup is null" duration="0" />
+    <testCase name="useSecurityStore - isMfaSetupComplete - should return true when mfaSetup is complete" duration="0" />
+    <testCase name="useSecurityStore - isMfaSetupComplete - should return false when mfaSetup is not complete" duration="0" />
+    <testCase name="useSecurityStore - currentSession - should return current session when found" duration="1" />
+    <testCase name="useSecurityStore - currentSession - should return null when no current session" duration="0" />
+    <testCase name="useSecurityStore - currentSession - should return null when no sessions" duration="0" />
+    <testCase name="useSecurityStore - fetchMfaSetup - should fetch MFA setup successfully" duration="1" />
+    <testCase name="useSecurityStore - fetchMfaSetup - should handle fetch MFA setup error" duration="1" />
+    <testCase name="useSecurityStore - enableMfa - should enable MFA successfully" duration="1" />
+    <testCase name="useSecurityStore - enableMfa - should not update MFA setup when enable fails" duration="0" />
+    <testCase name="useSecurityStore - enableMfa - should handle enable MFA error" duration="2" />
+    <testCase name="useSecurityStore - disableMfa - should disable MFA successfully" duration="1" />
+    <testCase name="useSecurityStore - disableMfa - should handle disable MFA error" duration="1" />
+    <testCase name="useSecurityStore - validateMfaCode - should validate MFA code successfully" duration="0" />
+    <testCase name="useSecurityStore - validateMfaCode - should handle MFA validation error" duration="1" />
+    <testCase name="useSecurityStore - fetchUserSessions - should fetch user sessions successfully" duration="1" />
+    <testCase name="useSecurityStore - fetchUserSessions - should handle fetch sessions error" duration="1" />
+    <testCase name="useSecurityStore - revokeSession - should revoke session successfully" duration="1" />
+    <testCase name="useSecurityStore - revokeSession - should handle revoke session error" duration="1" />
+    <testCase name="useSecurityStore - fetchSecurityEvents - should fetch security events successfully for first page" duration="1" />
+    <testCase name="useSecurityStore - fetchSecurityEvents - should append security events for subsequent pages" duration="1" />
+    <testCase name="useSecurityStore - fetchSecurityEvents - should handle fetch security events error" duration="1" />
+    <testCase name="useSecurityStore - clearSecurityData - should clear all security data" duration="0" />
+  </file>
+  <file path="src/stores/team.spec.ts">
+    <testCase name="useTeamStore - should initialize with default state" duration="5" />
+    <testCase name="useTeamStore - should compute hasTeam correctly" duration="2" />
+    <testCase name="useTeamStore - getTeamById - should find team by id" duration="1" />
+    <testCase name="useTeamStore - getTeamById - should return undefined when team not found" duration="0" />
+    <testCase name="useTeamStore - getUserTeamRole - should return role from team members" duration="1" />
+    <testCase name="useTeamStore - getUserTeamRole - should return OWNER when user created the team" duration="1" />
+    <testCase name="useTeamStore - getUserTeamRole - should return MEMBER as default" duration="0" />
+    <testCase name="useTeamStore - getUserTeamRole - should return MEMBER when member status is not ACTIVE" duration="1" />
+    <testCase name="useTeamStore - fetchTeams - should fetch teams successfully" duration="1" />
+    <testCase name="useTeamStore - fetchTeams - should handle fetch teams error" duration="2" />
+    <testCase name="useTeamStore - fetchTeam - should fetch single team successfully" duration="1" />
+    <testCase name="useTeamStore - fetchTeam - should update team in teams array if it exists" duration="1" />
+    <testCase name="useTeamStore - fetchTeam - should add team to teams array if it does not exist" duration="1" />
+    <testCase name="useTeamStore - fetchTeam - should handle fetch team error" duration="1" />
+    <testCase name="useTeamStore - createTeam - should create team successfully" duration="1" />
+    <testCase name="useTeamStore - createTeam - should handle create team error" duration="1" />
+    <testCase name="useTeamStore - updateTeam - should update team successfully" duration="1" />
+    <testCase name="useTeamStore - updateTeam - should update currentTeam if it matches" duration="0" />
+    <testCase name="useTeamStore - updateTeam - should handle update team error" duration="1" />
+    <testCase name="useTeamStore - deleteTeam - should delete team successfully" duration="1" />
+    <testCase name="useTeamStore - deleteTeam - should clear currentTeam if it matches deleted team" duration="0" />
+    <testCase name="useTeamStore - deleteTeam - should handle delete team error" duration="2" />
+    <testCase name="useTeamStore - fetchTeamMembers - should fetch team members successfully" duration="1" />
+    <testCase name="useTeamStore - fetchTeamMembers - should handle fetch team members error" duration="1" />
+    <testCase name="useTeamStore - inviteTeamMember - should invite team member successfully" duration="0" />
+    <testCase name="useTeamStore - inviteTeamMember - should fetch team members after invitation" duration="1" />
+    <testCase name="useTeamStore - inviteTeamMember - should handle invite team member error" duration="1" />
+    <testCase name="useTeamStore - acceptTeamInvitation - should accept team invitation successfully" duration="1" />
+    <testCase name="useTeamStore - acceptTeamInvitation - should handle accept invitation error" duration="1" />
+    <testCase name="useTeamStore - updateMemberRole - should update member role successfully" duration="1" />
+    <testCase name="useTeamStore - updateMemberRole - should handle update member role error" duration="1" />
+    <testCase name="useTeamStore - removeTeamMember - should remove team member successfully" duration="1" />
+    <testCase name="useTeamStore - removeTeamMember - should handle remove team member error" duration="1" />
+    <testCase name="useTeamStore - getTeamsByProject - should get teams by project successfully" duration="0" />
+    <testCase name="useTeamStore - getTeamsByProject - should handle get teams by project error" duration="1" />
+    <testCase name="useTeamStore - clearError - should clear error" duration="0" />
+    <testCase name="useTeamStore - clearCurrentTeam - should clear current team" duration="0" />
+    <testCase name="useTeamStore - clearTeamMembers - should clear team members" duration="0" />
   </file>
   <file path="src/utils/requirementSorting.spec.ts">
     <testCase name="requirementSorting - extractNumber - should extract number after last dash" duration="2" />
-    <testCase name="requirementSorting - extractNumber - should return 0 when no number found" duration="0" />
-    <testCase name="requirementSorting - extractNumber - should handle empty string" duration="0" />
-    <testCase name="requirementSorting - compareReqIds - should sort by number when prefixes are same" duration="0" />
+    <testCase name="requirementSorting - extractNumber - should return 0 when no number found" duration="3" />
+    <testCase name="requirementSorting - extractNumber - should handle empty string" duration="1" />
+    <testCase name="requirementSorting - compareReqIds - should sort by number when prefixes are same" duration="1" />
     <testCase name="requirementSorting - compareReqIds - should return 0 for identical IDs" duration="11" />
     <testCase name="requirementSorting - compareReqIds - should sort by string when numbers are equal" duration="0" />
     <testCase name="requirementSorting - compareReqIds - should handle mixed formats gracefully" duration="1" />
     <testCase name="requirementSorting - compareReqIds - should sort naturally by number" duration="0" />
   </file>
   <file path="src/views/Dashboard.spec.ts">
-    <testCase name="Dashboard.vue - should render dashboard" duration="29" />
+    <testCase name="Dashboard.vue - should render dashboard" duration="48" />
   </file>
   <file path="src/views/Login.spec.ts">
-    <testCase name="Login.vue - should render login form" duration="78" />
-    <testCase name="Login.vue - should have empty credentials initially" duration="10" />
-    <testCase name="Login.vue - should submit form and redirect on successful login" duration="20" />
+    <testCase name="Login.vue - should render login form" duration="32" />
+    <testCase name="Login.vue - should have empty credentials initially" duration="6" />
+    <testCase name="Login.vue - should submit form and redirect on successful login" duration="15" />
     <testCase name="Login.vue - should not redirect on failed login" duration="6" />
     <testCase name="Login.vue - should display error message when login fails" duration="9" />
-    <testCase name="Login.vue - should disable submit button when loading" duration="10" />
+    <testCase name="Login.vue - should disable submit button when loading" duration="7" />
   </file>
   <file path="src/views/ProjectDetail.spec.ts">
-    <testCase name="ProjectDetail.vue - should render project detail view" duration="57" />
-    <testCase name="ProjectDetail.vue - should have project component structure" duration="8" />
-    <testCase name="ProjectDetail.vue - should render basic elements" duration="11" />
+    <testCase name="ProjectDetail.vue - should render project detail view" duration="107" />
+    <testCase name="ProjectDetail.vue - should have project component structure" duration="28" />
+    <testCase name="ProjectDetail.vue - should render basic elements" duration="19" />
   </file>
   <file path="src/views/ProjectSettings.spec.ts">
-    <testCase name="ProjectSettings.vue - should render project settings view" duration="56" />
-    <testCase name="ProjectSettings.vue - should have settings structure" duration="15" />
-    <testCase name="ProjectSettings.vue - should render form elements" duration="25" />
+    <testCase name="ProjectSettings.vue - should render project settings view" duration="50" />
+    <testCase name="ProjectSettings.vue - should have settings structure" duration="7" />
+    <testCase name="ProjectSettings.vue - should render form elements" duration="12" />
   </file>
   <file path="src/views/Projects.spec.ts">
-    <testCase name="Projects.vue - should render projects view" duration="72" />
-    <testCase name="Projects.vue - should fetch projects on mount" duration="12" />
-    <testCase name="Projects.vue - should display projects list" duration="22" />
+    <testCase name="Projects.vue - should render projects view" duration="56" />
+    <testCase name="Projects.vue - should fetch projects on mount" duration="9" />
+    <testCase name="Projects.vue - should display projects list" duration="19" />
     <testCase name="Projects.vue - should show loading state" duration="12" />
-    <testCase name="Projects.vue - should show error message" duration="11" />
-    <testCase name="Projects.vue - should have project store available" duration="13" />
+    <testCase name="Projects.vue - should show error message" duration="7" />
+    <testCase name="Projects.vue - should have project store available" duration="6" />
   </file>
   <file path="src/views/RequirementDetail.spec.ts">
-    <testCase name="RequirementDetail.vue - should render requirement detail view" duration="91" />
-    <testCase name="RequirementDetail.vue - should have requirement structure" duration="22" />
+    <testCase name="RequirementDetail.vue - should render requirement detail view" duration="101" />
+    <testCase name="RequirementDetail.vue - should have requirement structure" duration="20" />
     <testCase name="RequirementDetail.vue - should render elements" duration="17" />
   </file>
 </testExecutions>

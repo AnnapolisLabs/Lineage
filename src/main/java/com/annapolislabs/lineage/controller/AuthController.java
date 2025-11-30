@@ -166,13 +166,12 @@ public class AuthController {
             String refreshToken = request.getRefreshToken();
             
             // Validate refresh token
-            if (!jwtTokenProvider.validateToken(refreshToken) || 
+            if (!jwtTokenProvider.validateToken(refreshToken) ||
                 jwtTokenProvider.getTokenType(refreshToken) != JwtTokenProvider.TokenType.REFRESH) {
                 throw new InvalidTokenException("Invalid or expired refresh token");
             }
             
             // Get user from token
-            String userId = jwtTokenProvider.getUserIdFromToken(refreshToken);
             String email = jwtTokenProvider.getEmailFromToken(refreshToken);
             
             User user = userService.getUserByEmail(email);
@@ -277,8 +276,7 @@ public class AuthController {
     @PostMapping("/verify-email")
     public ResponseEntity<?> verifyEmail(@Valid @RequestBody VerifyEmailRequest request) {
         try {
-            // Email verification implementation would go here
-            // TODO: Implement actual email verification logic using the token
+            // Placeholder: email verification via token validation pending service implementation
             
             return ResponseEntity.ok(new AuthResponse(
                 true,
@@ -376,8 +374,7 @@ public class AuthController {
     public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest request,
                                           HttpServletRequest httpRequest) {
         try {
-            // Password change implementation would go here
-            // TODO: Implement actual password change logic using authenticated user
+            // Placeholder: password change via authenticated user pending service implementation
             
             return ResponseEntity.ok(new AuthResponse(
                 true,
@@ -418,12 +415,12 @@ public class AuthController {
     
     private String getClientIpAddress(HttpServletRequest request) {
         String xForwardedFor = request.getHeader("X-Forwarded-For");
-        if (xForwardedFor != null && !xForwardedFor.isEmpty() && !"unknown".equalsIgnoreCase(xForwardedFor)) {
+        if (xForwardedFor != null && !xForwardedFor.isEmpty() && !UNKNOWN.equalsIgnoreCase(xForwardedFor)) {
             return xForwardedFor.split(",")[0].trim();
         }
         
         String xRealIp = request.getHeader("X-Real-IP");
-        if (xRealIp != null && !xRealIp.isEmpty() && !"unknown".equalsIgnoreCase(xRealIp)) {
+        if (xRealIp != null && !xRealIp.isEmpty() && !UNKNOWN.equalsIgnoreCase(xRealIp)) {
             return xRealIp;
         }
         

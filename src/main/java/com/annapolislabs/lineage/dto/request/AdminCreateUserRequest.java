@@ -36,7 +36,9 @@ public class AdminCreateUserRequest {
      */
     private boolean sendInvitation;
 
+    /** Default constructor required for Jackson deserialization. */
     public AdminCreateUserRequest() {
+        // Empty constructor for JSON deserialization
     }
 
     public String getEmail() {

@@ -24,7 +24,9 @@ public class ChangePasswordRequest {
      * Default constructor required for JSON deserialization.
      * Field values are set via setters after construction.
      */
-    public ChangePasswordRequest() {}
+    public ChangePasswordRequest() {
+        // Empty constructor for JSON deserialization
+    }
 
 
 }

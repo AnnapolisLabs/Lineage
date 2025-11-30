@@ -27,6 +27,13 @@ export interface User {
 }
 
 // Permission Evaluation Types
+export interface UserPermission {
+  permission: string
+  resource_id: string
+  authorized: boolean
+  timestamp: number
+}
+
 export interface PermissionCheckRequest {
   permission: string
   resource_id: string

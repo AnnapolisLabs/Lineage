@@ -23,6 +23,10 @@ import java.util.stream.Collectors;
 @Service
 public class TaskAssignmentService {
 
+    private static final String ERROR_TASK_NOT_FOUND = "Task not found";
+    private static final String PERMISSION_TASK_READ = "task.read";
+    private static final String PERMISSION_TASK_MANAGE = "task.manage";
+
     @Autowired
     private TaskAssignmentRepository taskAssignmentRepository;
 
@@ -119,12 +123,12 @@ public class TaskAssignmentService {
         log.debug("Getting task {} for user {}", taskId, requestingUserId);
 
         TaskAssignment task = taskAssignmentRepository.findById(taskId)
-                .orElseThrow(() -> new IllegalArgumentException("Task not found"));
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_TASK_NOT_FOUND));
 
         // Check permissions
-        if (!task.getAssignedTo().equals(requestingUserId) && 
+        if (!task.getAssignedTo().equals(requestingUserId) &&
             !task.getAssignedBy().equals(requestingUserId) &&
-            !permissionEvaluationService.hasPermission(requestingUserId, "task.read", task.getProjectId())) {
+            !permissionEvaluationService.hasPermission(requestingUserId, PERMISSION_TASK_READ, task.getProjectId())) {
             throw new SecurityException("User does not have permission to view this task");
         }
 
@@ -148,12 +152,12 @@ public class TaskAssignmentService {
         log.info("Updating task {} status to {} by user {}", taskId, newStatus, requestingUserId);
 
         TaskAssignment task = taskAssignmentRepository.findById(taskId)
-                .orElseThrow(() -> new IllegalArgumentException("Task not found"));
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_TASK_NOT_FOUND));
 
         // Check permissions
         if (!task.getAssignedTo().equals(requestingUserId) &&
             !task.getAssignedBy().equals(requestingUserId) &&
-            !permissionEvaluationService.hasPermission(requestingUserId, "task.manage", task.getProjectId())) {
+            !permissionEvaluationService.hasPermission(requestingUserId, PERMISSION_TASK_MANAGE, task.getProjectId())) {
             throw new SecurityException("User does not have permission to update this task");
         }
 
@@ -184,8 +188,8 @@ public class TaskAssignmentService {
         log.debug("Getting tasks for user {} requested by {}", userId, requestingUserId);
 
         // Users can only view their own tasks unless they have manage permissions
-        if (!userId.equals(requestingUserId) && 
-            !permissionEvaluationService.hasPermission(requestingUserId, "task.manage", null)) {
+        if (!userId.equals(requestingUserId) &&
+            !permissionEvaluationService.hasPermission(requestingUserId, PERMISSION_TASK_MANAGE, null)) {
             throw new SecurityException("User does not have permission to view other users' tasks");
         }
 
@@ -226,7 +230,7 @@ public class TaskAssignmentService {
 
         // Permission: user can query others only with manage rights
         if (assignedTo != null && !assignedTo.equals(requestingUserId) &&
-                !permissionEvaluationService.hasPermission(requestingUserId, "task.manage", projectId)) {
+                !permissionEvaluationService.hasPermission(requestingUserId, PERMISSION_TASK_MANAGE, projectId)) {
             throw new SecurityException("User does not have permission to view other users' tasks");
         }
 
@@ -250,7 +254,7 @@ public class TaskAssignmentService {
      */
     public List<TaskAssignment> getTasksByProject(UUID projectId, UUID requestingUserId) {
         log.debug("Getting tasks for project {} by user {}", projectId, requestingUserId);
-        if (!permissionEvaluationService.hasPermission(requestingUserId, "task.read", projectId)) {
+        if (!permissionEvaluationService.hasPermission(requestingUserId, PERMISSION_TASK_READ, projectId)) {
             throw new SecurityException("User does not have permission to view tasks for this project");
         }
 
@@ -263,7 +267,7 @@ public class TaskAssignmentService {
      */
     public Map<String, Object> getTaskStatistics(UUID projectId, UUID requestingUserId) {
         log.debug("Getting task statistics for project {} by user {}", projectId, requestingUserId);
-        if (!permissionEvaluationService.hasPermission(requestingUserId, "task.manage", projectId)) {
+        if (!permissionEvaluationService.hasPermission(requestingUserId, PERMISSION_TASK_MANAGE, projectId)) {
             throw new SecurityException("User does not have permission to view task statistics");
         }
 
@@ -278,7 +282,7 @@ public class TaskAssignmentService {
         List<TaskAssignment> filtered = tasks.stream()
                 .filter(task -> task.getAssignedTo().equals(requestingUserId) ||
                         task.getAssignedBy().equals(requestingUserId) ||
-                        permissionEvaluationService.hasPermission(requestingUserId, "task.read", task.getProjectId()))
+                        permissionEvaluationService.hasPermission(requestingUserId, PERMISSION_TASK_READ, task.getProjectId()))
                 .collect(Collectors.toList());
         return new org.springframework.data.domain.PageImpl<>(filtered, tasks.getPageable(), filtered.size());
     }
@@ -307,11 +311,11 @@ public class TaskAssignmentService {
         log.info("Reassigning task {} from current assignee to {} by user {}", taskId, newAssigneeId, requestingUserId);
 
         TaskAssignment task = taskAssignmentRepository.findById(taskId)
-                .orElseThrow(() -> new IllegalArgumentException("Task not found"));
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_TASK_NOT_FOUND));
 
         // Check permissions
         if (!task.getAssignedBy().equals(requestingUserId) &&
-            !permissionEvaluationService.hasPermission(requestingUserId, "task.manage", task.getProjectId())) {
+            !permissionEvaluationService.hasPermission(requestingUserId, PERMISSION_TASK_MANAGE, task.getProjectId())) {
             throw new SecurityException("User does not have permission to reassign this task");
         }
 
@@ -342,7 +346,7 @@ public class TaskAssignmentService {
     @Transactional
     public TaskAssignment addTagToTask(UUID taskId, String tag, UUID requestingUserId) {
         TaskAssignment task = taskAssignmentRepository.findById(taskId)
-                .orElseThrow(() -> new IllegalArgumentException("Task not found"));
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_TASK_NOT_FOUND));
 
         // Check permissions
         if (!task.getAssignedTo().equals(requestingUserId) &&
@@ -371,12 +375,12 @@ public class TaskAssignmentService {
     @Transactional
     public TaskAssignment addBlockerToTask(UUID taskId, String blocker, UUID requestingUserId) {
         TaskAssignment task = taskAssignmentRepository.findById(taskId)
-                .orElseThrow(() -> new IllegalArgumentException("Task not found"));
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_TASK_NOT_FOUND));
 
         // Check permissions
         if (!task.getAssignedTo().equals(requestingUserId) &&
             !task.getAssignedBy().equals(requestingUserId) &&
-            !permissionEvaluationService.hasPermission(requestingUserId, "task.manage", task.getProjectId())) {
+            !permissionEvaluationService.hasPermission(requestingUserId, PERMISSION_TASK_MANAGE, task.getProjectId())) {
             throw new SecurityException("User does not have permission to modify this task");
         }
 
@@ -405,11 +409,11 @@ public class TaskAssignmentService {
         log.info("Updating task {} by user {}", taskId, requestingUserId);
 
         TaskAssignment task = taskAssignmentRepository.findById(taskId)
-                .orElseThrow(() -> new IllegalArgumentException("Task not found"));
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_TASK_NOT_FOUND));
 
         // Check permissions
         if (!task.getAssignedBy().equals(requestingUserId) &&
-            !permissionEvaluationService.hasPermission(requestingUserId, "task.manage", task.getProjectId())) {
+            !permissionEvaluationService.hasPermission(requestingUserId, PERMISSION_TASK_MANAGE, task.getProjectId())) {
             throw new SecurityException("User does not have permission to update this task");
         }
 

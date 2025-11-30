@@ -541,7 +541,7 @@ function getInitials(user: AdminUser): string {
 
 function formatRole(role?: string): string {
   if (!role) return 'User'
-  return role.replaceAll('_', ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase())
+  return role.replaceAll('_', ' ').toLowerCase().replaceAll(/\b\w/g, l => l.toUpperCase())
 }
 
 function formatDate(dateString?: string): string {
@@ -637,7 +637,7 @@ async function handleSetPassword() {
     await adminStore.setUserPassword(passwordTargetUser.value.id, newPassword)
     passwordSuccess.value = 'Password updated successfully.'
   } catch (error) {
-    // Store already logged the error; show generic message
+    console.error('Failed to set password:', error)
     if (!passwordError.value) {
       passwordError.value = 'Failed to set password. Please check policy requirements.'
     }

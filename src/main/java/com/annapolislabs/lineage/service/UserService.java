@@ -41,6 +41,7 @@ public class UserService {
     
     private static final int MAX_FAILED_LOGIN_ATTEMPTS = 5;
     private static final int ACCOUNT_LOCKOUT_DURATION_MINUTES = 30;
+    private static final String TARGET_USER_ID = "targetUserId";
     
     @Autowired
     private UserRepository userRepository;
@@ -310,7 +311,7 @@ public class UserService {
                 adminId != null ? adminId.toString() : userId.toString(),
                 "PASSWORD_RESET_ADMIN",
                 com.annapolislabs.lineage.entity.AuditSeverity.WARNING,
-                java.util.Map.of("targetUserId", userId.toString())
+                java.util.Map.of(TARGET_USER_ID, userId.toString())
         );
 
         logger.info("Admin password set completed for user ID: {} by admin: {}", userId, adminId);
@@ -606,7 +607,7 @@ public class UserService {
 
         securityAuditService.logAccountSecurityEvent(lockedBy.toString(), "ACCOUNT_LOCKED_ADMIN",
             com.annapolislabs.lineage.entity.AuditSeverity.WARNING,
-            java.util.Map.of("targetUserId", userId.toString()));
+            java.util.Map.of(TARGET_USER_ID, userId.toString()));
     }
 
     /**
@@ -626,7 +627,7 @@ public class UserService {
 
         securityAuditService.logAccountSecurityEvent(unlockedBy.toString(), "ACCOUNT_UNLOCKED_ADMIN",
             com.annapolislabs.lineage.entity.AuditSeverity.INFO,
-            java.util.Map.of("targetUserId", userId.toString()));
+            java.util.Map.of(TARGET_USER_ID, userId.toString()));
     }
     
     /**

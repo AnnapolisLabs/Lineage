@@ -162,7 +162,7 @@ public class MfaService {
         try {
             // First verify the code
             if (!verifyCode(userId, verificationCode)) {
-                throw new RuntimeException("Invalid MFA verification code");
+                throw new com.annapolislabs.lineage.exception.auth.MfaVerificationException("Invalid MFA verification code");
             }
 
             // Enable MFA

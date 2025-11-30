@@ -39,7 +39,7 @@ public class RateLimitingConfig {
         String key = userId + ":" + endpointCategory;
         RateLimitBucket bucket = rateLimitBuckets.computeIfAbsent(key, k -> new RateLimitBucket());
         
-        return bucket.consume(getLimitForCategory(endpointCategory));
+        return bucket.consume();
     }
 
     /**
@@ -81,20 +81,22 @@ public class RateLimitingConfig {
      * Rate limit bucket implementation (Token Bucket Algorithm)
      */
     private static class RateLimitBucket {
+        private static final int INITIAL_TOKENS = 100;
+        
         private final AtomicInteger tokens = new AtomicInteger();
         private volatile long resetTime;
         
         public RateLimitBucket() {
-            this.tokens.set(getInitialTokens());
+            this.tokens.set(INITIAL_TOKENS);
             this.resetTime = System.currentTimeMillis() + 3600000; // 1 hour
         }
 
-        public RateLimitResult consume(int limit) {
+        public RateLimitResult consume() {
             long now = System.currentTimeMillis();
             
             // Reset bucket if time window has passed
             if (now > resetTime) {
-                tokens.set(getInitialTokens());
+                tokens.set(INITIAL_TOKENS);
                 resetTime = now + 3600000;
             }
             
@@ -114,17 +116,13 @@ public class RateLimitingConfig {
         public int getRemainingTokens() {
             long now = System.currentTimeMillis();
             if (now > resetTime) {
-                return getInitialTokens();
+                return INITIAL_TOKENS;
             }
             return tokens.get();
         }
 
         public long getResetTime() {
             return resetTime;
-        }
-
-        private int getInitialTokens() {
-            return 100; // Token bucket size
         }
     }
 
@@ -135,17 +133,17 @@ public class RateLimitingConfig {
         public static final RateLimitResult ALLOWED = new RateLimitResult(true, "allowed", 0);
         public static final RateLimitResult RATE_LIMITED = new RateLimitResult(false, "rate_limited", 3600000);
         
-        private final boolean allowed;
+        private final boolean permitted;
         private final String reason;
         private final long retryAfterMs;
 
-        private RateLimitResult(boolean allowed, String reason, long retryAfterMs) {
-            this.allowed = allowed;
+        private RateLimitResult(boolean permitted, String reason, long retryAfterMs) {
+            this.permitted = permitted;
             this.reason = reason;
             this.retryAfterMs = retryAfterMs;
         }
 
-        public boolean isAllowed() { return allowed; }
+        public boolean isAllowed() { return permitted; }
         public String getReason() { return reason; }
         public long getRetryAfterMs() { return retryAfterMs; }
     }

@@ -35,6 +35,8 @@ public class UserProfileResponse {
      * Default constructor required for JSON deserialization.
      * Field values are set via setters after construction.
      */
-    public UserProfileResponse() {}
+    public UserProfileResponse() {
+        // Empty constructor for JSON deserialization
+    }
 
 }

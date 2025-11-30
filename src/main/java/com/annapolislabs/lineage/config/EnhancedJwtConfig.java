@@ -1,6 +1,7 @@
 package com.annapolislabs.lineage.config;
 
 import com.annapolislabs.lineage.entity.UserRole;
+import com.annapolislabs.lineage.exception.auth.InvalidTokenException;
 import com.annapolislabs.lineage.service.PermissionEvaluationService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -24,6 +25,11 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class EnhancedJwtConfig {
+
+    private static final String CLAIM_USER_ID = "user_id";
+    private static final String CLAIM_IS_ADMIN = "is_admin";
+    private static final String CLAIM_ISSUED_AT = "issued_at";
+    private static final String CLAIM_GLOBAL_PERMISSIONS = "global_permissions";
 
     private final PermissionEvaluationService permissionEvaluationService;
     private final AtomicReference<SecretKey> cachedSigningKey = new AtomicReference<>();
@@ -57,18 +63,18 @@ public class EnhancedJwtConfig {
     private Map<String, Object> buildBaseClaims(UUID userId, String email, UserRole role) {
         Map<String, Object> claims = new HashMap<>();
         if (userId != null) {
-            claims.put("user_id", userId.toString());
+            claims.put(CLAIM_USER_ID, userId.toString());
         }
         claims.put("email", email);
         claims.put("role", role.name());
         claims.put("role_level", getRoleLevel(role));
-        claims.put("is_admin", role == UserRole.ADMINISTRATOR || role == UserRole.OWNER);
+        claims.put(CLAIM_IS_ADMIN, role == UserRole.ADMINISTRATOR || role == UserRole.OWNER);
         claims.put("token_type", "access");
         claims.put("token_version", "enhanced");
-        claims.put("issued_at", new Date());
+        claims.put(CLAIM_ISSUED_AT, new Date());
 
         Set<String> globalPermissions = permissionEvaluationService.getEffectivePermissions(userId);
-        claims.put("global_permissions", new ArrayList<>(globalPermissions));
+        claims.put(CLAIM_GLOBAL_PERMISSIONS, new ArrayList<>(globalPermissions));
 
         return claims;
     }
@@ -107,7 +113,7 @@ public class EnhancedJwtConfig {
                 return false;
             }
 
-            String userId = claims.get("user_id", String.class);
+            String userId = claims.get(CLAIM_USER_ID, String.class);
             String role = claims.get("role", String.class);
             if (userId == null || userId.isBlank() || role == null || role.isBlank()) {
                 log.warn("Token missing required claims for subject {}", email);
@@ -127,7 +133,7 @@ public class EnhancedJwtConfig {
     public List<String> extractPermissions(String token) {
         try {
             Claims claims = getClaimsFromToken(token);
-            return extractStringListClaim(claims, "global_permissions");
+            return extractStringListClaim(claims, CLAIM_GLOBAL_PERMISSIONS);
         } catch (Exception e) {
             log.error("Failed to extract permissions from token: {}", e.getMessage());
             return Collections.emptyList();
@@ -166,7 +172,7 @@ public class EnhancedJwtConfig {
             return collection.stream()
                     .filter(Objects::nonNull)
                     .map(Object::toString)
-                    .collect(Collectors.toList());
+                    .toList();
         }
         return Collections.emptyList();
     }
@@ -204,7 +210,7 @@ public class EnhancedJwtConfig {
         try {
             Claims claims = getClaimsFromToken(token);
             String email = claims.getSubject();
-            String userId = claims.get("user_id", String.class);
+            String userId = claims.get(CLAIM_USER_ID, String.class);
             String role = claims.get("role", String.class);
             if (email == null || userId == null || role == null) {
                 throw new IllegalStateException("Token missing required claims for refresh");
@@ -217,7 +223,7 @@ public class EnhancedJwtConfig {
             );
         } catch (Exception e) {
             log.error("Failed to refresh token: {}", e.getMessage());
-            throw new RuntimeException("Token refresh failed", e);
+            throw new InvalidTokenException("Token refresh failed: " + e.getMessage());
         }
     }
 
@@ -258,7 +264,7 @@ public class EnhancedJwtConfig {
         Map<String, Object> claimsMap = new LinkedHashMap<>();
         claims.forEach(claimsMap::put);
         claimsMap.put("subject", claims.getSubject());
-        claimsMap.put("issued_at", claims.getIssuedAt());
+        claimsMap.put(CLAIM_ISSUED_AT, claims.getIssuedAt());
         claimsMap.put("expires_at", claims.getExpiration());
         return claimsMap;
     }
@@ -284,13 +290,13 @@ public class EnhancedJwtConfig {
             Claims claims = getClaimsFromToken(token);
             Map<String, Object> metadata = new HashMap<>();
 
-            metadata.put("user_id", claims.get("user_id"));
+            metadata.put(CLAIM_USER_ID, claims.get(CLAIM_USER_ID));
             metadata.put("role", claims.get("role"));
-            metadata.put("issued_at", claims.getIssuedAt());
+            metadata.put(CLAIM_ISSUED_AT, claims.getIssuedAt());
             metadata.put("expires_at", claims.getExpiration());
-            metadata.put("is_admin", claims.get("is_admin", Boolean.class));
+            metadata.put(CLAIM_IS_ADMIN, claims.get(CLAIM_IS_ADMIN, Boolean.class));
 
-            Object permissions = claims.get("global_permissions");
+            Object permissions = claims.get(CLAIM_GLOBAL_PERMISSIONS);
             if (permissions instanceof Collection<?> collection) {
                 metadata.put("permission_count", collection.size());
             }

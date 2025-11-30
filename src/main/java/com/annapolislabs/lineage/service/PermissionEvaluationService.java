@@ -22,6 +22,22 @@ import java.util.stream.Collectors;
 @Service
 public class PermissionEvaluationService {
 
+    // Permission action constants
+    private static final String ACTION_UPDATE = "update";
+    private static final String ACTION_DELETE = "delete";
+    private static final String ACTION_READ = "read";
+    
+    // Resource type constants
+    private static final String RESOURCE_PROJECT = "project";
+    private static final String RESOURCE_USER = "user";
+    private static final String RESOURCE_TEAM = "team";
+    private static final String RESOURCE_REQUIREMENT = "requirement";
+    private static final String RESOURCE_TASK = "task";
+    private static final String RESOURCE_REVIEW = "review";
+    
+    // Composite permission constants
+    private static final String PERMISSION_TEAM_PARTICIPATE = "team.participate";
+
     @Autowired
     private PermissionDefinitionRepository permissionDefinitionRepository;
 
@@ -61,13 +77,8 @@ public class PermissionEvaluationService {
         long startTime = System.currentTimeMillis();
         
         try {
-            // 1. Check cache first
+            // 1. Generate cache key for later storage (Spring @Cacheable handles lookup)
             String cacheKey = generateCacheKey(userId, permissionKey, resourceId);
-            PermissionCacheEntry cached = getFromCache(cacheKey);
-//            if (cached != null && !cached.isExpired()) {
-//                log.debug("Permission check cache hit for user {}: {}", userId, permissionKey);
-//                return cached.isAllowed();
-//            }
 
             // 2. Validate inputs
             User user = userRepository.findById(userId)
@@ -79,7 +90,7 @@ public class PermissionEvaluationService {
             }
 
             // 3. Check role hierarchy permissions
-            boolean hasPermission = checkRoleBasedPermissions(user, permissionKey, resourceId);
+            boolean hasPermission = checkRoleBasedPermissions(user, permissionKey);
             
             // 4. Check explicit permission grants/revokes
             if (!hasPermission) {
@@ -88,7 +99,7 @@ public class PermissionEvaluationService {
             
             // 5. Check team-based permissions if resource is project-scoped
             if (!hasPermission && resourceId != null) {
-                hasPermission = checkTeamPermissions(userId, permissionKey, resourceId);
+                hasPermission = checkTeamPermissions(userId, resourceId);
             }
 
             // 6. Cache result
@@ -137,7 +148,7 @@ public class PermissionEvaluationService {
                     .stream()
                     .filter(change -> change.getUserId().equals(userId))
                     .filter(change -> resourceId == null || Objects.equals(change.getResourceId(), resourceId))
-                    .collect(Collectors.toList());
+                    .toList();
             
             for (PermissionChange change : activeChanges) {
                 if (change.getChangeType() == PermissionChange.ChangeType.GRANT ||
@@ -213,7 +224,7 @@ public class PermissionEvaluationService {
 
     // Private helper methods
 
-    private boolean checkRoleBasedPermissions(User user, String permissionKey, UUID resourceId) {
+    private boolean checkRoleBasedPermissions(User user, String permissionKey) {
         UserRole userRole = user.getGlobalRole();
         
         // Parse permission key to get resource and action
@@ -238,33 +249,33 @@ public class PermissionEvaluationService {
 
     private boolean checkAdministratorPermissions(String resource, String action) {
         // Administrator can manage users, projects, teams, and requirements
-        return (resource.equals("user") && Arrays.asList("read", "update", "manage").contains(action)) ||
-               (resource.equals("project") && !action.equals("delete") && !action.equals("transfer_ownership")) ||
-               (resource.equals("team") && !action.equals("delete")) ||
-               (resource.equals("requirement") && !action.equals("delete")) ||
-               (resource.equals("task") && !action.equals("delete")) ||
-               (resource.equals("review") && action.equals("conduct"));
+        return (resource.equals(RESOURCE_USER) && Arrays.asList(ACTION_READ, ACTION_UPDATE, "manage").contains(action)) ||
+               (resource.equals(RESOURCE_PROJECT) && !action.equals(ACTION_DELETE) && !action.equals("transfer_ownership")) ||
+               (resource.equals(RESOURCE_TEAM) && !action.equals(ACTION_DELETE)) ||
+               (resource.equals(RESOURCE_REQUIREMENT) && !action.equals(ACTION_DELETE)) ||
+               (resource.equals(RESOURCE_TASK) && !action.equals(ACTION_DELETE)) ||
+               (resource.equals(RESOURCE_REVIEW) && action.equals("conduct"));
     }
 
     private boolean checkUserPermissions(String resource, String action) {
         // Standard user can read and create, update their own data
-        return (resource.equals("project") && action.equals("read")) ||
-               (resource.equals("requirement") && Arrays.asList("create", "read", "update").contains(action)) ||
-               (resource.equals("task") && Arrays.asList("complete", "update").contains(action)) ||
-               (resource.equals("team") && action.equals("participate")) ||
-               (resource.equals("review") && action.equals("conduct"));
+        return (resource.equals(RESOURCE_PROJECT) && action.equals(ACTION_READ)) ||
+               (resource.equals(RESOURCE_REQUIREMENT) && Arrays.asList("create", ACTION_READ, ACTION_UPDATE).contains(action)) ||
+               (resource.equals(RESOURCE_TASK) && Arrays.asList("complete", ACTION_UPDATE).contains(action)) ||
+               (resource.equals(RESOURCE_TEAM) && action.equals("participate")) ||
+               (resource.equals(RESOURCE_REVIEW) && action.equals("conduct"));
     }
 
     private boolean checkProjectManagerPermissions(String resource, String action) {
         // Project Manager has administrative rights for projects
         return checkAdministratorPermissions(resource, action) ||
-               (resource.equals("project") && action.equals("update"));
+               (resource.equals(RESOURCE_PROJECT) && action.equals(ACTION_UPDATE));
     }
 
     private boolean checkDeveloperPermissions(String resource, String action) {
         // Developer has user permissions plus development-specific rights
         return checkUserPermissions(resource, action) ||
-               (resource.equals("project") && action.equals("read"));
+               (resource.equals(RESOURCE_PROJECT) && action.equals(ACTION_READ));
     }
 
     private boolean checkExplicitPermissions(UUID userId, String permissionKey, UUID resourceId) {
@@ -274,7 +285,7 @@ public class PermissionEvaluationService {
                 .filter(change -> change.getUserId().equals(userId))
                 .filter(change -> change.getPermissionKey().equals(permissionKey))
                 .filter(change -> resourceId == null || Objects.equals(change.getResourceId(), resourceId))
-                .collect(Collectors.toList());
+                .toList();
 
         // If multiple changes exist, the most recent one takes precedence
         if (!activeChanges.isEmpty()) {
@@ -291,20 +302,17 @@ public class PermissionEvaluationService {
         return false;
     }
 
-    private boolean checkTeamPermissions(UUID userId, String permissionKey, UUID resourceId) {
+    private boolean checkTeamPermissions(UUID userId, UUID resourceId) {
         // Check if user is member of any team associated with the resource
         List<TeamMember> teamMemberships = teamMemberRepository
                 .findByUserIdAndStatus(userId, TeamMember.TeamMemberStatus.ACTIVE);
         
         for (TeamMember membership : teamMemberships) {
             Team team = teamRepository.findById(membership.getTeamId()).orElse(null);
-            if (team != null && team.getProjectId() != null && 
-                team.getProjectId().equals(resourceId) && team.isActive()) {
-                
-                // Check team role permissions
-                if (membership.canEdit() || membership.canManage()) {
-                    return true;
-                }
+            if (team != null && team.getProjectId() != null &&
+                team.getProjectId().equals(resourceId) && team.isActive() &&
+                (membership.canEdit() || membership.canManage())) {
+                return true;
             }
         }
         
@@ -315,33 +323,27 @@ public class PermissionEvaluationService {
         Set<String> permissions = new HashSet<>();
         
         switch (role) {
-            case OWNER:
-                permissions.addAll(Arrays.asList(
-                        "user.*", "project.*", "team.*", "task.*", "review.*", "requirement.*", "role.*"
-                ));
-                break;
-            case ADMINISTRATOR:
-                permissions.addAll(Arrays.asList(
-                        "user.read", "user.update", "user.manage",
-                        "project.read", "project.update", "project.create",
-                        "team.read", "team.manage", "team.invite",
-                        "task.read", "task.assign", "task.manage",
-                        "requirement.read", "requirement.update", "requirement.create",
-                        "review.read", "review.conduct"
-                ));
-                break;
-            case USER:
-            case DEVELOPER:
-                permissions.addAll(Arrays.asList(
-                        "project.read",
-                        "requirement.read", "requirement.create", "requirement.update",
-                        "task.read", "task.complete", "task.update",
-                        "team.participate",
-                        "review.read", "review.conduct"
-                ));
-                break;
-            default:
-                break;
+            case OWNER -> permissions.addAll(Arrays.asList(
+                    "user.*", "project.*", "team.*", "task.*", "review.*", "requirement.*", "role.*"
+            ));
+            case ADMINISTRATOR -> permissions.addAll(Arrays.asList(
+                    "user.read", "user.update", "user.manage",
+                    "project.read", "project.update", "project.create",
+                    "team.read", "team.manage", "team.invite",
+                    "task.read", "task.assign", "task.manage",
+                    "requirement.read", "requirement.update", "requirement.create",
+                    "review.read", "review.conduct"
+            ));
+            case USER, DEVELOPER -> permissions.addAll(Arrays.asList(
+                    "project.read",
+                    "requirement.read", "requirement.create", "requirement.update",
+                    "task.read", "task.complete", "task.update",
+                    PERMISSION_TEAM_PARTICIPATE,
+                    "review.read", "review.conduct"
+            ));
+            default -> {
+                // No additional permissions
+            }
         }
         
         return permissions;
@@ -351,22 +353,15 @@ public class PermissionEvaluationService {
         Set<String> permissions = new HashSet<>();
         
         switch (teamRole) {
-            case OWNER:
-            case ADMIN:
-                permissions.addAll(Arrays.asList(
-                        "team.manage", "team.invite", "team.remove",
-                        "task.assign", "task.manage"
-                ));
-                break;
-            case MEMBER:
-                permissions.addAll(Arrays.asList(
-                        "team.participate",
-                        "task.complete", "task.update"
-                ));
-                break;
-            case VIEWER:
-                permissions.add("team.participate");
-                break;
+            case OWNER, ADMIN -> permissions.addAll(Arrays.asList(
+                    "team.manage", "team.invite", "team.remove",
+                    "task.assign", "task.manage"
+            ));
+            case MEMBER -> permissions.addAll(Arrays.asList(
+                    PERMISSION_TEAM_PARTICIPATE,
+                    "task.complete", "task.update"
+            ));
+            case VIEWER -> permissions.add(PERMISSION_TEAM_PARTICIPATE);
         }
         
         return permissions;
@@ -375,10 +370,6 @@ public class PermissionEvaluationService {
     private String generateCacheKey(UUID userId, String permissionKey, UUID resourceId) {
         return String.format("%s_%s_%s", userId, permissionKey, 
                 resourceId != null ? resourceId.toString() : "null");
-    }
-
-    private PermissionCacheEntry getFromCache(String key) {
-        return permissionCache.get(key);
     }
 
     private void putInCache(String key, PermissionCacheEntry entry) {

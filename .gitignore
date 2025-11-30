@@ -56,3 +56,4 @@ dist/
 .DS_Store
 /frontend/nul
 /nul
+/.kilocode/mcp.json

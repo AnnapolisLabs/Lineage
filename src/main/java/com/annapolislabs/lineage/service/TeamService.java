@@ -23,6 +23,13 @@ import java.util.stream.Collectors;
 @Service
 public class TeamService {
 
+    private static final String SETTING_AUTO_ASSIGN_REVIEWERS = "autoAssignReviewers";
+    private static final String SETTING_REQUIRE_PEER_REVIEW = "requirePeerReview";
+    private static final String SETTING_MAX_MEMBERS = "maxMembers";
+    private static final String ERROR_TEAM_NOT_FOUND = "Team not found: ";
+    private static final String PERMISSION_TEAM_READ = "team.read";
+    private static final String ERROR_NOT_A_MEMBER = "User is not a member of this team";
+
     @Autowired
     private TeamRepository teamRepository;
 
@@ -82,14 +89,14 @@ public class TeamService {
         if (settings != null) {
             team.setSettings(settings);
             // Extract team-specific settings
-            if (settings.containsKey("autoAssignReviewers")) {
-                team.setAutoAssignReviewers((Boolean) settings.get("autoAssignReviewers"));
+            if (settings.containsKey(SETTING_AUTO_ASSIGN_REVIEWERS)) {
+                team.setAutoAssignReviewers((Boolean) settings.get(SETTING_AUTO_ASSIGN_REVIEWERS));
             }
-            if (settings.containsKey("requirePeerReview")) {
-                team.setRequirePeerReview((Boolean) settings.get("requirePeerReview"));
+            if (settings.containsKey(SETTING_REQUIRE_PEER_REVIEW)) {
+                team.setRequirePeerReview((Boolean) settings.get(SETTING_REQUIRE_PEER_REVIEW));
             }
-            if (settings.containsKey("maxMembers")) {
-                team.setMaxMembers((Integer) settings.get("maxMembers"));
+            if (settings.containsKey(SETTING_MAX_MEMBERS)) {
+                team.setMaxMembers((Integer) settings.get(SETTING_MAX_MEMBERS));
             }
         }
 
@@ -116,10 +123,10 @@ public class TeamService {
         log.debug("Getting team {} for user {}", teamId, requestingUserId);
 
         Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new IllegalArgumentException("Team not found: " + teamId));
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_TEAM_NOT_FOUND + teamId));
 
         // Check if user has permission to view team
-        if (!permissionEvaluationService.hasPermission(requestingUserId, "team.read", team.getProjectId())) {
+        if (!permissionEvaluationService.hasPermission(requestingUserId, PERMISSION_TEAM_READ, team.getProjectId())) {
             throw new SecurityException("User does not have permission to view this team");
         }
 
@@ -133,7 +140,7 @@ public class TeamService {
         log.debug("Getting teams for project {} by user {}", projectId, requestingUserId);
 
         // Check if user has permission to view teams for this project
-        if (!permissionEvaluationService.hasPermission(requestingUserId, "team.read", projectId)) {
+        if (!permissionEvaluationService.hasPermission(requestingUserId, PERMISSION_TEAM_READ, projectId)) {
             throw new SecurityException("User does not have permission to view teams for this project");
         }
 
@@ -149,11 +156,11 @@ public class TeamService {
         log.info("Updating team {} by user {}", teamId, requestingUserId);
 
         Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new IllegalArgumentException("Team not found: " + teamId));
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_TEAM_NOT_FOUND + teamId));
 
         // Check if user has permission to manage team
         TeamMember membership = teamMemberRepository.findByTeamIdAndUserId(teamId, requestingUserId)
-                .orElseThrow(() -> new SecurityException("User is not a member of this team"));
+                .orElseThrow(() -> new SecurityException(ERROR_NOT_A_MEMBER));
         
         if (!membership.canManage()) {
             throw new SecurityException("User does not have permission to manage this team");
@@ -175,14 +182,14 @@ public class TeamService {
         // Update settings
         if (settings != null) {
             team.setSettings(settings);
-            if (settings.containsKey("autoAssignReviewers")) {
-                team.setAutoAssignReviewers((Boolean) settings.get("autoAssignReviewers"));
+            if (settings.containsKey(SETTING_AUTO_ASSIGN_REVIEWERS)) {
+                team.setAutoAssignReviewers((Boolean) settings.get(SETTING_AUTO_ASSIGN_REVIEWERS));
             }
-            if (settings.containsKey("requirePeerReview")) {
-                team.setRequirePeerReview((Boolean) settings.get("requirePeerReview"));
+            if (settings.containsKey(SETTING_REQUIRE_PEER_REVIEW)) {
+                team.setRequirePeerReview((Boolean) settings.get(SETTING_REQUIRE_PEER_REVIEW));
             }
-            if (settings.containsKey("maxMembers")) {
-                team.setMaxMembers((Integer) settings.get("maxMembers"));
+            if (settings.containsKey(SETTING_MAX_MEMBERS)) {
+                team.setMaxMembers((Integer) settings.get(SETTING_MAX_MEMBERS));
             }
         }
 
@@ -205,8 +212,9 @@ public class TeamService {
         log.info("Inviting user {} to team {} with role {} by user {}", userEmail, teamId, role, invitedBy);
 
         // Validate inputs
-        Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new IllegalArgumentException("Team not found: " + teamId));
+        teamRepository.findById(teamId)
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_TEAM_NOT_FOUND + teamId));
+        Team team = teamRepository.findById(teamId).orElseThrow();
 
         if (!team.isActive()) {
             throw new IllegalArgumentException("Cannot invite users to inactive team");
@@ -300,15 +308,15 @@ public class TeamService {
         log.info("Removing user {} from team {} by user {}", userIdToRemove, teamId, requestingUserId);
 
         // Validate inputs
-        Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new IllegalArgumentException("Team not found: " + teamId));
+        teamRepository.findById(teamId)
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_TEAM_NOT_FOUND + teamId));
 
         TeamMember membershipToRemove = teamMemberRepository.findByTeamIdAndUserId(teamId, userIdToRemove)
-                .orElseThrow(() -> new IllegalArgumentException("User is not a member of this team"));
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_NOT_A_MEMBER));
 
         // Check permissions
         TeamMember requestingMembership = teamMemberRepository.findByTeamIdAndUserId(teamId, requestingUserId)
-                .orElseThrow(() -> new SecurityException("Requesting user is not a member of this team"));
+                .orElseThrow(() -> new SecurityException(ERROR_NOT_A_MEMBER));
 
         if (!requestingMembership.canRemove(membershipToRemove)) {
             throw new SecurityException("User does not have permission to remove this member");
@@ -341,9 +349,9 @@ public class TeamService {
 
         // Check permission
         Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new IllegalArgumentException("Team not found: " + teamId));
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_TEAM_NOT_FOUND + teamId));
 
-        if (!permissionEvaluationService.hasPermission(requestingUserId, "team.read", team.getProjectId())) {
+        if (!permissionEvaluationService.hasPermission(requestingUserId, PERMISSION_TEAM_READ, team.getProjectId())) {
             throw new SecurityException("User does not have permission to view team members");
         }
 
@@ -385,14 +393,14 @@ public class TeamService {
         log.info("Updating role for user {} in team {} to {} by user {}", userId, teamId, newRole, requestingUserId);
 
         // Validate inputs
-        Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new IllegalArgumentException("Team not found: " + teamId));
+        teamRepository.findById(teamId)
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_TEAM_NOT_FOUND + teamId));
 
         TeamMember membership = teamMemberRepository.findByTeamIdAndUserId(teamId, userId)
-                .orElseThrow(() -> new IllegalArgumentException("User is not a member of this team"));
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_NOT_A_MEMBER));
 
         TeamMember requestingMembership = teamMemberRepository.findByTeamIdAndUserId(teamId, requestingUserId)
-                .orElseThrow(() -> new SecurityException("Requesting user is not a member of this team"));
+                .orElseThrow(() -> new SecurityException(ERROR_NOT_A_MEMBER));
 
         // Check permissions
         if (!requestingMembership.canManage()) {
@@ -427,11 +435,11 @@ public class TeamService {
         log.info("Deactivating team {} by user {}", teamId, requestingUserId);
 
         Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new IllegalArgumentException("Team not found: " + teamId));
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_TEAM_NOT_FOUND + teamId));
 
         // Check permission
         TeamMember membership = teamMemberRepository.findByTeamIdAndUserId(teamId, requestingUserId)
-                .orElseThrow(() -> new SecurityException("User is not a member of this team"));
+                .orElseThrow(() -> new SecurityException(ERROR_NOT_A_MEMBER));
         
         if (!membership.canManage()) {
             throw new SecurityException("User does not have permission to deactivate this team");
@@ -462,10 +470,9 @@ public class TeamService {
         log.debug("Searching teams with term '{}' by user {}", searchTerm, requestingUserId);
 
         // If project ID is provided, check permission for that project
-        if (projectId != null) {
-            if (!permissionEvaluationService.hasPermission(requestingUserId, "team.read", projectId)) {
-                throw new SecurityException("User does not have permission to search teams for this project");
-            }
+        if (projectId != null &&
+            !permissionEvaluationService.hasPermission(requestingUserId, PERMISSION_TEAM_READ, projectId)) {
+            throw new SecurityException("User does not have permission to search teams for this project");
         }
 
         // Build filter criteria

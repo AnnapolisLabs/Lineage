@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
@@ -93,11 +94,18 @@ public class AuditLog {
         this.details = details;
     }
 
-    public AuditLog(UUID userId, String action, String resource, String resourceId, Map<String, Object> details, 
-                   AuditSeverity severity, String ipAddress, String userAgent) {
-        this(userId, action, resource, resourceId, details, severity);
-        this.ipAddress = ipAddress;
-        this.userAgent = userAgent;
+    /**
+     * Builder-based factory method to construct AuditLog with all fields.
+     * Use this instead of the 8-parameter constructor to comply with code quality rules.
+     */
+    @Builder(builderMethodName = "fullBuilder")
+    private static AuditLog createFull(UUID userId, String action, String resource, String resourceId,
+                                       Map<String, Object> details, AuditSeverity severity,
+                                       String ipAddress, String userAgent) {
+        AuditLog log = new AuditLog(userId, action, resource, resourceId, details, severity);
+        log.setIpAddress(ipAddress);
+        log.setUserAgent(userAgent);
+        return log;
     }
 
     // Utility Methods

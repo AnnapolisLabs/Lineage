@@ -106,11 +106,9 @@ public class ProjectImportService {
 
         Map<String, Requirement> created = new HashMap<>();
         Set<String> visiting = new HashSet<>();
-        List<Requirement> importedEntities = new ArrayList<>();
 
         for (ImportedRequirement importedRequirement : imported.values()) {
-            Requirement requirement = createRequirement(project, importedRequirement, imported, created, visiting, currentUser);
-            importedEntities.add(requirement);
+            createRequirement(project, importedRequirement, imported, created, visiting, currentUser);
         }
 
         ProjectResponse projectResponse = new ProjectResponse(project);
@@ -147,34 +145,68 @@ public class ProjectImportService {
         if (created.containsKey(reqId)) {
             return created.get(reqId);
         }
+        validateNoCycle(reqId, visiting);
+        validateNoDuplicateId(importedRequirement.getPayload().getReqId());
+
+        Requirement parent = resolveParent(project, importedRequirement, graph, created, visiting, currentUser);
+        Requirement requirement = buildRequirement(project, importedRequirement, parent, currentUser);
+
+        requirement = requirementRepository.save(requirement);
+        saveParentLink(parent, requirement, currentUser);
+        createHistoryEntry(requirement, currentUser);
+
+        created.put(reqId, requirement);
+        visiting.remove(reqId);
+        return requirement;
+    }
+
+    private void validateNoCycle(String reqId, Set<String> visiting) {
         if (!visiting.add(reqId)) {
             throw new IllegalStateException("Circular requirement dependency detected for reqId: " + reqId);
         }
+    }
 
-        requirementRepository.findByReqId(importedRequirement.getPayload().getReqId())
+    private void validateNoDuplicateId(String reqId) {
+        requirementRepository.findByReqId(reqId)
                 .ifPresent(existing -> {
-                    throw new DuplicateKeyException("Requirement ID already exists: " + importedRequirement.getPayload().getReqId());
+                    throw new DuplicateKeyException("Requirement ID already exists: " + reqId);
                 });
+    }
 
-        Requirement parent = null;
+    private Requirement resolveParent(Project project,
+                                      ImportedRequirement importedRequirement,
+                                      Map<String, ImportedRequirement> graph,
+                                      Map<String, Requirement> created,
+                                      Set<String> visiting,
+                                      User currentUser) {
         String parentReqId = importedRequirement.getParentReqId();
-        if (parentReqId != null) {
-            parent = created.get(parentReqId.toUpperCase());
-            if (parent == null) {
-                ImportedRequirement parentPayload = graph.get(parentReqId.toUpperCase());
-                if (parentPayload != null) {
-                    parent = createRequirement(project, parentPayload, graph, created, visiting, currentUser);
-                } else {
-                    parent = requirementRepository.findByReqId(parentReqId)
-                            .orElseThrow(() -> new ResourceNotFoundException("Parent requirement not found: " + parentReqId));
-                    if (!parent.getProject().getId().equals(project.getId())) {
-                        throw new ResourceNotFoundException("Parent requirement does not belong to this project: " + parentReqId);
-                    }
-                    created.put(parentReqId.toUpperCase(), parent);
-                }
-            }
+        if (parentReqId == null) {
+            return null;
         }
 
+        Requirement parent = created.get(parentReqId.toUpperCase());
+        if (parent != null) {
+            return parent;
+        }
+
+        ImportedRequirement parentPayload = graph.get(parentReqId.toUpperCase());
+        if (parentPayload != null) {
+            return createRequirement(project, parentPayload, graph, created, visiting, currentUser);
+        }
+
+        parent = requirementRepository.findByReqId(parentReqId)
+                .orElseThrow(() -> new ResourceNotFoundException("Parent requirement not found: " + parentReqId));
+        if (!parent.getProject().getId().equals(project.getId())) {
+            throw new ResourceNotFoundException("Parent requirement does not belong to this project: " + parentReqId);
+        }
+        created.put(parentReqId.toUpperCase(), parent);
+        return parent;
+    }
+
+    private Requirement buildRequirement(Project project,
+                                         ImportedRequirement importedRequirement,
+                                         Requirement parent,
+                                         User currentUser) {
         Requirement requirement = new Requirement(
                 project,
                 importedRequirement.getPayload().getReqId(),
@@ -198,19 +230,14 @@ public class ProjectImportService {
         } else {
             requirement.setLevel(1);
         }
+        return requirement;
+    }
 
-        requirement = requirementRepository.save(requirement);
-
+    private void saveParentLink(Requirement parent, Requirement requirement, User currentUser) {
         if (parent != null) {
             RequirementLink link = new RequirementLink(parent, requirement, currentUser);
             requirementLinkRepository.save(link);
         }
-
-        createHistoryEntry(requirement, currentUser);
-
-        created.put(reqId, requirement);
-        visiting.remove(reqId);
-        return requirement;
     }
 
     /**

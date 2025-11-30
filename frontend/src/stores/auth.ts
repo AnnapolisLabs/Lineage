@@ -11,8 +11,11 @@ export const useAuthStore = defineStore('auth', () => {
   if (storedUser) {
     try {
       initialUser = JSON.parse(storedUser) as User
-    } catch (e) {
-      console.warn('Failed to parse stored auth user, clearing it')
+    } catch (err) {
+      // Handle corrupted localStorage data by cleaning it up.
+      // JSON.parse can throw if the stored data is malformed,
+      // which can happen if the data structure changed between versions.
+      console.error('Failed to parse stored auth user, clearing it:', err)
       localStorage.removeItem('auth_user')
     }
   }
@@ -79,13 +82,9 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.setItem('auth_user', JSON.stringify(user.value))
       localStorage.setItem('user_id', response.user.id)
 
-      // Touch role-based computed flags once on successful login so any
-      // UI that depends on them (e.g. canCreateTeam via isAdmin/isEditor)
-      // reacts immediately. This ensures the computed getters run after
-      // the user/globalRole are populated, not only when logout clears
-      // the user.
-      void isAdmin.value
-      void isEditor.value
+      // Computed properties (isAdmin, isEditor) will be automatically
+      // evaluated by Vue's reactivity system when accessed by components.
+      // No need to explicitly "touch" them here.
       return true
     } catch (err: any) {
       const errorMsg = err.response?.data?.message || 'Login failed'

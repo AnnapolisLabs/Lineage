@@ -23,6 +23,12 @@ import java.util.stream.Collectors;
 @Service
 public class PeerReviewService {
 
+    private static final String PERMISSION_PEER_REVIEW = "peer.review";
+    private static final String PERMISSION_PEER_READ = "peer.read";
+    private static final String AUDIT_RESOURCE_TYPE = "PEER_REVIEW";
+    private static final String ERROR_PEER_REVIEW_NOT_FOUND = "Peer review not found: ";
+    private static final String AUDIT_KEY_COMMENTS = "comments";
+
     @Autowired
     private PeerReviewRepository peerReviewRepository;
 
@@ -59,7 +65,7 @@ public class PeerReviewService {
         }
 
         // Check if requesting user has permission to create reviews
-        if (!permissionEvaluationService.hasPermission(requestingUserId, "peer.review", null)) {
+        if (!permissionEvaluationService.hasPermission(requestingUserId, PERMISSION_PEER_REVIEW, null)) {
             throw new SecurityException("User does not have permission to create peer reviews");
         }
 
@@ -104,8 +110,8 @@ public class PeerReviewService {
         }
 
         // Audit log
-        securityAuditService.logEvent("PEER_REVIEW_CREATED", requestingUserId, "PEER_REVIEW", review.getId(),
-                Map.of("requirement_id", requirementId, "reviewer_id", reviewerId, "author_id", authorId, 
+        securityAuditService.logEvent("PEER_REVIEW_CREATED", requestingUserId, AUDIT_RESOURCE_TYPE, review.getId(),
+                Map.of("requirement_id", requirementId, "reviewer_id", reviewerId, "author_id", authorId,
                        "review_type", reviewType.name(), "deadline", deadline));
 
         log.info("Peer review created successfully with ID {}", review.getId());
@@ -119,12 +125,12 @@ public class PeerReviewService {
         log.debug("Getting peer review {} for user {}", reviewId, requestingUserId);
 
         PeerReview review = peerReviewRepository.findById(reviewId)
-                .orElseThrow(() -> new IllegalArgumentException("Peer review not found: " + reviewId));
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_PEER_REVIEW_NOT_FOUND + reviewId));
 
         // Check if user has permission to view this review
         boolean canView = review.getReviewerId().equals(requestingUserId) ||
                          review.getAuthorId().equals(requestingUserId) ||
-                         permissionEvaluationService.hasPermission(requestingUserId, "peer.review", null);
+                         permissionEvaluationService.hasPermission(requestingUserId, PERMISSION_PEER_REVIEW, null);
 
         if (!canView) {
             throw new SecurityException("User does not have permission to view this peer review");
@@ -140,7 +146,7 @@ public class PeerReviewService {
         log.debug("Getting reviews for requirement {} by user {}", requirementId, requestingUserId);
 
         // Check if user has permission to view reviews for this requirement
-        if (!permissionEvaluationService.hasPermission(requestingUserId, "peer.read", null)) {
+        if (!permissionEvaluationService.hasPermission(requestingUserId, PERMISSION_PEER_READ, null)) {
             throw new SecurityException("User does not have permission to view peer reviews");
         }
 
@@ -156,7 +162,7 @@ public class PeerReviewService {
         log.info("Starting peer review {} by user {}", reviewId, requestingUserId);
 
         PeerReview review = peerReviewRepository.findById(reviewId)
-                .orElseThrow(() -> new IllegalArgumentException("Peer review not found: " + reviewId));
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_PEER_REVIEW_NOT_FOUND + reviewId));
 
         // Only reviewer can start the review
         if (!review.getReviewerId().equals(requestingUserId)) {
@@ -171,7 +177,7 @@ public class PeerReviewService {
         peerReviewRepository.save(review);
 
         // Audit log
-        securityAuditService.logEvent("PEER_REVIEW_STARTED", requestingUserId, "PEER_REVIEW", reviewId,
+        securityAuditService.logEvent("PEER_REVIEW_STARTED", requestingUserId, AUDIT_RESOURCE_TYPE, reviewId,
                 Map.of("previous_status", "pending", "new_status", "in_progress"));
 
         log.info("Peer review {} started successfully", reviewId);
@@ -185,7 +191,7 @@ public class PeerReviewService {
         log.info("Approving peer review {} by user {}", reviewId, requestingUserId);
 
         PeerReview review = peerReviewRepository.findById(reviewId)
-                .orElseThrow(() -> new IllegalArgumentException("Peer review not found: " + reviewId));
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_PEER_REVIEW_NOT_FOUND + reviewId));
 
         // Only reviewer can approve the review
         if (!review.getReviewerId().equals(requestingUserId)) {
@@ -217,8 +223,8 @@ public class PeerReviewService {
         }
 
         // Audit log
-        securityAuditService.logEvent("PEER_REVIEW_APPROVED", requestingUserId, "PEER_REVIEW", reviewId,
-                Map.of("comments", comments));
+        securityAuditService.logEvent("PEER_REVIEW_APPROVED", requestingUserId, AUDIT_RESOURCE_TYPE, reviewId,
+                Map.of(AUDIT_KEY_COMMENTS, comments));
 
         log.info("Peer review {} approved successfully", reviewId);
     }
@@ -231,7 +237,7 @@ public class PeerReviewService {
         log.info("Rejecting peer review {} by user {}", reviewId, requestingUserId);
 
         PeerReview review = peerReviewRepository.findById(reviewId)
-                .orElseThrow(() -> new IllegalArgumentException("Peer review not found: " + reviewId));
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_PEER_REVIEW_NOT_FOUND + reviewId));
 
         // Only reviewer can reject the review
         if (!review.getReviewerId().equals(requestingUserId)) {
@@ -263,8 +269,8 @@ public class PeerReviewService {
         }
 
         // Audit log
-        securityAuditService.logEvent("PEER_REVIEW_REJECTED", requestingUserId, "PEER_REVIEW", reviewId,
-                Map.of("comments", comments));
+        securityAuditService.logEvent("PEER_REVIEW_REJECTED", requestingUserId, AUDIT_RESOURCE_TYPE, reviewId,
+                Map.of(AUDIT_KEY_COMMENTS, comments));
 
         log.info("Peer review {} rejected successfully", reviewId);
     }
@@ -277,7 +283,7 @@ public class PeerReviewService {
         log.info("Requesting revision for peer review {} by user {}", reviewId, requestingUserId);
 
         PeerReview review = peerReviewRepository.findById(reviewId)
-                .orElseThrow(() -> new IllegalArgumentException("Peer review not found: " + reviewId));
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_PEER_REVIEW_NOT_FOUND + reviewId));
 
         // Only reviewer can request revision
         if (!review.getReviewerId().equals(requestingUserId)) {
@@ -309,8 +315,8 @@ public class PeerReviewService {
         }
 
         // Audit log
-        securityAuditService.logEvent("PEER_REVIEW_REVISION_REQUESTED", requestingUserId, "PEER_REVIEW", reviewId,
-                Map.of("comments", comments));
+        securityAuditService.logEvent("PEER_REVIEW_REVISION_REQUESTED", requestingUserId, AUDIT_RESOURCE_TYPE, reviewId,
+                Map.of(AUDIT_KEY_COMMENTS, comments));
 
         log.info("Peer review {} revision requested successfully", reviewId);
     }
@@ -323,7 +329,7 @@ public class PeerReviewService {
         log.info("Setting ratings for peer review {} by user {}", reviewId, requestingUserId);
 
         PeerReview review = peerReviewRepository.findById(reviewId)
-                .orElseThrow(() -> new IllegalArgumentException("Peer review not found: " + reviewId));
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_PEER_REVIEW_NOT_FOUND + reviewId));
 
         // Only reviewer can set ratings
         if (!review.getReviewerId().equals(requestingUserId)) {
@@ -338,7 +344,7 @@ public class PeerReviewService {
         peerReviewRepository.save(review);
 
         // Audit log
-        securityAuditService.logEvent("PEER_REVIEW_RATINGS_SET", requestingUserId, "PEER_REVIEW", reviewId,
+        securityAuditService.logEvent("PEER_REVIEW_RATINGS_SET", requestingUserId, AUDIT_RESOURCE_TYPE, reviewId,
                 Map.of("effort_rating", effortRating, "quality_rating", qualityRating));
 
         log.info("Ratings set successfully for peer review {}: effort={}, quality={}", reviewId, effortRating, qualityRating);
@@ -351,8 +357,8 @@ public class PeerReviewService {
         log.debug("Getting pending reviews for reviewer {} by user {}", reviewerId, requestingUserId);
 
         // Check if user can view their own reviews or has admin permission
-        if (!reviewerId.equals(requestingUserId) && 
-            !permissionEvaluationService.hasPermission(requestingUserId, "peer.review", null)) {
+        if (!reviewerId.equals(requestingUserId) &&
+            !permissionEvaluationService.hasPermission(requestingUserId, PERMISSION_PEER_REVIEW, null)) {
             throw new SecurityException("User does not have permission to view these reviews");
         }
 
@@ -367,7 +373,7 @@ public class PeerReviewService {
         log.debug("Getting overdue reviews for user {}", requestingUserId);
 
         // Check if user has permission to view reviews
-        if (!permissionEvaluationService.hasPermission(requestingUserId, "peer.read", null)) {
+        if (!permissionEvaluationService.hasPermission(requestingUserId, PERMISSION_PEER_READ, null)) {
             throw new SecurityException("User does not have permission to view peer reviews");
         }
 
@@ -381,7 +387,7 @@ public class PeerReviewService {
         log.debug("Getting reviews needing attention for user {}", requestingUserId);
 
         // Check if user has permission to view reviews
-        if (!permissionEvaluationService.hasPermission(requestingUserId, "peer.read", null)) {
+        if (!permissionEvaluationService.hasPermission(requestingUserId, PERMISSION_PEER_READ, null)) {
             throw new SecurityException("User does not have permission to view peer reviews");
         }
 
@@ -397,7 +403,7 @@ public class PeerReviewService {
         log.debug("Searching reviews with term '{}' by user {}", searchTerm, requestingUserId);
 
         // Check if user has permission to search reviews
-        if (!permissionEvaluationService.hasPermission(requestingUserId, "peer.read", null)) {
+        if (!permissionEvaluationService.hasPermission(requestingUserId, PERMISSION_PEER_READ, null)) {
             throw new SecurityException("User does not have permission to search peer reviews");
         }
 
@@ -415,7 +421,7 @@ public class PeerReviewService {
         log.debug("Getting peer review statistics for user {}", requestingUserId);
 
         // Check if user has permission to view review statistics
-        if (!permissionEvaluationService.hasPermission(requestingUserId, "peer.read", null)) {
+        if (!permissionEvaluationService.hasPermission(requestingUserId, PERMISSION_PEER_READ, null)) {
             throw new SecurityException("User does not have permission to view peer review statistics");
         }
 
