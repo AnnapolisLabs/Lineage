@@ -96,19 +96,6 @@ public class ProjectController {
         }
     }
 
-    // Temporary test endpoint to debug JSON parsing
-    /**
-     * POST /api/projects/test-import is a diagnostic helper that echoes key values from the import payload.
-     *
-     * @param request import structure to inspect
-     * @return 200 OK with summary text used during troubleshooting
-     */
-    @PostMapping(value = "/test-import", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> testImport(@RequestBody ImportProjectRequest request) {
-        return ResponseEntity.ok("SUCCESS - Project: " + request.getProject().getName() + 
-                               ", Requirements: " + (request.getRequirements() != null ? request.getRequirements().size() : 0));
-    }
-
     /**
      * GET /api/projects lists all projects visible to the caller.
      *

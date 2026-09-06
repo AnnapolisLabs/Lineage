@@ -114,7 +114,7 @@ public class RequirementService {
         User currentUser = authService.getCurrentUser();
 
         // Check project access
-        if (!projectMemberRepository.existsByProjectIdAndUserId(projectId, currentUser.getId())) {
+        if (!projectMemberRepository.hasProjectAccess(projectId, currentUser.getId())) {
             throw new AccessDeniedException("Access denied");
         }
 
@@ -141,7 +141,7 @@ public class RequirementService {
 
         // Check project access
         User currentUser = authService.getCurrentUser();
-        if (!projectMemberRepository.existsByProjectIdAndUserId(requirement.getProject().getId(), currentUser.getId())) {
+        if (!projectMemberRepository.hasProjectAccess(requirement.getProject().getId(), currentUser.getId())) {
             throw new AccessDeniedException("Access denied");
         }
 
@@ -251,7 +251,7 @@ public class RequirementService {
                 .orElseThrow(() -> new ResourceNotFoundException(ServiceConstants.REQUIREMENT_NOT_FOUND));
 
         User currentUser = authService.getCurrentUser();
-        if (!projectMemberRepository.existsByProjectIdAndUserId(requirement.getProject().getId(), currentUser.getId())) {
+        if (!projectMemberRepository.hasProjectAccess(requirement.getProject().getId(), currentUser.getId())) {
             throw new AccessDeniedException("Access denied");
         }
 

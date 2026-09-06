@@ -110,7 +110,7 @@ class RequirementServiceTest {
     void getRequirementsByProject_Success() {
         // Arrange
         when(authService.getCurrentUser()).thenReturn(testUser);
-        when(projectMemberRepository.existsByProjectIdAndUserId(testProject.getId(), testUser.getId()))
+        when(projectMemberRepository.hasProjectAccess(testProject.getId(), testUser.getId()))
                 .thenReturn(true);
         when(requirementRepository.findByProjectIdAndDeletedAtIsNull(testProject.getId()))
                 .thenReturn(Arrays.asList(testRequirement));
@@ -179,7 +179,7 @@ class RequirementServiceTest {
 
         when(requirementRepository.findById(testRequirement.getId())).thenReturn(Optional.of(testRequirement));
         when(authService.getCurrentUser()).thenReturn(testUser);
-        when(projectMemberRepository.existsByProjectIdAndUserId(testProject.getId(), testUser.getId()))
+        when(projectMemberRepository.hasProjectAccess(testProject.getId(), testUser.getId()))
                 .thenReturn(true);
         when(historyRepository.findByRequirementIdOrderByChangedAtDesc(testRequirement.getId()))
                 .thenReturn(Arrays.asList(history));
@@ -260,7 +260,7 @@ class RequirementServiceTest {
         // Arrange
         when(requirementRepository.findById(testRequirement.getId())).thenReturn(Optional.of(testRequirement));
         when(authService.getCurrentUser()).thenReturn(testUser);
-        when(projectMemberRepository.existsByProjectIdAndUserId(testProject.getId(), testUser.getId()))
+        when(projectMemberRepository.hasProjectAccess(testProject.getId(), testUser.getId()))
                 .thenReturn(true);
         when(linkRepository.findAllLinksForRequirement(testRequirement.getId()))
                 .thenReturn(new ArrayList<>());
@@ -290,7 +290,7 @@ class RequirementServiceTest {
         // Arrange
         when(requirementRepository.findById(testRequirement.getId())).thenReturn(Optional.of(testRequirement));
         when(authService.getCurrentUser()).thenReturn(testUser);
-        when(projectMemberRepository.existsByProjectIdAndUserId(testProject.getId(), testUser.getId()))
+        when(projectMemberRepository.hasProjectAccess(testProject.getId(), testUser.getId()))
                 .thenReturn(false);
 
         // Act & Assert
@@ -389,7 +389,7 @@ class RequirementServiceTest {
 
         when(requirementRepository.findById(testRequirement.getId())).thenReturn(Optional.of(testRequirement));
         when(authService.getCurrentUser()).thenReturn(testUser);
-        when(projectMemberRepository.existsByProjectIdAndUserId(testProject.getId(), testUser.getId()))
+        when(projectMemberRepository.hasProjectAccess(testProject.getId(), testUser.getId()))
                 .thenReturn(true);
         when(linkRepository.findAllLinksForRequirement(testRequirement.getId()))
                 .thenReturn(Arrays.asList(linkToParent, linkToChild));

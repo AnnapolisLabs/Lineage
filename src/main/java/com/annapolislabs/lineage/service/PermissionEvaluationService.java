@@ -34,6 +34,7 @@ public class PermissionEvaluationService {
     private static final String RESOURCE_REQUIREMENT = "requirement";
     private static final String RESOURCE_TASK = "task";
     private static final String RESOURCE_REVIEW = "review";
+    private static final String RESOURCE_PEER = "peer";
     
     // Composite permission constants
     private static final String PERMISSION_TEAM_PARTICIPATE = "team.participate";
@@ -99,7 +100,7 @@ public class PermissionEvaluationService {
             
             // 5. Check team-based permissions if resource is project-scoped
             if (!hasPermission && resourceId != null) {
-                hasPermission = checkTeamPermissions(userId, resourceId);
+                hasPermission = checkTeamPermissions(userId, permissionKey, resourceId);
             }
 
             // 6. Cache result
@@ -254,16 +255,25 @@ public class PermissionEvaluationService {
                (resource.equals(RESOURCE_TEAM) && !action.equals(ACTION_DELETE)) ||
                (resource.equals(RESOURCE_REQUIREMENT) && !action.equals(ACTION_DELETE)) ||
                (resource.equals(RESOURCE_TASK) && !action.equals(ACTION_DELETE)) ||
-               (resource.equals(RESOURCE_REVIEW) && action.equals("conduct"));
+               (resource.equals(RESOURCE_REVIEW) && action.equals("conduct")) ||
+               // Matches the OWNER/ADMINISTRATOR "peer.review", "peer.approve", "peer.reject" grants
+               // seeded in V14__Enhanced_RBAC_Schema.sql's collaboration_permissions.
+               (resource.equals(RESOURCE_PEER) && Arrays.asList("review", "approve", "reject", ACTION_READ).contains(action));
     }
 
     private boolean checkUserPermissions(String resource, String action) {
-        // Standard user can read and create, update their own data
+        // Standard user can read and create, update their own data.
+        // Note: task.* permissions are intentionally NOT granted globally here - they are
+        // scoped per-project via team membership (see checkTeamPermissions and
+        // getTeamBasedPermissions' MEMBER role mapping), so a user can only read/complete/update
+        // tasks on projects they are actually a team member of.
         return (resource.equals(RESOURCE_PROJECT) && action.equals(ACTION_READ)) ||
                (resource.equals(RESOURCE_REQUIREMENT) && Arrays.asList("create", ACTION_READ, ACTION_UPDATE).contains(action)) ||
-               (resource.equals(RESOURCE_TASK) && Arrays.asList("complete", ACTION_UPDATE).contains(action)) ||
                (resource.equals(RESOURCE_TEAM) && action.equals("participate")) ||
-               (resource.equals(RESOURCE_REVIEW) && action.equals("conduct"));
+               (resource.equals(RESOURCE_REVIEW) && action.equals("conduct")) ||
+               // Matches the USER "peer.review" grant seeded in V14__Enhanced_RBAC_Schema.sql's
+               // collaboration_permissions (users may conduct peer reviews on their assigned work).
+               (resource.equals(RESOURCE_PEER) && action.equals("review"));
     }
 
     private boolean checkProjectManagerPermissions(String resource, String action) {
@@ -302,16 +312,20 @@ public class PermissionEvaluationService {
         return false;
     }
 
-    private boolean checkTeamPermissions(UUID userId, UUID resourceId) {
-        // Check if user is member of any team associated with the resource
+    private boolean checkTeamPermissions(UUID userId, String permissionKey, UUID resourceId) {
+        // Check if user is a member of a team associated with the resource, and whether that
+        // specific team role actually grants the requested permission key (see
+        // getTeamBasedPermissions). Team membership alone (e.g. canEdit()) is NOT sufficient -
+        // a plain MEMBER should not implicitly receive OWNER/ADMIN-only permissions such as
+        // "team.manage" or "task.assign" just because they can edit team content.
         List<TeamMember> teamMemberships = teamMemberRepository
                 .findByUserIdAndStatus(userId, TeamMember.TeamMemberStatus.ACTIVE);
-        
+
         for (TeamMember membership : teamMemberships) {
             Team team = teamRepository.findById(membership.getTeamId()).orElse(null);
             if (team != null && team.getProjectId() != null &&
                 team.getProjectId().equals(resourceId) && team.isActive() &&
-                (membership.canEdit() || membership.canManage())) {
+                getTeamBasedPermissions(membership.getRole()).contains(permissionKey)) {
                 return true;
             }
         }

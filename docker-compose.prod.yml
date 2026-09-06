@@ -40,6 +40,8 @@ services:
       DB_USERNAME: lineage
       DB_PASSWORD: ${DB_PASSWORD:-lineage123}
       SERVER_PORT: 8080
+      # No insecure default - the app fails fast on startup if this isn't set.
+      JWT_SECRET: ${JWT_SECRET}
     networks:
       - lineage-net
 

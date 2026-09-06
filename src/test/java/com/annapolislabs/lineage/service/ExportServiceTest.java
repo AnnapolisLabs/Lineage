@@ -83,7 +83,7 @@ class ExportServiceTest {
         List<Requirement> requirements = Arrays.asList(requirement1, requirement2);
 
         when(authService.getCurrentUser()).thenReturn(testUser);
-        when(projectMemberRepository.existsByProjectIdAndUserId(projectId, testUser.getId())).thenReturn(true);
+        when(projectMemberRepository.hasProjectAccess(projectId, testUser.getId())).thenReturn(true);
         when(requirementRepository.findByProjectId(projectId)).thenReturn(requirements);
 
         // Act
@@ -102,7 +102,7 @@ class ExportServiceTest {
     void exportToCsv_AccessDenied() {
         // Arrange
         when(authService.getCurrentUser()).thenReturn(testUser);
-        when(projectMemberRepository.existsByProjectIdAndUserId(projectId, testUser.getId())).thenReturn(false);
+        when(projectMemberRepository.hasProjectAccess(projectId, testUser.getId())).thenReturn(false);
 
         // Act & Assert
         assertThrows(ExportException.class, () -> exportService.exportToCsv(projectId));
@@ -118,7 +118,7 @@ class ExportServiceTest {
         List<Requirement> requirements = Arrays.asList(requirement1, requirement2);
 
         when(authService.getCurrentUser()).thenReturn(testUser);
-        when(projectMemberRepository.existsByProjectIdAndUserId(projectId, testUser.getId())).thenReturn(true);
+        when(projectMemberRepository.hasProjectAccess(projectId, testUser.getId())).thenReturn(true);
         when(requirementRepository.findByProjectId(projectId)).thenReturn(requirements);
 
         // Act
@@ -139,7 +139,7 @@ class ExportServiceTest {
         List<Requirement> requirements = Collections.singletonList(requirement1);
 
         when(authService.getCurrentUser()).thenReturn(testUser);
-        when(projectMemberRepository.existsByProjectIdAndUserId(projectId, testUser.getId())).thenReturn(true);
+        when(projectMemberRepository.hasProjectAccess(projectId, testUser.getId())).thenReturn(true);
         when(requirementRepository.findByProjectId(projectId)).thenReturn(requirements);
 
         // Act
@@ -157,7 +157,7 @@ class ExportServiceTest {
         String expectedJson = "{\"project\": {}, \"requirements\": []}";
 
         when(authService.getCurrentUser()).thenReturn(testUser);
-        when(projectMemberRepository.existsByProjectIdAndUserId(projectId, testUser.getId())).thenReturn(true);
+        when(projectMemberRepository.hasProjectAccess(projectId, testUser.getId())).thenReturn(true);
         when(projectRepository.findById(projectId)).thenReturn(Optional.of(testProject));
         when(requirementRepository.findByProjectId(projectId)).thenReturn(requirements);
         when(objectMapper.writerWithDefaultPrettyPrinter()).thenReturn(objectWriter);
@@ -176,7 +176,7 @@ class ExportServiceTest {
     void exportToJson_ProjectNotFound() {
         // Arrange
         when(authService.getCurrentUser()).thenReturn(testUser);
-        when(projectMemberRepository.existsByProjectIdAndUserId(projectId, testUser.getId())).thenReturn(true);
+        when(projectMemberRepository.hasProjectAccess(projectId, testUser.getId())).thenReturn(true);
         when(projectRepository.findById(projectId)).thenReturn(Optional.empty());
 
         // Act & Assert
@@ -189,7 +189,7 @@ class ExportServiceTest {
         List<Requirement> requirements = Collections.singletonList(requirement1);
 
         when(authService.getCurrentUser()).thenReturn(testUser);
-        when(projectMemberRepository.existsByProjectIdAndUserId(projectId, testUser.getId())).thenReturn(true);
+        when(projectMemberRepository.hasProjectAccess(projectId, testUser.getId())).thenReturn(true);
         when(projectRepository.findById(projectId)).thenReturn(Optional.of(testProject));
         when(requirementRepository.findByProjectId(projectId)).thenReturn(requirements);
         when(objectMapper.writerWithDefaultPrettyPrinter()).thenReturn(objectWriter);
@@ -203,7 +203,7 @@ class ExportServiceTest {
     void exportToJson_AccessDenied() {
         // Arrange
         when(authService.getCurrentUser()).thenReturn(testUser);
-        when(projectMemberRepository.existsByProjectIdAndUserId(projectId, testUser.getId())).thenReturn(false);
+        when(projectMemberRepository.hasProjectAccess(projectId, testUser.getId())).thenReturn(false);
 
         // Act & Assert
         assertThrows(ExportException.class, () -> exportService.exportToJson(projectId));
@@ -216,7 +216,7 @@ class ExportServiceTest {
         List<Requirement> childRequirements = Collections.singletonList(requirement2);
 
         when(authService.getCurrentUser()).thenReturn(testUser);
-        when(projectMemberRepository.existsByProjectIdAndUserId(projectId, testUser.getId())).thenReturn(true);
+        when(projectMemberRepository.hasProjectAccess(projectId, testUser.getId())).thenReturn(true);
         when(projectRepository.findById(projectId)).thenReturn(Optional.of(testProject));
         when(requirementRepository.findByProjectIdAndParentIsNullAndDeletedAtIsNull(projectId))
                 .thenReturn(topLevelRequirements);
@@ -244,7 +244,7 @@ class ExportServiceTest {
         List<Requirement> topLevelRequirements = Collections.singletonList(requirement1);
 
         when(authService.getCurrentUser()).thenReturn(testUser);
-        when(projectMemberRepository.existsByProjectIdAndUserId(projectId, testUser.getId())).thenReturn(true);
+        when(projectMemberRepository.hasProjectAccess(projectId, testUser.getId())).thenReturn(true);
         when(projectRepository.findById(projectId)).thenReturn(Optional.of(projectWithoutDesc));
         when(requirementRepository.findByProjectIdAndParentIsNullAndDeletedAtIsNull(projectId))
                 .thenReturn(topLevelRequirements);
@@ -267,7 +267,7 @@ class ExportServiceTest {
         List<Requirement> topLevelRequirements = Collections.singletonList(requirement1);
 
         when(authService.getCurrentUser()).thenReturn(testUser);
-        when(projectMemberRepository.existsByProjectIdAndUserId(projectId, testUser.getId())).thenReturn(true);
+        when(projectMemberRepository.hasProjectAccess(projectId, testUser.getId())).thenReturn(true);
         when(projectRepository.findById(projectId)).thenReturn(Optional.of(testProject));
         when(requirementRepository.findByProjectIdAndParentIsNullAndDeletedAtIsNull(projectId))
                 .thenReturn(topLevelRequirements);
@@ -286,7 +286,7 @@ class ExportServiceTest {
     void exportToMarkdown_ProjectNotFound() {
         // Arrange
         when(authService.getCurrentUser()).thenReturn(testUser);
-        when(projectMemberRepository.existsByProjectIdAndUserId(projectId, testUser.getId())).thenReturn(true);
+        when(projectMemberRepository.hasProjectAccess(projectId, testUser.getId())).thenReturn(true);
         when(projectRepository.findById(projectId)).thenReturn(Optional.empty());
 
         // Act & Assert
@@ -297,7 +297,7 @@ class ExportServiceTest {
     void exportToMarkdown_AccessDenied() {
         // Arrange
         when(authService.getCurrentUser()).thenReturn(testUser);
-        when(projectMemberRepository.existsByProjectIdAndUserId(projectId, testUser.getId())).thenReturn(false);
+        when(projectMemberRepository.hasProjectAccess(projectId, testUser.getId())).thenReturn(false);
 
         // Act & Assert
         assertThrows(ExportException.class, () -> exportService.exportToMarkdown(projectId));

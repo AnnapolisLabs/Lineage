@@ -2,45 +2,72 @@ package com.annapolislabs.lineage.mcp;
 
 import com.annapolislabs.lineage.entity.Project;
 import com.annapolislabs.lineage.entity.User;
+import com.annapolislabs.lineage.entity.UserRole;
 import com.annapolislabs.lineage.repository.ProjectRepository;
 import com.annapolislabs.lineage.repository.UserRepository;
-import com.annapolislabs.lineage.security.JwtUtil;
+import com.annapolislabs.lineage.security.JwtTokenProvider;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.TestPropertySource;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Integration test for MCP WebSocket server
- * Disabled due to H2/PostgreSQL compatibility issues - test manually after starting the app
+ * Integration test for MCP WebSocket server. Runs against a real Postgres container (rather than
+ * H2) because the User entity's `preferences` column is mapped as Postgres `jsonb`, and creates
+ * its own test user/project directly instead of depending on DataLoader-seeded data or
+ * pre-existing rows, so it works against a fresh, empty database.
  */
-@Disabled("Integration test requires full application context - test manually")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Testcontainers
 @TestPropertySource(properties = {
-    "spring.datasource.url=jdbc:h2:mem:testdb",
-    "spring.jpa.hibernate.ddl-auto=create-drop"
+    "spring.jpa.hibernate.ddl-auto=create-drop",
+    "spring.flyway.enabled=false"
 })
+// Close this test's Spring context (and its Hikari pool) immediately after this class finishes,
+// before Testcontainers tears down the static Postgres container. Without this, the context stays
+// open until JVM shutdown, by which point the container is already gone, causing Hikari to hang
+// for 30s per connection trying to validate/close against a dead container.
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class McpServerIntegrationTest {
+
+    @Container
+    static PostgreSQLContainer<?> postgreSQL = new PostgreSQLContainer<>("postgres:15")
+            .withDatabaseName("lineage_test")
+            .withUsername("test")
+            .withPassword("test");
+
+    @DynamicPropertySource
+    static void configureProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgreSQL::getJdbcUrl);
+        registry.add("spring.datasource.username", postgreSQL::getUsername);
+        registry.add("spring.datasource.password", postgreSQL::getPassword);
+    }
 
     @LocalServerPort
     private int port;
 
     @Autowired
-    private JwtUtil jwtUtil;
+    private JwtTokenProvider jwtTokenProvider;
 
     @Autowired
     private UserRepository userRepository;
@@ -58,23 +85,16 @@ class McpServerIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        // Create test user (uses same default admin email behavior as DataLoader)
-        String adminEmail = System.getenv("LINEAGE_ADMIN_EMAIL") != null ?
-            System.getenv("LINEAGE_ADMIN_EMAIL") : "admin@lineage.local";
-        
-        // Try to find existing user, or fail if initial admin was not created
-        testUser = userRepository.findByEmail(adminEmail).orElse(null);
-        
-        if (testUser == null) {
-            throw new RuntimeException("Test user not found - ensure application startup created the initial admin user");
-        }
-        
-        jwtToken = jwtUtil.generateToken(testUser.getEmail());
-        
-        // Find or create test project
-        testProject = projectRepository.findAll().stream()
-            .findFirst()
-            .orElseThrow(() -> new RuntimeException("No test project found"));
+        String suffix = UUID.randomUUID().toString().substring(0, 8);
+
+        testUser = userRepository.save(
+                new User("mcp-test-" + suffix + "@lineage.local", "hashed-password", "MCP Test User", UserRole.ADMINISTRATOR));
+
+        jwtToken = jwtTokenProvider.generateAccessToken(testUser);
+
+        testProject = projectRepository.save(
+                new Project("MCP Test Project", "Project used for MCP server integration tests",
+                        "MCP-" + suffix, testUser));
     }
 
     @Test

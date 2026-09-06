@@ -196,7 +196,7 @@
         <!-- Requirements Tab Content -->
         <div v-show="activeTab === 'requirements'">
           <!-- Actions Bar -->
-          <div class="flex justify-between items-center">
+          <div class="flex justify-between items-center mb-6">
             <div class="flex gap-2">
               <input
                 v-model="searchQuery"
@@ -600,13 +600,13 @@ import { compareReqIds } from '@/utils/requirementSorting'
 import TeamList from '@/components/rbac/TeamList.vue'
 import PermissionGate from '@/components/rbac/PermissionGate.vue'
 import { useTeamStore } from '@/stores/team'
-import { useRbacStore } from '@/stores/rbac'
+// import { useRbacStore } from '@/stores/rbac'
 
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
 const teamStore = useTeamStore()
-const rbacStore = useRbacStore()
+// const rbacStore = useRbacStore()
 
 const projectId = computed(() => route.params.id as string)
 const project = ref<Project | null>(null)
@@ -674,22 +674,23 @@ async function loadData() {
     }
 
     // Load all requirement links for tree view
-    const linkPromises = allRequirements.value.map(req =>
-      requirementService.getLinks(req.id).catch(err => {
-        console.error(`Failed to load links for ${req.reqId}:`, err)
-        return []
-      })
+    const linkResults = await Promise.all(
+      allRequirements.value.map(async req => ({
+        sourceReqId: req.id,
+        links: await requirementService.getLinks(req.id).catch(err => {
+          console.error(`Failed to load links for ${req.reqId}:`, err)
+          return []
+        })
+      }))
     )
-    const allLinks = await Promise.all(linkPromises)
 
     // Flatten and store all links with their source requirement ID
-    allRequirementLinks.value = allLinks.flatMap((links, index) => {
-      const sourceReqId = allRequirements.value[index].id
-      return links.map(link => ({
+    allRequirementLinks.value = linkResults.flatMap(({ sourceReqId, links }) =>
+      links.map(link => ({
         ...link,
         sourceRequirementId: sourceReqId
       }))
-    })
+    )
   } catch (err) {
     console.error('Failed to load data:', err)
   } finally {

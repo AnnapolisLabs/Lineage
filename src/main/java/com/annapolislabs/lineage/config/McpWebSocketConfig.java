@@ -1,7 +1,7 @@
 package com.annapolislabs.lineage.config;
 
 import com.annapolislabs.lineage.mcp.McpServer;
-import com.annapolislabs.lineage.security.JwtUtil;
+import com.annapolislabs.lineage.security.JwtTokenProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
@@ -23,18 +23,18 @@ import java.util.Map;
 public class McpWebSocketConfig implements WebSocketConfigurer {
 
     private final McpServer mcpServer;
-    private final JwtUtil jwtUtil;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public McpWebSocketConfig(McpServer mcpServer, JwtUtil jwtUtil) {
+    public McpWebSocketConfig(McpServer mcpServer, JwtTokenProvider jwtTokenProvider) {
         this.mcpServer = mcpServer;
-        this.jwtUtil = jwtUtil;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(mcpServer, "/mcp")
                 .setAllowedOrigins("*")
-                .addInterceptors(new McpAuthInterceptor(jwtUtil));
+                .addInterceptors(new McpAuthInterceptor(jwtTokenProvider));
     }
 
     /**
@@ -42,10 +42,10 @@ public class McpWebSocketConfig implements WebSocketConfigurer {
      */
     private static class McpAuthInterceptor implements HandshakeInterceptor {
         private static final Logger log = LoggerFactory.getLogger(McpAuthInterceptor.class);
-        private final JwtUtil jwtUtil;
+        private final JwtTokenProvider jwtTokenProvider;
 
-        public McpAuthInterceptor(JwtUtil jwtUtil) {
-            this.jwtUtil = jwtUtil;
+        public McpAuthInterceptor(JwtTokenProvider jwtTokenProvider) {
+            this.jwtTokenProvider = jwtTokenProvider;
         }
 
         @Override
@@ -55,10 +55,9 @@ public class McpWebSocketConfig implements WebSocketConfigurer {
                 // Extract JWT from query parameter or header
                 String token = extractToken(request);
                 
-                if (token != null) {
-                    // Validate token by checking expiration
-                    String username = jwtUtil.extractUsername(token);
-                    if (username != null && !jwtUtil.extractExpiration(token).before(new java.util.Date())) {
+                if (token != null && jwtTokenProvider.validateToken(token)) {
+                    String username = jwtTokenProvider.getEmailFromToken(token);
+                    if (username != null) {
                         attributes.put("userId", username);
                         return true;
                     }

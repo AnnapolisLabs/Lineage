@@ -7,41 +7,28 @@ import com.annapolislabs.lineage.entity.User;
 import com.annapolislabs.lineage.entity.UserRole;
 import com.annapolislabs.lineage.entity.UserStatus;
 import com.annapolislabs.lineage.service.AuthService;
-import com.annapolislabs.lineage.service.UserService;
-import com.annapolislabs.lineage.security.JwtTokenProvider;
-import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+// AuthController.login() is a thin delegate to AuthService.login(...), so the controller test
+// only needs to mock that single collaborator rather than the lower-level dependencies
+// (UserService/JwtTokenProvider/AuthenticationManager) that AuthService itself now encapsulates.
 @ExtendWith(MockitoExtension.class)
-@Disabled("Authentication context setup required - tests need complex Spring Security mocking")
 class AuthControllerTest {
 
     @Mock
-    private AuthenticationManager authenticationManager;
-
-    @Mock
-    private JwtTokenProvider jwtTokenProvider;
-
-    @Mock
-    private UserService userService;
-
-    @Mock
-    private HttpServletRequest httpRequest;
+    private AuthService authService;
 
     @InjectMocks
     private AuthController authController;
@@ -64,28 +51,25 @@ class AuthControllerTest {
     }
 
     @Test
-    @Disabled("Authentication context setup required")
     void login_Success() {
         // Arrange
         LoginRequest request = new LoginRequest("test@example.com", "password");
-        
-        when(userService.getUserByEmail(anyString())).thenReturn(testUser);
-        when(jwtTokenProvider.generateTokenPair(any(User.class)))
-            .thenReturn(new JwtTokenProvider.TokenPair("token123", "refresh456"));
-        when(userService.getUserProfile(any(UUID.class))).thenReturn(userProfile);
-        when(httpRequest.getRemoteAddr()).thenReturn("127.0.0.1");
+
+        AuthResponse authResponse = new AuthResponse(true, "Login successful", testUser.getId(),
+                testUser.getEmail(), "token123", "refresh456", userProfile);
+        when(authService.login(any(LoginRequest.class))).thenReturn(authResponse);
 
         // Act
-        ResponseEntity<?> response = authController.login(request);
+        ResponseEntity<AuthResponse> response = authController.login(request);
 
         // Assert
         assertNotNull(response);
         assertEquals(200, response.getStatusCode().value());
-        assertTrue(response.getBody() instanceof AuthResponse);
-        
-        AuthResponse authResponse = (AuthResponse) response.getBody();
-        assertEquals("token123", authResponse.getToken());
-        assertEquals(testUser.getEmail(), authResponse.getEmail());
+        assertNotNull(response.getBody());
+
+        AuthResponse body = response.getBody();
+        assertEquals("token123", body.getToken());
+        assertEquals(testUser.getEmail(), body.getEmail());
     }
 
     // Removed getCurrentUser_Success test as AuthController no longer has that method
