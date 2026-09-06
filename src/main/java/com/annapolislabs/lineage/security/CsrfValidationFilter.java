@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -27,21 +27,19 @@ public class CsrfValidationFilter extends OncePerRequestFilter {
     
     // Define which endpoints require CSRF validation
     private final RequestMatcher[] requireCsrfValidationMatchers = {
-        new AntPathRequestMatcher("/api/projects/**"),
-        new AntPathRequestMatcher("/api/requirements/**"),
-        new AntPathRequestMatcher("/api/admin/**")
+        PathPatternRequestMatcher.withDefaults().matcher("/api/projects/**"),
+        PathPatternRequestMatcher.withDefaults().matcher("/api/requirements/**"),
+        PathPatternRequestMatcher.withDefaults().matcher("/api/admin/**")
     };
     
     // Define which endpoints should bypass CSRF validation
     private final RequestMatcher[] bypassCsrfValidationMatchers = {
-        new AntPathRequestMatcher("/api/csrf/**"),
-        new AntPathRequestMatcher("/api/auth/**"),
-        new AntPathRequestMatcher("/api/invitations/**"),
-        new AntPathRequestMatcher("/api/security/**"),
-        new AntPathRequestMatcher("/api/docs/**"),
-        new AntPathRequestMatcher("/api/projects/test-import"),
-        new AntPathRequestMatcher("/api/projects/import"),
-        new AntPathRequestMatcher("/actuator/**")
+        PathPatternRequestMatcher.withDefaults().matcher("/api/csrf/**"),
+        PathPatternRequestMatcher.withDefaults().matcher("/api/auth/**"),
+        PathPatternRequestMatcher.withDefaults().matcher("/api/invitations/**"),
+        PathPatternRequestMatcher.withDefaults().matcher("/api/security/**"),
+        PathPatternRequestMatcher.withDefaults().matcher("/api/docs/**"),
+        PathPatternRequestMatcher.withDefaults().matcher("/actuator/**")
     };
     
     /**

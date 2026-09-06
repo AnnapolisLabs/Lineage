@@ -86,7 +86,7 @@ public class ProjectService {
     @Transactional(readOnly = true)
     public List<ProjectResponse> getAllProjects() {
         User currentUser = authService.getCurrentUser();
-        return projectRepository.findAllByUserId(currentUser.getId())
+        return projectRepository.findAllOwnedAndMemberProjectsByUserId(currentUser.getId())
                 .stream()
                 .map(ProjectResponse::new)
                 .toList();
@@ -99,7 +99,7 @@ public class ProjectService {
 
         // Check if user has access
         User currentUser = authService.getCurrentUser();
-        if (!projectMemberRepository.existsByProjectIdAndUserId(projectId, currentUser.getId())) {
+        if (!projectMemberRepository.hasProjectAccess(projectId, currentUser.getId())) {
             throw new AccessDeniedException();
         }
 

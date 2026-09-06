@@ -131,7 +131,7 @@ public class RequirementLinkService {
                 .orElseThrow(() -> new ResourceNotFoundException(ServiceConstants.REQUIREMENT_NOT_FOUND));
 
         User currentUser = authService.getCurrentUser();
-        if (!projectMemberRepository.existsByProjectIdAndUserId(requirement.getProject().getId(), currentUser.getId())) {
+        if (!projectMemberRepository.hasProjectAccess(requirement.getProject().getId(), currentUser.getId())) {
             throw new InvalidLinkException("Access denied");
         }
 

@@ -91,7 +91,7 @@ class ProjectServiceTest {
     void getAllProjects_ReturnsUserProjects() {
         // Arrange
         when(authService.getCurrentUser()).thenReturn(testUser);
-        when(projectRepository.findAllByUserId(testUser.getId()))
+        when(projectRepository.findAllOwnedAndMemberProjectsByUserId(testUser.getId()))
                 .thenReturn(Arrays.asList(testProject));
 
         // Act
@@ -108,7 +108,7 @@ class ProjectServiceTest {
         // Arrange
         when(projectRepository.findById(testProject.getId())).thenReturn(Optional.of(testProject));
         when(authService.getCurrentUser()).thenReturn(testUser);
-        when(projectMemberRepository.existsByProjectIdAndUserId(testProject.getId(), testUser.getId()))
+        when(projectMemberRepository.hasProjectAccess(testProject.getId(), testUser.getId()))
                 .thenReturn(true);
 
         // Act
@@ -124,7 +124,7 @@ class ProjectServiceTest {
         // Arrange
         when(projectRepository.findById(testProject.getId())).thenReturn(Optional.of(testProject));
         when(authService.getCurrentUser()).thenReturn(testUser);
-        when(projectMemberRepository.existsByProjectIdAndUserId(testProject.getId(), testUser.getId()))
+        when(projectMemberRepository.hasProjectAccess(testProject.getId(), testUser.getId()))
                 .thenReturn(false);
 
         // Act & Assert

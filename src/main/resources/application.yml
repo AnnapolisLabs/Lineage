@@ -26,8 +26,9 @@ server:
     enabled: true
 
 jwt:
+  # Local-development-only fallback. The "prod" profile (application-prod.properties)
+  # overrides this with no default, so deploys fail fast if JWT_SECRET is unset.
   secret: ${JWT_SECRET:dev-secret-key-change-in-production-use-at-least-256-bits}
-  expiration: 86400000
 
 logging:
   level:

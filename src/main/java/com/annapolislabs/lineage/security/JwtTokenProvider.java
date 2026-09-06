@@ -4,6 +4,7 @@ import com.annapolislabs.lineage.entity.User;
 import com.annapolislabs.lineage.entity.UserRole;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,23 +35,40 @@ public class JwtTokenProvider {
     @Value("${jwt.refresh.token.expiry:604800}") // 7 days
     private long refreshTokenExpiry;
     
-    @Value("${jwt.secret.key:#{null}}")
-    private String secretKey;
-
     @Value("${jwt.secret:#{null}}")
     private String secret;
-    
-    private SecretKey getSigningKey() {
-        // Use the same fallback secret as JwtUtil to ensure consistency
-        String key;
-        if (secretKey != null && !secretKey.isBlank()) {
-            key = secretKey;
-        } else {
-            key = secret != null && !secret.isBlank() ? 
-                secret : 
-                "development-secret-key-for-jwt-signing-change-in-production";
+
+    private volatile SecretKey signingKey;
+
+    /**
+     * Fails application startup if no JWT signing secret has been configured, rather than silently
+     * falling back to a hardcoded/well-known value. Every profile (including local dev) must supply
+     * {@code jwt.secret} (typically via the {@code JWT_SECRET} environment variable).
+     */
+    @PostConstruct
+    void validateSecretConfigured() {
+        if (secret == null || secret.isBlank()) {
+            throw new IllegalStateException(
+                "jwt.secret is not configured. Set the JWT_SECRET environment variable before starting the application.");
         }
-        return Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8));
+        if (secret.getBytes(StandardCharsets.UTF_8).length < 32) {
+            throw new IllegalStateException(
+                "jwt.secret must be at least 256 bits (32 bytes) long for HMAC-SHA signing.");
+        }
+    }
+
+    private SecretKey getSigningKey() {
+        SecretKey key = signingKey;
+        if (key == null) {
+            synchronized (this) {
+                key = signingKey;
+                if (key == null) {
+                    key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+                    signingKey = key;
+                }
+            }
+        }
+        return key;
     }
 
     private SecretKey getValidationKey() {

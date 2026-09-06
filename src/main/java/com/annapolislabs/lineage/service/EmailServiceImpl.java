@@ -113,7 +113,7 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendPeerReviewRejectionNotification(String authorEmail, String requirementTitle,
-                                                  String reviewerName, String comments) {
+                                                   String reviewerName, String comments) {
         logger.info("Peer review rejection notification would be sent to: {} for requirement '{}' rejected by {}",
                 authorEmail, requirementTitle, reviewerName);
         // Placeholder: SMTP implementation pending infrastructure setup
@@ -125,53 +125,5 @@ public class EmailServiceImpl implements EmailService {
         logger.info("Peer review revision request notification would be sent to: {} for requirement '{}' by {}",
                 authorEmail, requirementTitle, reviewerName);
         // Placeholder: SMTP implementation pending infrastructure setup
-    }
-
-    @Override
-    public void sendTeamInvitation(String userEmail, String teamName, String roleDisplayName, 
-                                 String message, String teamId, String invitationId) {
-        logger.info("Team invitation email would be sent to: {} for team '{}' with role '{}'", 
-                userEmail, teamName, roleDisplayName);
-        // TODO: Implement actual email sending functionality with SMTP configuration
-    }
-
-    @Override
-    public void sendTaskAssignmentNotification(String assigneeEmail, String taskTitle, 
-                                             String taskDescription, String projectId) {
-        logger.info("Task assignment notification would be sent to: {} for task '{}' in project {}", 
-                assigneeEmail, taskTitle, projectId);
-        // TODO: Implement actual email sending functionality with SMTP configuration
-    }
-
-    @Override
-    public void sendPeerReviewInvitation(String reviewerEmail, String requirementTitle, 
-                                       String authorName, String reviewType, String deadline) {
-        logger.info("Peer review invitation would be sent to: {} for requirement '{}' by {} with type '{}'", 
-                reviewerEmail, requirementTitle, authorName, reviewType);
-        // TODO: Implement actual email sending functionality with SMTP configuration
-    }
-
-    @Override
-    public void sendPeerReviewApprovalNotification(String authorEmail, String requirementTitle, 
-                                                 String reviewerName, String comments) {
-        logger.info("Peer review approval notification would be sent to: {} for requirement '{}' approved by {}", 
-                authorEmail, requirementTitle, reviewerName);
-        // TODO: Implement actual email sending functionality with SMTP configuration
-    }
-
-    @Override
-    public void sendPeerReviewRejectionNotification(String authorEmail, String requirementTitle, 
-                                                  String reviewerName, String comments) {
-        logger.info("Peer review rejection notification would be sent to: {} for requirement '{}' rejected by {}", 
-                authorEmail, requirementTitle, reviewerName);
-        // TODO: Implement actual email sending functionality with SMTP configuration
-    }
-
-    @Override
-    public void sendPeerReviewRevisionRequestNotification(String authorEmail, String requirementTitle, 
-                                                       String reviewerName, String feedback) {
-        logger.info("Peer review revision request notification would be sent to: {} for requirement '{}' by {}", 
-                authorEmail, requirementTitle, reviewerName);
-        // TODO: Implement actual email sending functionality with SMTP configuration
     }
 }

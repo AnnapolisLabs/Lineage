@@ -102,7 +102,15 @@ public class SecurityConfig {
                     .requestMatchers("/error").permitAll()
                     .requestMatchers("/h2-console/**").hasAnyRole(OWNER, ADMINISTRATOR)
                     .requestMatchers("/actuator/health", "/actuator/info").permitAll()
-                    
+
+                    // MCP WebSocket endpoint authenticates its own handshake via
+                    // McpWebSocketConfig's HandshakeInterceptor (JWT passed as a query param or
+                    // Authorization header), since browsers/WebSocket clients can't always attach
+                    // custom Authorization headers during the handshake. Must be excluded here or
+                    // the standard HTTP filter chain rejects the upgrade request with 401 before
+                    // the WebSocket-level auth ever runs.
+                    .requestMatchers("/mcp/**").permitAll()
+
                     // Static resources
                     .requestMatchers("/", "/index.html", "/assets/**", "/vite.svg", "/favicon.ico").permitAll()
                     
@@ -125,8 +133,6 @@ public class SecurityConfig {
                     .requestMatchers("/api/security/**").authenticated()
                     
                     // Project management (requires authentication)
-                    .requestMatchers("/api/projects/test-import").permitAll()
-                    .requestMatchers("/api/projects/import").permitAll()
                     .requestMatchers("/api/projects/**").authenticated()
                     
                     // Everything else requires authentication
@@ -215,8 +221,7 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }

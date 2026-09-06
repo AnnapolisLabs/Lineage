@@ -191,7 +191,7 @@ public class ExportService {
      */
     private void checkAccess(UUID projectId) {
         User currentUser = authService.getCurrentUser();
-        if (!projectMemberRepository.existsByProjectIdAndUserId(projectId, currentUser.getId())) {
+        if (!projectMemberRepository.hasProjectAccess(projectId, currentUser.getId())) {
             throw new ExportException("Access denied");
         }
     }

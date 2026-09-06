@@ -203,7 +203,7 @@ class RequirementLinkServiceTest {
 
         when(requirementRepository.findById(fromRequirement.getId())).thenReturn(Optional.of(fromRequirement));
         when(authService.getCurrentUser()).thenReturn(testUser);
-        when(projectMemberRepository.existsByProjectIdAndUserId(testProject.getId(), testUser.getId())).thenReturn(true);
+        when(projectMemberRepository.hasProjectAccess(testProject.getId(), testUser.getId())).thenReturn(true);
         when(linkRepository.findAllLinksForRequirement(fromRequirement.getId()))
                 .thenReturn(Collections.singletonList(link));
 
@@ -225,7 +225,7 @@ class RequirementLinkServiceTest {
 
         when(requirementRepository.findById(toRequirement.getId())).thenReturn(Optional.of(toRequirement));
         when(authService.getCurrentUser()).thenReturn(testUser);
-        when(projectMemberRepository.existsByProjectIdAndUserId(testProject.getId(), testUser.getId())).thenReturn(true);
+        when(projectMemberRepository.hasProjectAccess(testProject.getId(), testUser.getId())).thenReturn(true);
         when(linkRepository.findAllLinksForRequirement(toRequirement.getId()))
                 .thenReturn(Collections.singletonList(link));
 
@@ -255,7 +255,7 @@ class RequirementLinkServiceTest {
         // Arrange
         when(requirementRepository.findById(fromRequirement.getId())).thenReturn(Optional.of(fromRequirement));
         when(authService.getCurrentUser()).thenReturn(testUser);
-        when(projectMemberRepository.existsByProjectIdAndUserId(testProject.getId(), testUser.getId())).thenReturn(false);
+        when(projectMemberRepository.hasProjectAccess(testProject.getId(), testUser.getId())).thenReturn(false);
 
         // Act & Assert
         assertThrows(InvalidLinkException.class,
